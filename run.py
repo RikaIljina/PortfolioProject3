@@ -119,6 +119,14 @@ def cadet_skill_generator():
 
 
 def game_manager():
+    '''
+    '''
+    # Build initial cadet dictionary with 6 cadets and their respective random skill values. 
+    # The player has no access to these values.
+    cadets = {key: {key: value for key, value in zip(
+        SKILLS, cadet_skill_generator())} for key in NAMES}
+    pprint(cadets)
+
     m = Menu()
     m.run_lvl1()
 
