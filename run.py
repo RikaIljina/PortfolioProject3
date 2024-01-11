@@ -67,16 +67,15 @@ class Cadets:
                        "Engineering", "Medicine", "Pilot"]
         # Selection of names for cadets (TODO: randomize selection!)
         self.NAMES = random.sample(["Cadet Janeway", "Cadet Picard", "Cadet Kirk", "Cadet Kim", "Cadet Paris",
-                      "Cadet Whorf", "Cadet Crusher", "Cadet Torres", "Cadet Spock", "Cadet Troi"], 6)
+                                    "Cadet Whorf", "Cadet Crusher", "Cadet Torres", "Cadet Spock", "Cadet Troi"], 6)
         self.cadets = {}
-        
-        
+
     def recruit(self):
         # Build initial cadet dictionary with 6 cadets and their respective random skill values.
         # The player has no access to these values.
         self.cadets = {key: {key: value for key, value in zip(
-        self.SKILLS, self.cadet_skill_generator())} for key in self.NAMES}
-        
+            self.SKILLS, self.cadet_skill_generator())} for key in self.NAMES}
+
     def cadet_skill_generator(self):
         """
         This function generates and returns a list with 5 random skill numbers, 
@@ -120,7 +119,7 @@ class Cadets:
                     lower_range = max(
                         (MAX_POINTS - sum(skill_points[0:i-1])) % (HIGHEST_SKILL*(skill_amount - i)), 1)
                 points = random.randrange(lower_range, upper_range)
-           
+
             elif i == 3:
                 upper_range = min(
                     MAX_POINTS - sum(skill_points[0:i-1]) - (skill_amount - i) + 1, HIGHEST_SKILL + 1)
@@ -130,15 +129,14 @@ class Cadets:
                     lower_range = max(
                         (MAX_POINTS - sum(skill_points[0:i-1])) % (HIGHEST_SKILL*(skill_amount - i)), 1)
                 points = random.randrange(lower_range, upper_range)
-           
+
             else:
                 points = random.randrange(LOWEST_SKILL, HIGHEST_SKILL + 1)
-                
+
             skill_points.append(points)
 
         print(sum(skill_points))
         return skill_points
-
 
 
 class Trials:
@@ -148,7 +146,7 @@ class Trials:
         self.c2 = ""
         self.trials_log = {}
         self.count = 0
-        
+
     def run_trials(self, cadets):
         print(self.trials_log)
         # print(f'Comparing cadets {self.c1} and {self.c2} for skill {self.skill}:')
@@ -164,15 +162,21 @@ class Trials:
             result_string = (f'{self.c1} is better than {self.c2}')
         else:
             result_string = (f'{self.c1} and {self.c2} are equals')
-            
+
         if self.trials_log.get(self.skill):
-                self.trials_log[self.skill].append(result_string)
+            self.trials_log[self.skill].append(result_string)
         else:
             self.trials_log[self.skill] = [result_string]
 
-        self.count += 1                
+        self.count += 1
         return f'{self.skill}: {result_string}'
 
+    def show_log(self, skill):
+        if self.trials_log.get(skill):
+            return (self.trials_log[skill])
+        else:
+            self.trials_log[skill] = ["No trials for this skill"]
+            return (self.trials_log[skill])
 
 
 # Add Mission class with roles and crew, it handles the assignment of cadets
@@ -183,23 +187,23 @@ class Mission:
         self.prognosis = 0
         self.score = 0
         self.mission_log = ""
-        
+
     def calculate_prognosis(self):
         result = 0
         for value in self.crew.values():
             result += value[1]*10
         self.prognosis = math.floor(result/len(self.crew.values()))
         return self.prognosis
-    
+
     def calculate_success(self):
-        mission_parameters = [random.randrange(5,11) for _ in range(5)]
+        mission_parameters = [random.randrange(5, 11) for _ in range(5)]
         difficulty = (sum(mission_parameters)/5)*10
         print(f'The mission difficulty is {difficulty}')
         i = 0
         for key, value in self.crew.items():
             descriptor = ""
             print(key)
-            
+
             # TODO: Move strings into a Google sheet
             match key:
                 case 'Diplomacy':
@@ -226,17 +230,15 @@ class Mission:
                         descriptor += f"{value[0]} was a real miracle worker!"
                     else:
                         descriptor += f"Unfortunately, {value[0]} was unable to handle the stress of the medical profession."
-                    
-                    
+
             self.mission_log += descriptor
-                         
-            print(f'{value[0]} has {"succeeded" if value[1] >= mission_parameters[i] else "failed"}' )
+
+            print(
+                f'{value[0]} has {"succeeded" if value[1] >= mission_parameters[i] else "failed"}')
             i += 1
-            
+
         print(self.mission_log)
-        
-        
-                
+
 
 # Add Game Manager (for each stage?) that will instantiate objects, pass them to their
 # respective functions
@@ -249,14 +251,15 @@ def game_manager():
     player.get_name()               # maybe just player.name = input()
     print(f'Hello {player.name}')
     active_cadets = Cadets()
-    active_cadets.recruit()             # Can be modified to allow n cadets to be recruited instead of 6
+    # Can be modified to allow n cadets to be recruited instead of 6
+    active_cadets.recruit()
     pprint(active_cadets.cadets)
-    
+
     print("\nStarting trials:")
     trials = Trials()
-    
+
     for _ in range(3):
-        
+
         print(active_cadets.SKILLS)
         s = int(input("Skill number:"))
         trials.skill = active_cadets.SKILLS[s]
@@ -267,33 +270,33 @@ def game_manager():
         n2 = int(input("Cadet number 2:"))
         trials.c2 = active_cadets.NAMES[n2]
         print(trials.run_trials(active_cadets))
-        
+
     # Final mission
-    
+
     final_mission = Mission(active_cadets.SKILLS)
     available_cadets = active_cadets.NAMES
     for skill in active_cadets.SKILLS:
+        print(trials.show_log(skill))           #   print on demand!
         lst = list(f'{c[0]}. {c[1]} ' for c in enumerate(available_cadets))
         for l in lst:
             print(l, end="")
         print(f'\n{skill}: Please assign a cadet:')
         index = int(input())
         cadet_name = available_cadets[index]
-        final_mission.crew[skill] = [cadet_name, active_cadets.cadets[cadet_name][skill]]
+        final_mission.crew[skill] = [cadet_name,
+                                     active_cadets.cadets[cadet_name][skill]]
         available_cadets.pop(index)
-    
+
     print(final_mission.crew)
-    
+
     # Calculate mission success
-    
+
     print("Success rate: ", final_mission.calculate_prognosis())
     print("Mission success: ", final_mission.calculate_success())
-    
-    
-    
+
     m = Menu()
     m.run_lvl1()
-    
+
     print("end")
 
 
