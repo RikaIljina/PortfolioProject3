@@ -6,6 +6,8 @@ from pprint import pprint
 import random
 import math
 import os
+from typing import Any
+
 
 # Establish connection to Google sheets for highscore management
 
@@ -175,6 +177,10 @@ class Trials:
 
 # Add Mission class with roles and crew, it handles the assignment of cadets
 
+class Mission:
+    def __init__(self, roles):
+        self.crew = {key: "" for key in roles}
+        
 
 # Add Game Manager (for each stage?) that will instantiate objects, pass them to their
 # respective functions
@@ -184,10 +190,10 @@ def game_manager():
     '''
 
     player = Player()
-    player.get_name()
+    player.get_name()               # maybe just player.name = input()
     print(f'Hello {player.name}')
     active_cadets = Cadets()
-    active_cadets.recruit()
+    active_cadets.recruit()             # Can be modified to allow n cadets to be recruited instead of 6
     pprint(active_cadets.cadets)
     
     print("\nStarting trials:")
@@ -206,6 +212,19 @@ def game_manager():
         trials.c2 = active_cadets.NAMES[n2]
         print(trials.run_trials(active_cadets))
         
+    # Final mission
+    
+    final_mission = Mission(active_cadets.SKILLS)
+    available_cadets = active_cadets.NAMES
+    for skill in active_cadets.SKILLS:
+        lst = list(f'{c[0]}. {c[1]} ' for c in enumerate(available_cadets))
+        for l in lst:
+            print(l, end="")
+        print(f'\n{skill}: Please assign a cadet:')
+        index = int(input())
+        final_mission.crew[skill] = available_cadets[index]
+    
+    print(final_mission.crew)
     
     m = Menu()
     m.run_lvl1()
