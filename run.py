@@ -146,12 +146,12 @@ class Trials:
         self.skill = ""
         self.c1 = ""
         self.c2 = ""
-        self.results = {}
+        self.trials_log = {}
         self.count = 0
         
     def run_trials(self, cadets):
-        print(self.results)
-        print(f'Comparing cadets {self.c1} and {self.c2} for skill {self.skill}:')
+        print(self.trials_log)
+        # print(f'Comparing cadets {self.c1} and {self.c2} for skill {self.skill}:')
         skill_c1 = cadets.cadets[self.c1][self.skill]
         skill_c2 = cadets.cadets[self.c2][self.skill]
         if skill_c1 - skill_c2 <= -4:
@@ -165,10 +165,10 @@ class Trials:
         else:
             result_string = (f'{self.c1} and {self.c2} are equals')
             
-        if self.results.get(self.skill):
-                self.results[self.skill].append(result_string)
+        if self.trials_log.get(self.skill):
+                self.trials_log[self.skill].append(result_string)
         else:
-            self.results[self.skill] = [result_string]
+            self.trials_log[self.skill] = [result_string]
 
         self.count += 1                
         return f'{self.skill}: {result_string}'
@@ -179,7 +179,27 @@ class Trials:
 
 class Mission:
     def __init__(self, roles):
-        self.crew = {key: "" for key in roles}
+        self.crew = {key: [] for key in roles}
+        self.prognosis = 0
+        self.score = 0
+        self.mission_log = ""
+        
+    def calculate_prognosis(self):
+        result = 0
+        for value in self.crew.values():
+            result += value[1]*10
+        self.prognosis = math.floor(result/len(self.crew.values()))
+        return self.prognosis
+    
+    def calculate_success(self):
+        mission_parameters = [random.randrange(1,11) for _ in range(5)]
+        print(f'The mission difficulty is {(sum(mission_parameters)/5)*10}')
+        i = 0
+        for key, value in self.crew.items():
+            print(key)
+            print(f'{value[0]} has {"succeeded" if value[1] >= mission_parameters[i] else "failed"}' )
+            i += 1
+        
         
 
 # Add Game Manager (for each stage?) that will instantiate objects, pass them to their
@@ -222,9 +242,17 @@ def game_manager():
             print(l, end="")
         print(f'\n{skill}: Please assign a cadet:')
         index = int(input())
-        final_mission.crew[skill] = available_cadets[index]
+        cadet_name = available_cadets[index]
+        final_mission.crew[skill] = [cadet_name, active_cadets.cadets[cadet_name][skill]]
     
     print(final_mission.crew)
+    
+    # Calculate mission success
+    
+    print("Success rate: ", final_mission.calculate_prognosis())
+    print("Mission success: ", final_mission.calculate_success())
+    
+    
     
     m = Menu()
     m.run_lvl1()
