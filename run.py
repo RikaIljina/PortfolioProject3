@@ -10,6 +10,19 @@ import os
 # Establish connection to Google sheets for highscore management
 
 
+# Player object with name and score
+class Player:
+    def __init__(self):
+        self.name = ""
+        self.score = 0
+        
+    def get_name(self):
+        # All print statements should be passed to class Display later
+        print("Please enter your name:")
+        self.name = input()
+        
+    
+
 # Total amount of skill points to divide among all skills for each cadet
 MAX_POINTS = 25
 # Lowest and highest possible skill level on a scale of 1-10
@@ -114,6 +127,9 @@ def cadet_skill_generator():
     return skill_points
 
 
+def cadet_trials(cadets):
+    pass
+
 # Add Game Manager (for each stage?) that will instantiate objects, pass them to their
 # respective functions
 
@@ -126,6 +142,10 @@ def game_manager():
     cadets = {key: {key: value for key, value in zip(
         SKILLS, cadet_skill_generator())} for key in NAMES}
     pprint(cadets)
+    
+    player = Player()
+    player.get_name()
+    print(f'Hello {player.name}')
 
     m = Menu()
     m.run_lvl1()
