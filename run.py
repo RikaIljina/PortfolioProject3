@@ -192,15 +192,51 @@ class Mission:
         return self.prognosis
     
     def calculate_success(self):
-        mission_parameters = [random.randrange(1,11) for _ in range(5)]
-        print(f'The mission difficulty is {(sum(mission_parameters)/5)*10}')
+        mission_parameters = [random.randrange(5,11) for _ in range(5)]
+        difficulty = (sum(mission_parameters)/5)*10
+        print(f'The mission difficulty is {difficulty}')
         i = 0
         for key, value in self.crew.items():
+            descriptor = ""
             print(key)
+            
+            # TODO: Move strings into a Google sheet
+            match key:
+                case 'Diplomacy':
+                    if mission_parameters[i] >= 7:
+                        descriptor += "This was a real diplomatic crisis!"
+                    elif 4 < mission_parameters[i] < 7:
+                        descriptor += "This mission had challenging diplomatic issues."
+                    else:
+                        descriptor += "There was only a minor diplomatic issue on this mission."
+                    if value[1] >= mission_parameters[i]:
+                        self.score += 1
+                        descriptor += f"{value[0]} solved it masterfully."
+                    else:
+                        descriptor += f"Unfortunately, {value[0]} was unable to deal with it."
+                case 'Medicine':
+                    if mission_parameters[i] >= 7:
+                        descriptor += "This was a real medical crisis! A planet-wide outbreak!"
+                    elif 4 < mission_parameters[i] < 7:
+                        descriptor += "An alien guest had a challenging medical problem."
+                    else:
+                        descriptor += "A couple crew members sustained minor injuries on the Holodeck."
+                    if value[1] >= mission_parameters[i]:
+                        self.score += 1
+                        descriptor += f"{value[0]} was a real miracle worker!"
+                    else:
+                        descriptor += f"Unfortunately, {value[0]} was unable to handle the stress of the medical profession."
+                    
+                    
+            self.mission_log += descriptor
+                         
             print(f'{value[0]} has {"succeeded" if value[1] >= mission_parameters[i] else "failed"}' )
             i += 1
+            
+        print(self.mission_log)
         
         
+                
 
 # Add Game Manager (for each stage?) that will instantiate objects, pass them to their
 # respective functions
@@ -244,6 +280,7 @@ def game_manager():
         index = int(input())
         cadet_name = available_cadets[index]
         final_mission.crew[skill] = [cadet_name, active_cadets.cadets[cadet_name][skill]]
+        available_cadets.pop(index)
     
     print(final_mission.crew)
     
