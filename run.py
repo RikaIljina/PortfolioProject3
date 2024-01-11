@@ -23,6 +23,18 @@ class Player:
         print("Please enter your name:")
         self.name = input()
 
+    def calculate_score(self, trial_runs, trial_max_runs, mission_score, mission_difficulty, mission_prognosis):
+        mission_failed_penalty = 0 if mission_score >= 3 else 500
+        mission_score_penalty = (5 - mission_score) * 100
+        mission_prognosis_penalty = 100 - mission_prognosis
+        trial_run_bonus = 0 if mission_failed_penalty != 0 else (trial_max_runs - trial_runs) * 10
+        mission_difficulty_bonus = 0 if mission_failed_penalty != 0 else mission_difficulty - mission_prognosis
+        print(f'{trial_runs} {trial_run_bonus} {mission_failed_penalty} + {mission_score_penalty} + {mission_prognosis_penalty}')
+        print(mission_difficulty_bonus)
+        result = 1000 - mission_failed_penalty - mission_score_penalty - \
+            mission_prognosis_penalty + mission_difficulty_bonus + trial_run_bonus
+        return result
+
 
 # Add Menu class with Stage 1 - name input, Stage 2 - cadet trial runs,
 # Stage 3 - assignments, Stage 4 - final mission start,
@@ -145,7 +157,8 @@ class Trials:
         self.c1 = ""
         self.c2 = ""
         self.trials_log = {}
-        self.count = 0
+        self.runs = 0
+        self.MAX_RUNS = 15
 
     def run_trials(self, cadets):
         print(self.trials_log)
@@ -168,7 +181,7 @@ class Trials:
         else:
             self.trials_log[self.skill] = [result_string]
 
-        self.count += 1
+        self.runs += 1
         return f'{self.skill}: {result_string}'
 
     def show_log(self, skill):
@@ -186,6 +199,7 @@ class Mission:
         self.crew = {key: [] for key in roles}
         self.prognosis = 0
         self.score = 0
+        self.difficulty = 0
         self.mission_log = ""
 
     def calculate_prognosis(self):
@@ -196,9 +210,9 @@ class Mission:
         return self.prognosis
 
     def calculate_success(self):
-        mission_parameters = [random.randrange(5, 11) for _ in range(5)]
-        difficulty = (sum(mission_parameters)/5)*10
-        print(f'The mission difficulty is {difficulty}')
+        mission_parameters = [random.randrange(5, 11) for _ in range(5)]        # Mission difficulty starts at 5
+        self.difficulty = (sum(mission_parameters)/5)*10
+        print(f'The mission difficulty is {self.difficulty}')
         i = 0
         for key, value in self.crew.items():
             descriptor = ""
@@ -230,6 +244,42 @@ class Mission:
                         descriptor += f"{value[0]} was a real miracle worker!"
                     else:
                         descriptor += f"Unfortunately, {value[0]} was unable to handle the stress of the medical profession."
+                case 'Science':
+                    if mission_parameters[i] >= 7:
+                        descriptor += "This was a real scientific crisis!"
+                    elif 4 < mission_parameters[i] < 7:
+                        descriptor += "An alien guest had a challenging scientific problem."
+                    else:
+                        descriptor += "There was a minor scientific issue."
+                    if value[1] >= mission_parameters[i]:
+                        self.score += 1
+                        descriptor += f"{value[0]} was a real miracle worker!"
+                    else:
+                        descriptor += f"Unfortunately, {value[0]} was unable to handle the stress of being a scientist."
+                case 'Pilot':
+                    if mission_parameters[i] >= 7:
+                        descriptor += "This was a real piloting crisis!"
+                    elif 4 < mission_parameters[i] < 7:
+                        descriptor += "An alien guest had a challenging piloting problem."
+                    else:
+                        descriptor += "There was a minor piloting issue."
+                    if value[1] >= mission_parameters[i]:
+                        self.score += 1
+                        descriptor += f"{value[0]} was a real miracle worker!"
+                    else:
+                        descriptor += f"Unfortunately, {value[0]} was unable to handle the stress of being a pilot."
+                case 'Engineering':
+                    if mission_parameters[i] >= 7:
+                        descriptor += "This was a real engineering crisis!"
+                    elif 4 < mission_parameters[i] < 7:
+                        descriptor += "An alien guest had a challenging engineering problem."
+                    else:
+                        descriptor += "There was a minor engineering issue."
+                    if value[1] >= mission_parameters[i]:
+                        self.score += 1
+                        descriptor += f"{value[0]} was a real miracle worker!"
+                    else:
+                        descriptor += f"Unfortunately, {value[0]} was unable to handle the stress of being an engineer."
 
             self.mission_log += descriptor
 
@@ -276,7 +326,7 @@ def game_manager():
     final_mission = Mission(active_cadets.SKILLS)
     available_cadets = active_cadets.NAMES
     for skill in active_cadets.SKILLS:
-        print(trials.show_log(skill))           #   print on demand!
+        print(trials.show_log(skill))  # print on demand!
         lst = list(f'{c[0]}. {c[1]} ' for c in enumerate(available_cadets))
         for l in lst:
             print(l, end="")
@@ -293,6 +343,10 @@ def game_manager():
 
     print("Success rate: ", final_mission.calculate_prognosis())
     print("Mission success: ", final_mission.calculate_success())
+
+    print("Calculating final player score:")
+    print(player.calculate_score(trials.runs, trials.MAX_RUNS,
+          final_mission.score, final_mission.difficulty, final_mission.prognosis))
 
     m = Menu()
     m.run_lvl1()
