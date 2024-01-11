@@ -39,6 +39,7 @@ class Menu:
                 self.lvl1[k]()
             except:
                 print(f"Wrong input")
+                break
 
 
 def print_x():
@@ -143,8 +144,8 @@ class Trials:
         self.skill = ""
         self.c1 = ""
         self.c2 = ""
-        self.current_run = {self.skill: [self.c1, self.c2]}
         self.results = {}
+        self.count = 0
         
     def run_trials(self, cadets):
         print(self.results)
@@ -152,21 +153,27 @@ class Trials:
         skill_c1 = cadets.cadets[self.c1][self.skill]
         skill_c2 = cadets.cadets[self.c2][self.skill]
         if skill_c1 - skill_c2 <= -4:
-            print(f'{self.skill}: {self.c1} is much worse than {self.c2}')
-            if self.results.get(self.skill):
-                self.results[self.skill].append(f'{self.c1} is much worse than {self.c2}')
-            else:
-                self.results[self.skill] = [f'{self.c1} is much worse than {self.c2}']
+            result_string = (f'{self.c1} is much worse than {self.c2}')
         elif skill_c1 - skill_c2 < 0:
-            print(f'{self.skill}: {self.c1} is worse than {self.c2}')
+            result_string = (f'{self.c1} is worse than {self.c2}')
         elif skill_c1 - skill_c2 >= 4:
-            print(f'{self.skill}: {self.c1} is much better than {self.c2}')
+            result_string = (f'{self.c1} is much better than {self.c2}')
         elif skill_c1 - skill_c2 > 0:
-            print(f'{self.skill}: {self.c1} is better than {self.c2}')
+            result_string = (f'{self.c1} is better than {self.c2}')
         else:
-            print(f'{self.skill}: {self.c1} and {self.c2} are equals')
+            result_string = (f'{self.c1} and {self.c2} are equals')
             
-        print(self.results)
+        if self.results.get(self.skill):
+                self.results[self.skill].append(result_string)
+        else:
+            self.results[self.skill] = [result_string]
+
+        self.count += 1                
+        return f'{self.skill}: {result_string}'
+
+
+
+# Add Mission class with roles and crew, it handles the assignment of cadets
 
 
 # Add Game Manager (for each stage?) that will instantiate objects, pass them to their
@@ -197,11 +204,13 @@ def game_manager():
         print(active_cadets.NAMES)
         n2 = int(input("Cadet number 2:"))
         trials.c2 = active_cadets.NAMES[n2]
-        trials.run_trials(active_cadets)
+        print(trials.run_trials(active_cadets))
         
     
     m = Menu()
     m.run_lvl1()
+    
+    print("end")
 
 
 if __name__ == '__main__':
