@@ -63,8 +63,8 @@ class Cadets:
         self.SKILLS = ["Diplomacy", "Science",
                        "Engineering", "Medicine", "Pilot"]
         # Selection of names for cadets (TODO: randomize selection!)
-        self.NAMES = ["Cadet Janeway", "Cadet Picard", "Cadet Kirk", "Cadet Kim", "Cadet Paris",
-                      "Cadet Whorf", "Cadet Crusher", "Cadet Torres", "Cadet Spock"][0:6]
+        self.NAMES = random.sample(["Cadet Janeway", "Cadet Picard", "Cadet Kirk", "Cadet Kim", "Cadet Paris",
+                      "Cadet Whorf", "Cadet Crusher", "Cadet Torres", "Cadet Spock", "Cadet Troi"], 6)
         self.cadets = {}
         
         
@@ -136,12 +136,41 @@ class Cadets:
         print(sum(skill_points))
         return skill_points
 
-    def cadet_trials(self):
-        pass
+
+
+class Trials:
+    def __init__(self):
+        self.skill = ""
+        self.c1 = ""
+        self.c2 = ""
+        self.current_run = {self.skill: [self.c1, self.c2]}
+        self.results = {}
+        
+    def run_trials(self, cadets):
+        print(self.results)
+        print(f'Comparing cadets {self.c1} and {self.c2} for skill {self.skill}:')
+        skill_c1 = cadets.cadets[self.c1][self.skill]
+        skill_c2 = cadets.cadets[self.c2][self.skill]
+        if skill_c1 - skill_c2 <= -4:
+            print(f'{self.skill}: {self.c1} is much worse than {self.c2}')
+            if self.results.get(self.skill):
+                self.results[self.skill].append(f'{self.c1} is much worse than {self.c2}')
+            else:
+                self.results[self.skill] = [f'{self.c1} is much worse than {self.c2}']
+        elif skill_c1 - skill_c2 < 0:
+            print(f'{self.skill}: {self.c1} is worse than {self.c2}')
+        elif skill_c1 - skill_c2 >= 4:
+            print(f'{self.skill}: {self.c1} is much better than {self.c2}')
+        elif skill_c1 - skill_c2 > 0:
+            print(f'{self.skill}: {self.c1} is better than {self.c2}')
+        else:
+            print(f'{self.skill}: {self.c1} and {self.c2} are equals')
+            
+        print(self.results)
+
 
 # Add Game Manager (for each stage?) that will instantiate objects, pass them to their
 # respective functions
-
 
 def game_manager():
     '''
@@ -152,8 +181,25 @@ def game_manager():
     print(f'Hello {player.name}')
     active_cadets = Cadets()
     active_cadets.recruit()
-    print(active_cadets.cadets)
-
+    pprint(active_cadets.cadets)
+    
+    print("\nStarting trials:")
+    trials = Trials()
+    
+    for _ in range(3):
+        
+        print(active_cadets.SKILLS)
+        s = int(input("Skill number:"))
+        trials.skill = active_cadets.SKILLS[s]
+        print(active_cadets.NAMES)
+        n1 = int(input("Cadet number 1:"))
+        trials.c1 = active_cadets.NAMES[n1]
+        print(active_cadets.NAMES)
+        n2 = int(input("Cadet number 2:"))
+        trials.c2 = active_cadets.NAMES[n2]
+        trials.run_trials(active_cadets)
+        
+    
     m = Menu()
     m.run_lvl1()
 
