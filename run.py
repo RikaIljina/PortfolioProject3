@@ -139,8 +139,23 @@ class Trials:
         self.runs = 0
         self.MAX_RUNS = 5
         
-    def choose_skill(self):
-        print("choose skill")
+    def fill_trials(self, cadets, skill_nr, c1, c2):  # fill_trials move to Trials class
+    
+        self.skill = cadets.SKILLS[skill_nr] if skill_nr else self.skill
+        print(self.skill)
+
+        self.c1 = cadets.NAMES[c1]
+        self.c2 = cadets.NAMES[c2]
+                
+        print(self.run_trials(cadets))
+                
+        if self.runs == self.MAX_RUNS:
+            print("No more time for trials! On to the real mission!")
+            return False
+        else:
+            print(f'{self.runs} trials run\n')
+            return True
+
 
     def run_trials(self, cadets):
         print(self.trials_log)
@@ -285,30 +300,6 @@ def recruit_cadets(cadets):
     pprint(cadets.cadets)
     return
 
-def run_trials(trials, cadets, skill_nr, c1, c2):
-    
-    # if n == 1:
-    #     print(cadets.SKILLS)
-        #s = int(input("Skill number:"))
-    print("running trials...")
-    trials.skill = cadets.SKILLS[skill_nr] if skill_nr else trials.skill
-    print(trials.skill)
-
-#    print(cadets.NAMES)
- #   n1 = int(input("Cadet number 1:"))
-    trials.c1 = cadets.NAMES[c1] #cadets.NAMES[n1]
-    #print(cadets.NAMES)
-    #n2 = int(input("Cadet number 2:"))
-    trials.c2 = cadets.NAMES[c2] # cadets.NAMES[n2]
-            
-    print(trials.run_trials(cadets))
-            
-    if trials.runs == trials.MAX_RUNS:
-        print("No more time for trials! On to the real mission!")
-        return False
-    else:
-        print(f'{trials.runs} trials run\n')
-        return True
 
 
 def run_final_mission(mission, cadets, trials):
@@ -355,7 +346,7 @@ def show_highscore():
 # Stage 5 - view highscore, restart, exit
 
 class Menu:
-    def __init__(self):
+    def __init__(self):  # rename levels
         self.texts_lvl1 = "1. Start game   2. Show highscore"
         self.lvl1 = {'1': run, '2': show_highscore}
         self.texts_lvl2 = "1. Choose skill   2. Choose cadets   3. End trials"
@@ -435,7 +426,7 @@ class Menu:
             except Exception as e:
                 print(f"Wrong input 42", e)
         
-        self.stay_in_trial_menu = run_trials(trials, cadets, skill_nr, c1, c2)
+        self.stay_in_trial_menu = trials.fill_trials(cadets, skill_nr, c1, c2)
         return
     
     def reset_menu(self):
