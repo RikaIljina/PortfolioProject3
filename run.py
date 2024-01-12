@@ -216,7 +216,7 @@ class Mission:
         return self.prognosis
 
     def calculate_success(self):
-        # Mission difficulty starts at 5
+        # Mission difficulty starts at 2
         mission_parameters = [random.randrange(2, 11) for _ in range(5)]
         self.difficulty = (sum(mission_parameters)/5)*10
         print(f'The mission difficulty is {self.difficulty}')
@@ -225,7 +225,7 @@ class Mission:
             descriptor = ""
             print(key)
 
-            # TODO: Move strings into a Google sheet
+            # TODO: Move strings into a Google sheet or use gettext module
             match key:
                 case 'Diplomacy':
                     if mission_parameters[i] >= 7:
@@ -297,6 +297,11 @@ class Mission:
         print(self.mission_log)
 
 
+def initialize_player(player):
+    player.get_name()               # maybe just player.name = input()
+    print(f'Hello {player.name}')
+    return
+
 # Add Game Manager (for each stage?) that will instantiate objects, pass them to their
 # respective functions
 
@@ -305,8 +310,8 @@ def game_manager():
     '''
 
     player = Player()
-    player.get_name()               # maybe just player.name = input()
-    print(f'Hello {player.name}')
+    initialize_player(player)
+    
     active_cadets = Cadets()
     # Can be modified to allow n cadets to be recruited instead of 6
     active_cadets.recruit()
