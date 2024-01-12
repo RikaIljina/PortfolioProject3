@@ -217,7 +217,7 @@ class Mission:
 
     def calculate_success(self):
         # Mission difficulty starts at 2
-        mission_parameters = [random.randrange(2, 11) for _ in range(5)]
+        mission_parameters = [random.randrange(2, 11) for _ in range(5)]  # 5 should be replaced with len(skills)
         self.difficulty = (sum(mission_parameters)/5)*10
         print(f'The mission difficulty is {self.difficulty}')
         i = 0
@@ -295,12 +295,63 @@ class Mission:
             i += 1
 
         print(self.mission_log)
+        return
 
 
 def initialize_player(player):
     player.get_name()               # maybe just player.name = input()
     print(f'Hello {player.name}')
     return
+
+def recruit_cadets(cadets):
+    # Can be modified to allow n cadets to be recruited instead of 6
+    cadets.recruit()
+    pprint(cadets.cadets)
+    return
+
+def run_trials(trials, cadets):
+
+    for _ in range(3):
+        print(cadets.SKILLS)
+        s = int(input("Skill number:"))
+        trials.skill = cadets.SKILLS[s]
+        print(cadets.NAMES)
+        n1 = int(input("Cadet number 1:"))
+        trials.c1 = cadets.NAMES[n1]
+        print(cadets.NAMES)
+        n2 = int(input("Cadet number 2:"))
+        trials.c2 = cadets.NAMES[n2]
+        print(trials.run_trials(cadets))
+    return
+
+def run_final_mission(mission, cadets, trials):
+    available_cadets = cadets.NAMES
+    for skill in cadets.SKILLS:
+        print(trials.show_log(skill))  # print on demand!
+        lst = list(f'{c[0]}. {c[1]} ' for c in enumerate(available_cadets))
+        for l in lst:
+            print(l, end="")
+        print(f'\n{skill}: Please assign a cadet:')
+        index = int(input())
+        cadet_name = available_cadets[index]
+        mission.crew[skill] = [cadet_name,
+                                     cadets.cadets[cadet_name][skill]]
+        available_cadets.pop(index)
+
+    print(mission.crew)
+    return
+    
+def calculate_results(player, mission, trials):
+    # Calculate mission success
+
+    print("Success rate: ", mission.calculate_prognosis())
+    print("Mission success: ", mission.calculate_success())
+
+    print("Calculating final player score:")
+    print(player.calculate_score(trials.runs, trials.MAX_RUNS,
+          mission))
+    return
+
 
 # Add Game Manager (for each stage?) that will instantiate objects, pass them to their
 # respective functions
@@ -313,53 +364,17 @@ def game_manager():
     initialize_player(player)
     
     active_cadets = Cadets()
-    # Can be modified to allow n cadets to be recruited instead of 6
-    active_cadets.recruit()
-    pprint(active_cadets.cadets)
-
-    print("\nStarting trials:")
+    recruit_cadets(active_cadets)
+    
     trials = Trials()
-
-    for _ in range(3):
-
-        print(active_cadets.SKILLS)
-        s = int(input("Skill number:"))
-        trials.skill = active_cadets.SKILLS[s]
-        print(active_cadets.NAMES)
-        n1 = int(input("Cadet number 1:"))
-        trials.c1 = active_cadets.NAMES[n1]
-        print(active_cadets.NAMES)
-        n2 = int(input("Cadet number 2:"))
-        trials.c2 = active_cadets.NAMES[n2]
-        print(trials.run_trials(active_cadets))
+    run_trials(trials, active_cadets)
 
     # Final mission
-
     final_mission = Mission(active_cadets.SKILLS)
-    available_cadets = active_cadets.NAMES
-    for skill in active_cadets.SKILLS:
-        print(trials.show_log(skill))  # print on demand!
-        lst = list(f'{c[0]}. {c[1]} ' for c in enumerate(available_cadets))
-        for l in lst:
-            print(l, end="")
-        print(f'\n{skill}: Please assign a cadet:')
-        index = int(input())
-        cadet_name = available_cadets[index]
-        final_mission.crew[skill] = [cadet_name,
-                                     active_cadets.cadets[cadet_name][skill]]
-        available_cadets.pop(index)
-
-    print(final_mission.crew)
-
-    # Calculate mission success
-
-    print("Success rate: ", final_mission.calculate_prognosis())
-    print("Mission success: ", final_mission.calculate_success())
-
-    print("Calculating final player score:")
-    print(player.calculate_score(trials.runs, trials.MAX_RUNS,
-          final_mission))
-
+    run_final_mission(final_mission, active_cadets, trials)
+    
+    calculate_results(player, final_mission, trials)
+    
     m = Menu()
     m.run_lvl1()
 
