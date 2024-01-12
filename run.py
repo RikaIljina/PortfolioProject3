@@ -322,17 +322,17 @@ class Mission:
         return
 
 
-def initialize_player(player):
-    player.get_name()               # maybe just player.name = input()
-    print(f'Hello {player.name}')
-    return
+# def initialize_player():
+#     new_player = Player()
+#     run()
+#     return
 
 
-def recruit_cadets(cadets):
-    # Can be modified to allow n cadets to be recruited instead of 6
-    cadets.recruit()
-    pprint(cadets.cadets)
-    return
+# def recruit_cadets(cadets):
+#     # Can be modified to allow n cadets to be recruited instead of 6
+#     cadets.recruit()
+#     pprint(cadets.cadets)
+#     return
 
 
 def calculate_results(player, mission, trials):
@@ -364,7 +364,7 @@ def show_highscore():
 
 class Menu:
     def __init__(self):  # rename levels
-        self.texts_lvl1_loader = "1. Start game   2. Show highscore"
+        self.texts_lvl1_loader = "1. Start game   2. Show highscore   3. New player"
         self.lvl1_loader = {'1': run, '2': show_highscore}
         self.texts_lvl2_trials = "1. Choose skill   2. Choose cadets   3. End trials"
         self.lvl2_trials = {'1': self.run_lvl3_skill,
@@ -373,15 +373,19 @@ class Menu:
         self.texts_lvl4_cadets = ""
         self.first_skill_chosen = False
         self.stay_in_trial_menu = True
+        self.active_player = None
 
     def run_lvl1_loader(self):
         while True:
             print(self.texts_lvl1_loader)
-            k = input()
-            try:
-                self.lvl1_loader[k](self)
-            except Exception as e:
-                print(f"Wrong input 1", e)
+            choice = input()
+            if choice == '3':
+                run(self, None)
+            else:
+                try:
+                    self.lvl1_loader[choice](self, self.active_player)
+                except Exception as e:
+                    print(f"Wrong input 1", e)
 
     def run_lvl2_trials(self, trials, cadets):
         while True:
@@ -468,16 +472,22 @@ class Menu:
 # respective functions
 
 
-def run(menu):
+def run(menu, player):
 
     menu.reset_menu()
 
-    player = Player()           # initialize from menu level 0 to keep player
-    initialize_player(player)
+    if player:
+        print(f'Hello {player.name}')
+        player.score = 0
+    else:
+        player = Player()
+        player.name = input("Please enter your name: ")
+        
+    menu.active_player = player
+    
 
     cadets = Cadets()
     cadets.recruit()
-    # recruit_cadets(cadets)
     print(cadets.NAMES)
 
     trials = Trials()
