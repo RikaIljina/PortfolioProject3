@@ -42,33 +42,6 @@ class Player:
         return result
 
 
-# Add Menu class with Stage 1 - name input, Stage 2 - cadet trial runs,
-# Stage 3 - assignments, Stage 4 - final mission start,
-# Stage 5 - view highscore, restart, exit
-
-class Menu:
-    def __init__(self):
-        self.texts_lvl1 = "1. Print x   2. Print y"
-        self.lvl1 = {'1': print_x, '2': print_y}
-
-    def run_lvl1(self):
-        while True:
-            print(self.texts_lvl1)
-            k = input()
-            try:
-                self.lvl1[k]()
-            except:
-                print(f"Wrong input")
-                break
-
-
-def print_x():
-    print('Printing x!!!')
-
-
-def print_y():
-    print("Printing y!!!")
-
 
 # Add Display class to gather all prints and produce output (80x24)
 
@@ -309,8 +282,9 @@ def recruit_cadets(cadets):
     pprint(cadets.cadets)
     return
 
-def run_trials(trials, cadets):
+def run_trials(trials, cadets, menu):
 
+    menu.run_lvl2()
     for _ in range(3):
         print(cadets.SKILLS)
         s = int(input("Skill number:"))
@@ -323,6 +297,7 @@ def run_trials(trials, cadets):
         trials.c2 = cadets.NAMES[n2]
         print(trials.run_trials(cadets))
     return
+
 
 def run_final_mission(mission, cadets, trials):
     available_cadets = cadets.NAMES
@@ -342,6 +317,13 @@ def run_final_mission(mission, cadets, trials):
     return
     
 def calculate_results(player, mission, trials):
+    """
+
+    Args:
+        player (class Player): player object
+        mission (class Mission): mission object
+        trials (class Trials): trials object
+    """    
     # Calculate mission success
 
     print("Success rate: ", mission.calculate_prognosis())
@@ -353,13 +335,13 @@ def calculate_results(player, mission, trials):
     return
 
 
-# Add Game Manager (for each stage?) that will instantiate objects, pass them to their
+def show_highscore():
+    return
+
+# Game Manager that will instantiate objects, pass them to their
 # respective functions
 
-def game_manager():
-    '''
-    '''
-
+def run(menu):
     player = Player()
     initialize_player(player)
     
@@ -367,7 +349,7 @@ def game_manager():
     recruit_cadets(active_cadets)
     
     trials = Trials()
-    run_trials(trials, active_cadets)
+    run_trials(trials, active_cadets, menu)
 
     # Final mission
     final_mission = Mission(active_cadets.SKILLS)
@@ -375,11 +357,34 @@ def game_manager():
     
     calculate_results(player, final_mission, trials)
     
-    m = Menu()
-    m.run_lvl1()
+    return          # returns to menu lvl1
+    
+# Add Menu class with Stage 1 - name input, Stage 2 - cadet trial runs,
+# Stage 3 - assignments, Stage 4 - final mission start,
+# Stage 5 - view highscore, restart, exit
 
-    print("end")
+class Menu:
+    def __init__(self):
+        self.texts_lvl1 = "1. Start game   2. Show highscore"
+        self.lvl1 = {'1': run, '2': show_highscore}
+
+    def run_lvl1(self):
+        while True:
+            print(self.texts_lvl1)
+            k = input()
+            try:
+                self.lvl1[k](self)
+            except:
+                print(f"Wrong input")
+                
+            
+def main():
+    """
+    """
+    menu = Menu()
+    menu.run_lvl1()
+
 
 
 if __name__ == '__main__':
-    game_manager()
+    main()
