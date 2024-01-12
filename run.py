@@ -320,6 +320,24 @@ class Mission:
 
         print(self.mission_log)
         return
+    
+    def calculate_results(self, player, trials):
+        """
+
+        Args:
+            player (class Player): player object
+            mission (class Mission): mission object
+            trials (class Trials): trials object
+        """
+        # Calculate mission success
+
+        print("Success rate: ", self.calculate_prognosis())
+        print("Mission success: ", self.calculate_success())
+
+        print("Calculating final player score:")
+        print(player.calculate_score(trials.runs, trials.MAX_RUNS,
+            self))
+        return
 
 
 # def initialize_player():
@@ -335,26 +353,10 @@ class Mission:
 #     return
 
 
-def calculate_results(player, mission, trials):
-    """
-
-    Args:
-        player (class Player): player object
-        mission (class Mission): mission object
-        trials (class Trials): trials object
-    """
-    # Calculate mission success
-
-    print("Success rate: ", mission.calculate_prognosis())
-    print("Mission success: ", mission.calculate_success())
-
-    print("Calculating final player score:")
-    print(player.calculate_score(trials.runs, trials.MAX_RUNS,
-          mission))
-    return
 
 
-def show_highscore():
+
+def show_highscore(*args):
     return
 
 # Add Menu class with Stage 1 - name input, Stage 2 - cadet trial runs,
@@ -498,7 +500,7 @@ def run(menu, player):
     #menu.run_lvl2_mission(final_mission, cadets, trials)
     final_mission.assemble_crew(menu, trials, cadets)
 
-    calculate_results(player, final_mission, trials)
+    final_mission.calculate_results(player, trials)
 
     return          # returns to menu lvl1
 
