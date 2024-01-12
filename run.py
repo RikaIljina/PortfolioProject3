@@ -131,7 +131,7 @@ class Cadets:
 
 class Trials:
     def __init__(self):
-        self.skill = "" # BUG!
+        self.skill = ""
         self.c1 = ""
         self.c2 = ""
         self.trials_log = {}
@@ -401,10 +401,10 @@ class Menu:
     def run_lvl3_skill(self, trials, cadets):
         print("so far...")
         self.texts_lvl3_skill = list(
-            f'{c[0]}. {c[1]} ' for c in enumerate(cadets.SKILLS))
+            f'{c[0]}. {c[1]} ' for c in enumerate(cadets.SKILLS, 1))
         print(self.texts_lvl3_skill)
         while True:
-            skill_nr = int(input())
+            skill_nr = int(input()) - 1
             try:
                 print(cadets.SKILLS, skill_nr)
                 cadets.SKILLS[skill_nr]
@@ -423,11 +423,11 @@ class Menu:
             return
 
         self.texts_lvl4_cadets = list(
-            f'{c[0]}. {c[1]} ' for c in enumerate(cadets.NAMES))
+            f'{c[0]}. {c[1]} ' for c in enumerate(cadets.NAMES, 1))
         print(self.texts_lvl4_cadets)
         while True:
             print("Choose Cadet 1:")
-            c1 = int(input())
+            c1 = int(input()) - 1
             try:
                 print(cadets.NAMES[c1])
                 cadets.NAMES[c1]
@@ -436,7 +436,7 @@ class Menu:
                 print(f"Wrong input 41", e)
         while True:
             print("Choose Cadet 2:")
-            c2 = int(input())
+            c2 = int(input()) - 1
             try:
                 print(cadets.NAMES[c2])
                 cadets.NAMES[c2]
@@ -449,37 +449,13 @@ class Menu:
 
     def run_lvl2_mission(self, available_cadets):
         self.texts_lvl2_mission = [
-            f'{c[0]}. {c[1]} ' for c in enumerate(available_cadets)]
+            f'{c[0]}. {c[1]} ' for c in enumerate(available_cadets, 1)]
         print(self.texts_lvl2_mission)
-        choice = int(input())
+        choice = int(input()) - 1
         print(choice)
         return choice
 
-        # available_cadets = cadets.NAMES
-        # for skill in mission.roles:
-        #     print(trials.show_log(skill))
-        #     print(f'\n{skill}: Please assign a cadet:')
-        #     print(available_cadets)
-        #     self.texts_lvl2_mission = [
-        #         f'{c[0]}. {c[1]} ' for c in enumerate(available_cadets)]
-        #     print(self.texts_lvl2_mission)
-        #     while True:
-        #         index = int(input())
-        #         try:
-        #             available_cadets[index]
-        #             # break
-        #         except:
-        #             print("Wrong input")
-        #         else:
-        #             break
-        #     cadet_list.append(available_cadets[index])
-        #     print("list ", cadet_list)
-        #     available_cadets.pop(index)
-        #     print(available_cadets)
-
-        # mission.assemble_crew(cadet_list, cadets)
-        # return
-
+        
     def reset_menu(self):
         self.texts_lvl3_skill = ""
         self.texts_lvl4_cadets = ""
@@ -487,22 +463,6 @@ class Menu:
         self.stay_in_trial_menu = True
         return
 
-# def run_final_mission(mission, cadets, trials):
-#     available_cadets = cadets.NAMES
-#     for skill in cadets.SKILLS:
-#         print(trials.show_log(skill))  # print on demand!
-#         lst = list(f'{c[0]}. {c[1]} ' for c in enumerate(available_cadets))
-#         for l in lst:
-#             print(l, end="")
-#         print(f'\n{skill}: Please assign a cadet:')
-#         index = int(input())
-#         cadet_name = available_cadets[index]
-#         mission.crew[skill] = [cadet_name,
-#                                      cadets.cadets[cadet_name][skill]]
-#         available_cadets.pop(index)
-
-#     print(mission.crew)
-#     return
 
 # Game Manager that will instantiate objects, pass them to their
 # respective functions
@@ -516,7 +476,9 @@ def run(menu):
     initialize_player(player)
 
     cadets = Cadets()
-    recruit_cadets(cadets)
+    cadets.recruit()
+    # recruit_cadets(cadets)
+    print(cadets.NAMES)
 
     trials = Trials()
     menu.run_lvl2_trials(trials, cadets)
