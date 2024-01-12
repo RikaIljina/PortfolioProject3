@@ -68,9 +68,9 @@ class Cadets:
 
     def cadet_skill_generator(self):
         """
-        This function generates and returns a list with 5 random skill numbers, 
-        each between LOWEST_SKILL and HIGHEST_SKILL (1 - 10), with a total sum of 
-        MAX_POINTS (25). 
+        This function generates and returns a list with 5 random skill numbers,
+        each between LOWEST_SKILL and HIGHEST_SKILL (1 - 10), with a total sum of
+        MAX_POINTS (25).
         """
         # Total amount of skill points to divide among all skills for each cadet
         MAX_POINTS = 25
@@ -131,7 +131,7 @@ class Cadets:
 
 class Trials:
     def __init__(self):
-        self.skill = ""
+        self.skill = "" # BUG!
         self.c1 = ""
         self.c2 = ""
         self.trials_log = {}
@@ -140,7 +140,7 @@ class Trials:
 
     def fill_trials(self, cadets, skill_nr, c1, c2):
 
-        self.skill = cadets.SKILLS[skill_nr] if skill_nr else self.skill
+        self.skill = cadets.SKILLS[skill_nr] if skill_nr is not None else self.skill
         print(self.skill)
 
         self.c1 = cadets.NAMES[c1]
@@ -198,11 +198,32 @@ class Mission:
         self.difficulty = 0
         self.mission_log = ""
 
-    def assemble_crew(self, cadet_list, cadets):
+    def assemble_crew(self, menu, trials, cadets):
+
+        # cadet_list = []
+        available_cadets = cadets.NAMES
+        for skill in self.roles:
+            print(trials.show_log(skill))
+            print(f'\n{skill}: Please assign a cadet:')
+            print(available_cadets)
+
+            while True:
+                index = menu.run_lvl2_mission(available_cadets)
+                try:
+                    available_cadets[index]
+                    # break
+                except:
+                    print("Wrong input")
+                else:
+                    break
+            self.crew[skill] = [available_cadets[index],
+                                cadets.cadets[available_cadets[index]][skill]]
+            available_cadets.pop(index)
+
         # get list from menu
         # loop through skills and cadet list
         print("assembling")
-        self.crew.update({skill: [cadet, cadets.cadets[cadet][skill]] for cadet, skill in zip(cadet_list, self.roles)}) # 
+        # self.crew.update({skill: [cadet, cadets.cadets[cadet][skill]] for cadet, skill in zip(cadet_list, self.roles)}) #
         # i = 0
         # for skill in self.roles:
         #     self.crew[skill] = [cadet_list[i], cadets.cadets[cadet_list[i]][skill]]
@@ -426,32 +447,38 @@ class Menu:
         self.stay_in_trial_menu = trials.fill_trials(cadets, skill_nr, c1, c2)
         return
 
-    def run_lvl2_mission(self, mission, cadets, trials):
-        cadet_list = []
-        available_cadets = cadets.NAMES
-        for skill in mission.roles:
-            print(trials.show_log(skill))
-            print(f'\n{skill}: Please assign a cadet:')
-            print(available_cadets)
-            self.texts_lvl2_mission = [
-                f'{c[0]}. {c[1]} ' for c in enumerate(available_cadets)]
-            print(self.texts_lvl2_mission)
-            while True:
-                index = int(input())
-                try:
-                    available_cadets[index]
-                    # break
-                except:
-                    print("Wrong input")
-                else:
-                    break
-            cadet_list.append(available_cadets[index])
-            print("list ", cadet_list)
-            available_cadets.pop(index)
-            print(available_cadets)
+    def run_lvl2_mission(self, available_cadets):
+        self.texts_lvl2_mission = [
+            f'{c[0]}. {c[1]} ' for c in enumerate(available_cadets)]
+        print(self.texts_lvl2_mission)
+        choice = int(input())
+        print(choice)
+        return choice
 
-        mission.assemble_crew(cadet_list, cadets)
-        return
+        # available_cadets = cadets.NAMES
+        # for skill in mission.roles:
+        #     print(trials.show_log(skill))
+        #     print(f'\n{skill}: Please assign a cadet:')
+        #     print(available_cadets)
+        #     self.texts_lvl2_mission = [
+        #         f'{c[0]}. {c[1]} ' for c in enumerate(available_cadets)]
+        #     print(self.texts_lvl2_mission)
+        #     while True:
+        #         index = int(input())
+        #         try:
+        #             available_cadets[index]
+        #             # break
+        #         except:
+        #             print("Wrong input")
+        #         else:
+        #             break
+        #     cadet_list.append(available_cadets[index])
+        #     print("list ", cadet_list)
+        #     available_cadets.pop(index)
+        #     print(available_cadets)
+
+        # mission.assemble_crew(cadet_list, cadets)
+        # return
 
     def reset_menu(self):
         self.texts_lvl3_skill = ""
@@ -488,16 +515,16 @@ def run(menu):
     player = Player()           # initialize from menu level 0 to keep player
     initialize_player(player)
 
-    active_cadets = Cadets()
-    recruit_cadets(active_cadets)
+    cadets = Cadets()
+    recruit_cadets(cadets)
 
     trials = Trials()
-    menu.run_lvl2_trials(trials, active_cadets)
+    menu.run_lvl2_trials(trials, cadets)
 
     # Final mission
-    final_mission = Mission(active_cadets.SKILLS)
-    menu.run_lvl2_mission(final_mission, active_cadets, trials)
-    # run_final_mission(final_mission, active_cadets, trials)
+    final_mission = Mission(cadets.SKILLS)
+    #menu.run_lvl2_mission(final_mission, cadets, trials)
+    final_mission.assemble_crew(menu, trials, cadets)
 
     calculate_results(player, final_mission, trials)
 
@@ -507,6 +534,7 @@ def run(menu):
 def main():
     """
     """
+    os.system('cls||clear')
     menu = Menu()
     menu.run_lvl1_loader()
 
