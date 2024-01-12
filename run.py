@@ -285,19 +285,21 @@ def recruit_cadets(cadets):
     pprint(cadets.cadets)
     return
 
-def run_trials(n, trials, cadets):
+def run_trials(trials, cadets, skill_nr, c1, c2):
     
-    if n == 1:
-        print(cadets.SKILLS)
-        s = int(input("Skill number:"))
-        trials.skill = cadets.SKILLS[s]
-        
-    print(cadets.NAMES)
-    n1 = int(input("Cadet number 1:"))
-    trials.c1 = cadets.NAMES[n1]
-    print(cadets.NAMES)
-    n2 = int(input("Cadet number 2:"))
-    trials.c2 = cadets.NAMES[n2]
+    # if n == 1:
+    #     print(cadets.SKILLS)
+        #s = int(input("Skill number:"))
+    print("running trials...")
+    trials.skill = cadets.SKILLS[skill_nr] if skill_nr else trials.skill
+    print(trials.skill)
+
+#    print(cadets.NAMES)
+ #   n1 = int(input("Cadet number 1:"))
+    trials.c1 = cadets.NAMES[c1] #cadets.NAMES[n1]
+    #print(cadets.NAMES)
+    #n2 = int(input("Cadet number 2:"))
+    trials.c2 = cadets.NAMES[c2] # cadets.NAMES[n2]
             
     print(trials.run_trials(cadets))
             
@@ -357,7 +359,11 @@ class Menu:
         self.texts_lvl1 = "1. Start game   2. Show highscore"
         self.lvl1 = {'1': run, '2': show_highscore}
         self.texts_lvl2 = "1. Choose skill   2. Choose cadets   3. End trials"
-        self.lvl2 = {'1': 1, '2': 2, '3': 3}
+        self.lvl2 = {'1': self.run_lvl3, '2': self.run_lvl4}
+        self.texts_lvl3 = ""
+        self.texts_lvl4 = ""
+        self.first_skill_chosen = False
+        self.stay_in_trial_menu = True
 
     def run_lvl1(self):
         while True:
@@ -365,29 +371,88 @@ class Menu:
             k = input()
             try:
                 self.lvl1[k](self)
-            except:
-                print(f"Wrong input")
+            except Exception as e:
+                print(f"Wrong input 1", e)
                 
     def run_lvl2(self, trials, cadets):
-         continue_trials = True
          while True:
-            if not continue_trials:
+            if not self.stay_in_trial_menu:
                 break
             print(self.texts_lvl2)
-            k = input()
-            if k == '3':
+            choice = input()
+            if choice == '3':
                 break
             try:
-                continue_trials = run_trials(self.lvl2[k], trials, cadets)
-            except:
-                print(f"Wrong input")
+                print("trying lvl2")
+                print(self.lvl2[choice])
+                self.lvl2[choice](trials, cadets)
+            except Exception as e:
+                print(f"Wrong input 2", e)
+                
+    def run_lvl3(self, trials, cadets):
+        print("so far...")
+        self.texts_lvl3 = list(f'{c[0]}. {c[1]} ' for c in enumerate(cadets.SKILLS))
+        print(self.texts_lvl3)
+        while True:
+            skill_nr = int(input())
+            try:
+                print(cadets.SKILLS, skill_nr)
+                cadets.SKILLS[skill_nr]
+                print(cadets.SKILLS[skill_nr])
+                break
+            except Exception as e:
+                print(f"Wrong input 3", e)
+    #            self.run_lvl3(self, trials, cadets)
+        self.first_skill_chosen = True
+        self.run_lvl4(trials, cadets, skill_nr)
+        return
+        
+        
     
+    def run_lvl4(self, trials, cadets, skill_nr=None):
+        if not self.first_skill_chosen:
+            print("Please choose a skill first.")
+            return
+            
+        self.texts_lvl4 = list(f'{c[0]}. {c[1]} ' for c in enumerate(cadets.NAMES))
+        print(self.texts_lvl4)
+        while True:
+            print("Choose Cadet 1:")
+            c1 = int(input())
+            try:
+                print(cadets.NAMES[c1])
+                cadets.NAMES[c1]
+                break
+            except Exception as e:
+                print(f"Wrong input 41", e)
+        while True:
+            print("Choose Cadet 2:")
+            c2 = int(input())
+            try:
+                print(cadets.NAMES[c2])
+                cadets.NAMES[c2]
+                break
+            except Exception as e:
+                print(f"Wrong input 42", e)
+        
+        self.stay_in_trial_menu = run_trials(trials, cadets, skill_nr, c1, c2)
+        return
     
+    def reset_menu(self):
+        self.texts_lvl3 = ""
+        self.texts_lvl4 = ""
+        self.first_skill_chosen = False
+        self.stay_in_trial_menu = True
+        return
+        
 # Game Manager that will instantiate objects, pass them to their
 # respective functions
 
 def run(menu):
-    player = Player()
+    
+    menu.reset_menu()
+    
+    player = Player()           # initialize from menu level 0 to keep player
     initialize_player(player)
     
     active_cadets = Cadets()
