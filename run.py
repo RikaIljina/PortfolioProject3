@@ -23,16 +23,22 @@ class Player:
         print("Please enter your name:")
         self.name = input()
 
-    def calculate_score(self, trial_runs, trial_max_runs, mission_score, mission_difficulty, mission_prognosis):
-        mission_failed_penalty = 0 if mission_score >= 3 else 500
-        mission_score_penalty = (5 - mission_score) * 100
-        mission_prognosis_penalty = 100 - mission_prognosis
-        trial_run_bonus = 0 if mission_failed_penalty != 0 else (trial_max_runs - trial_runs) * 10
-        mission_difficulty_bonus = 0 if mission_failed_penalty != 0 else mission_difficulty - mission_prognosis
-        print(f'{trial_runs} {trial_run_bonus} {mission_failed_penalty} + {mission_score_penalty} + {mission_prognosis_penalty}')
+    # mission_score, mission_difficulty, mission_prognosis):
+    def calculate_score(self, trial_runs, trial_max_runs, mission_data):
+        mission_failed_penalty = 0 if mission_data.score >= 3 else 500
+        mission_score_penalty = (5 - mission_data.score) * 100
+        mission_prognosis_penalty = 100 - mission_data.prognosis
+        skill_penalty = 500 - sum([value[1]
+                                  for value in mission_data.crew.values()])*10
+        trial_run_bonus = 0 if mission_failed_penalty != 0 else (
+            trial_max_runs - trial_runs) * 10
+        mission_difficulty_bonus = 0 if mission_failed_penalty != 0 else mission_data.difficulty - \
+            mission_data.prognosis
+        print(f'{trial_runs} {trial_run_bonus} {mission_failed_penalty} + {mission_score_penalty} + {mission_prognosis_penalty} + {skill_penalty}')
         print(mission_difficulty_bonus)
         result = 1000 - mission_failed_penalty - mission_score_penalty - \
-            mission_prognosis_penalty + mission_difficulty_bonus + trial_run_bonus
+            mission_prognosis_penalty - skill_penalty + \
+            mission_difficulty_bonus + trial_run_bonus
         return result
 
 
@@ -210,7 +216,8 @@ class Mission:
         return self.prognosis
 
     def calculate_success(self):
-        mission_parameters = [random.randrange(5, 11) for _ in range(5)]        # Mission difficulty starts at 5
+        # Mission difficulty starts at 5
+        mission_parameters = [random.randrange(2, 11) for _ in range(5)]
         self.difficulty = (sum(mission_parameters)/5)*10
         print(f'The mission difficulty is {self.difficulty}')
         i = 0
@@ -346,7 +353,7 @@ def game_manager():
 
     print("Calculating final player score:")
     print(player.calculate_score(trials.runs, trials.MAX_RUNS,
-          final_mission.score, final_mission.difficulty, final_mission.prognosis))
+          final_mission))
 
     m = Menu()
     m.run_lvl1()
