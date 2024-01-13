@@ -392,7 +392,7 @@ def show_highscore(*args):
 # Stage 5 - view highscore, restart, exit
 
 
-class Menu:
+class Menu(Display):
     def __init__(self):  # rename levels
         self.texts_lvl1_loader = "1. Start game   2. Show highscore   3. New player"
         self.lvl1_loader = {'1': run, '2': show_highscore}
@@ -404,33 +404,33 @@ class Menu:
         self.first_skill_chosen = False
         self.stay_in_trial_menu = True
         self.active_player = None
+        Display.__init__(self)
 
-    def run_lvl1_loader(self, display):
-        display.draw_menu(self.texts_lvl1_loader)
+    def run_lvl1_loader(self):
+        Display.draw_menu(self, self.texts_lvl1_loader)
         while True:
-            # display.draw_screen(self.texts_lvl1_loader)
-            
-            choice = input(display.draw_input()).strip()
+            choice = input(Display.draw_input(self)).strip()
             if choice == '3':
                 run(self, None)
             else:
                 try:
                     self.lvl1_loader[choice](self, self.active_player)
                 except:
-                    display.draw_menu(f"Please provide a valid choice", True)
+                    Display.draw_menu(self, f"--- Please provide a valid choice ---", True)
 
     def run_lvl2_trials(self, trials, cadets):
+        Display.draw_menu(self, self.texts_lvl2_trials)
         while True:
             if not self.stay_in_trial_menu:
                 break
-            print(self.texts_lvl2_trials)
-            choice = input().strip()
+            
+            choice = input(Display.draw_input(self)).strip()
             if choice == '3':
                 break
             try:
                 self.lvl2_trials[choice]
             except:
-                print(f"Please provide a valid choice")
+                print(f"--- Please provide a valid choice ---")
             else:
                 self.lvl2_trials[choice](trials, cadets)
 
@@ -439,13 +439,13 @@ class Menu:
             f'{c[0]}. {c[1]} ' for c in enumerate(cadets.SKILLS, 1))
         print(self.texts_lvl3_skill)
         while True:
-            skill_nr = input().strip()
+            skill_nr = input(Display.draw_input(self)).strip()
             try:
                 skill_nr = int(skill_nr)-1
                 cadets.SKILLS[skill_nr]
                 break
             except:
-                print(f"Please provide a valid skill choice")
+                print(f"--- Please provide a valid skill choice ---")
 
         self.first_skill_chosen = True
         self.run_lvl4_cadets(trials, cadets, skill_nr)
@@ -453,7 +453,7 @@ class Menu:
 
     def run_lvl4_cadets(self, trials, cadets, skill_nr=None):
         if not self.first_skill_chosen:
-            print("Please choose a skill first.")
+            print("--- Please choose a skill first ---")
             return
 
         self.texts_lvl4_cadets = list(
@@ -461,7 +461,7 @@ class Menu:
         print(self.texts_lvl4_cadets)
         while True:
             print("Choose Cadet 1:\n")
-            c1 = input().strip()
+            c1 = input(Display.draw_input(self)).strip()
             try:
                 c1 = int(c1) - 1
                 cadets.NAMES[c1]
@@ -470,12 +470,12 @@ class Menu:
                 print(f"--- Please provide a valid choice for Cadet 1 ---")
         while True:
             print("Choose Cadet 2:\n")
-            c2 = input().strip()
+            c2 = input(Display.draw_input(self)).strip()
             try:
                 c2 = int(c2) - 1
                 cadets.NAMES[c2]
                 break
-            except Exception as e:
+            except:
                 print(f"--- Please provide a valid choice for Cadet 2 ---")
 
         self.stay_in_trial_menu = trials.fill_trials(cadets, skill_nr, c1, c2)
@@ -486,7 +486,7 @@ class Menu:
             f'{c[0]}. {c[1]} ' for c in enumerate(available_cadets, 1)]
         print(self.texts_lvl2_mission)
         while True:
-            choice = input().strip()
+            choice = input(Display.draw_input(self)).strip()
             try:
                 choice = int(choice) - 1
                 available_cadets[choice]
@@ -544,8 +544,8 @@ def main():
     """
     os.system('cls||clear')
     menu = Menu()
-    display = Display()
-    menu.run_lvl1_loader(display)
+    #display = Display()
+    menu.run_lvl1_loader()
 
 
 if __name__ == '__main__':
