@@ -428,12 +428,14 @@ class Menu():
         loading_screen(self.display, part=2)
         self.display.draw_menu("Please enter your name:")
         name = input(self.display.draw_input()).strip()
-        return name
+        self.active_player.name = name
+        self.display.clear()
+        return
 
     def run_lvl1_loader(self):
-        loading_screen(self.display, part=1)
         while True:
             self.display.draw_menu(self.texts_lvl1_loader)
+            loading_screen(self.display, part=1)
             choice = input(self.display.draw_input()).strip()
             self.display.clear(is_error=True)
             self.display.clear()
@@ -597,10 +599,10 @@ def loading_screen(display, part=1):
         case 2:
             message = ['Welcome, Assessor!', ' ']
             message.extend(textwrap.wrap(
-                'I am CAT, short for "Cadet Assessment Terminal". Since the speech module is currently undergoing a personality adjustment, I ask you to use your keyboard today (if you can remember how).'))
+                'I am Cat, short for "Cadet Assessment Terminal". Since the speech module is currently undergoing a personality adjustment, I ask you to use your keyboard today (if you can remember how).'))
             message.append("")
             message.extend(textwrap.wrap("As usual, you will be assessing a group of young cadets who have volunteered to go on an important mission. The mission requires a crew, and each role on the crew must be filled with one cadet. Please run a few trials where you let two cadets compete against each other, and note their performance. The sooner you finish the trials, the better, of course. Be as thorough as you need to, but don't miss the deadline!"))
-            message.extend("", "Don't forget to provide your full name for the log.")
+            message.extend(["", "Don't forget to provide your full name for the log."])
             display.draw_screen(message)
 
 
@@ -619,7 +621,7 @@ def run(menu, player, display):
     else:
         player = Player()
         menu.active_player = player
-        player.name = menu.run_lvl0_player()
+        menu.run_lvl0_player()
 
     cadets = Cadets()
     cadets.recruit()
