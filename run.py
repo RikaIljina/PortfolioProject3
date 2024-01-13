@@ -6,6 +6,7 @@ from pprint import pprint
 import random
 import math
 import os
+import textwrap
 # from typing import Any
 
 
@@ -61,8 +62,8 @@ class Display:
         lines.extend([self.EMPTY_LINE for _ in range(self.HEIGHT-2)])
         lines.append(str(self.BORDER_CHAR*self.WIDTH))
         return lines
-    
-    def clear(self, indexes, is_error=False):
+
+    def clear(self, indexes=[1,2,3,4,5,6,7,8,9,10], is_error=False):
         if is_error:
             self.lines[self.ERROR_LINE_NR] = self.EMPTY_LINE
         else:
@@ -74,40 +75,37 @@ class Display:
         for line in self.lines:
             print(f'{line}')
 
-        
     def draw_screen(self, text=None, line_nr=1):
        # os.system('cls||clear')
 
         if text:
-            result = f'{self.BORDER_CHAR} {text:<77}{self.BORDER_CHAR}'
-            self.lines.pop(line_nr)
-            self.lines.insert(line_nr, result)
-        
-        self.draw()
-            
+            if type(text) == list:
+                text_len = len(text)
+                for i in range(text_len):
+                    self.lines.pop(line_nr + i)
+                    self.lines.insert(line_nr + i,
+                                      f'{self.BORDER_CHAR} {text[i]:<77}{self.BORDER_CHAR}')
+            else:
+                result = f'{self.BORDER_CHAR} {text:<77}{self.BORDER_CHAR}'
+                self.lines.pop(line_nr)
+                self.lines.insert(line_nr, result)
 
-    def draw_menu(self, text, is_error=None):
-        #os.system('cls||clear')
+        self.draw()
+
+    def draw_menu(self, text, is_error=False):
+        # os.system('cls||clear')
 
         if is_error:
             result = f'{self.BORDER_CHAR} {text:>77}{self.BORDER_CHAR}'
             self.lines.pop(self.ERROR_LINE_NR)
             self.lines.insert(self.ERROR_LINE_NR, result)
 
-        # else:
-        #     if type(text) == list:
-        #         text_len = len(text)
-        #         for i in range(text_len):
-        #             self.lines.pop(self.HEIGHT - 2 - text_len + i)
-        #             self.lines.insert(self.HEIGHT - 2 - text_len + i,
-        #                               f'{self.BORDER_CHAR} {text[i]:<77}{self.BORDER_CHAR}')
-
         else:
             result = f'{self.BORDER_CHAR} {text:<77}{self.BORDER_CHAR}'
             self.lines.pop(self.MENU_LINE_NR)
             self.lines.insert(self.MENU_LINE_NR, result)
 
-        #self.draw_screen()
+        # self.draw_screen()
 
     def draw_input(self, prompt=''):
         self.draw()
@@ -413,8 +411,8 @@ def show_highscore(*args):
 class Menu():
     def __init__(self, display):  # rename levels
         self.display = display
-        self.texts_lvl1_loader = "1. Start game   2. Show highscore   3. New player"
-        self.lvl1_loader = {'1': run, '2': show_highscore}
+        self.texts_lvl1_loader = "1. Start game   2. New player   3. Show highscore"
+        self.lvl1_loader = {'1': run, '3': show_highscore}
         self.texts_lvl2_trials = "1. Choose skill   2. Choose cadets   3. End trials"
         self.lvl2_trials = {'1': self.run_lvl3_skill,
                             '2': self.run_lvl4_cadets}
@@ -431,32 +429,34 @@ class Menu():
         return name
 
     def run_lvl1_loader(self):
-        self.display.clear([], is_error=True)
         while True:
             self.display.draw_menu(self.texts_lvl1_loader)
             choice = input(self.display.draw_input()).strip()
             self.display.clear([], is_error=True)
-            if choice == '3':
+            if choice == '2':
                 run(self, None, self.display)
             else:
                 try:
-                    self.lvl1_loader[choice](self, self.active_player, self.display)
+                    self.lvl1_loader[choice](
+                        self, self.active_player, self.display)
                 except:
                     self.display.draw_menu(
                         f"--- Please provide a valid choice ---", is_error=True)
-
 
     def run_lvl2_trials(self, trials, cadets):
         while True:
             self.display.draw_menu(self.texts_lvl2_trials)
             if not self.stay_in_trial_menu:
-                self.display.clear([], is_error=True)
+                self.display.clear(is_error=True)
+                self.display.clear()
                 break
 
             choice = input(self.display.draw_input()).strip()
-            self.display.clear([], is_error=True)
-            
+            self.display.clear(is_error=True)
+
             if choice == '3':
+                self.display.clear(is_error=True)
+                self.display.clear()
                 break
             try:
                 self.lvl2_trials[choice]
@@ -464,12 +464,12 @@ class Menu():
                 self.display.draw_menu(
                     f"--- Please provide a valid choice ---", is_error=True)
             else:
+                self.display.clear()
                 self.lvl2_trials[choice](trials, cadets)
                # self.display.clear([], is_error=True)
-                
 
     def run_lvl3_skill(self, trials, cadets):
-        self.display.clear([], is_error=True)
+        self.display.clear(is_error=True)
         self.display.clear([1])
         self.texts_lvl3_skill = ' '.join(
             [f'{c[0]}. {c[1]} ' for c in enumerate(cadets.SKILLS, 1)])
@@ -477,8 +477,8 @@ class Menu():
         while True:
             self.display.draw_menu(self.texts_lvl3_skill)
             skill_nr = input(self.display.draw_input()).strip()
-            self.display.clear([], is_error=True)
-            
+            self.display.clear(is_error=True)
+
             try:
                 skill_nr = int(skill_nr)-1
                 cadets.SKILLS[skill_nr]
@@ -486,32 +486,31 @@ class Menu():
                 self.display.draw_menu(
                     f"--- Please provide a valid skill choice ---", is_error=True)
             else:
-                self.display.clear([], is_error=True)
+                self.display.clear(is_error=True)
                 break
-                
 
         self.chosen_skill = cadets.SKILLS[skill_nr]
         self.run_lvl4_cadets(trials, cadets, skill_nr)
         return
 
     def run_lvl4_cadets(self, trials, cadets, skill_nr=None):
-        #self.display.clear([2,3])
+        # self.display.clear([2,3])
         if self.chosen_skill is None:
             self.display.draw_menu(
                 "--- Please choose a skill first ---", is_error=True)
             return
         else:
-            self.display.clear([], is_error=True)
-            trial_status =f'{self.chosen_skill}:  '
+            self.display.clear(is_error=True)
+            trial_status = f'{self.chosen_skill}:  '
             self.display.draw_screen(trial_status, line_nr=1)
-            
 
         short_names = [name.split(" ")[1] for name in cadets.NAMES]
         self.texts_lvl4_cadets = ' '.join(
             [f'{c[0]}. {c[1]} ' for c in enumerate(short_names, 1)])
         self.display.draw_menu(self.texts_lvl4_cadets)
         while True:
-            c1 = input(self.display.draw_input("Choose first cadet :: ")).strip()
+            c1 = input(self.display.draw_input(
+                "Choose first cadet :: ")).strip()
             try:
                 c1 = int(c1) - 1
                 cadets.NAMES[c1]
@@ -521,14 +520,15 @@ class Menu():
             else:
                 self.display.clear([], is_error=True)
                 break
-                
+
         trial_status += f'{cadets.NAMES[c1]} vs ...'
         self.display.draw_screen(trial_status, line_nr=1)
-        
+
         while True:
-            c2 = input(self.display.draw_input("Choose second cadet ::")).strip()
-            self.display.clear([], is_error=True)
-            
+            c2 = input(self.display.draw_input(
+                "Choose second cadet :: ")).strip()
+            self.display.clear(is_error=True)
+
             try:
                 c2 = int(c2) - 1
                 cadets.NAMES[c2]
@@ -536,9 +536,9 @@ class Menu():
                 self.display.draw_menu(
                     f"--- Please provide a valid choice for second cadet ---", is_error=True)
             else:
-                self.display.clear([], is_error=True)
+                self.display.clear(is_error=True)
                 break
-        
+
         trial_status = trial_status[:-3] + f'{cadets.NAMES[c2]}'
         self.display.draw_screen(trial_status, line_nr=1)
 
@@ -559,7 +559,7 @@ class Menu():
             except:
                 self.display.draw_menu(
                     f"---Please provide a valid choice for the Cadet to fill this role---", is_error=True)
-        self.display.draw_screen(available_cadets[choice])
+        # self.display.draw_screen(available_cadets[choice])
         return choice
 
     def reset_menu(self):
@@ -589,7 +589,9 @@ def run(menu, player, display):
 
     cadets = Cadets()
     cadets.recruit()
-    print(cadets.NAMES)
+    message = [f'The following cadets have volunteered for the mission:', '']
+    message.extend(textwrap.wrap(f'{", ".join(cadets.NAMES)}', display.WIDTH - 4))
+    display.draw_screen(message, line_nr=2)
 
     trials = Trials()
     menu.run_lvl2_trials(trials, cadets)
