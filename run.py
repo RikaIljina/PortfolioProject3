@@ -51,26 +51,51 @@ class Display:
         self.BORDER_CHAR = "▓"
         self.INPUT_PROMPT = '▓ :: '
         self.current_text = ""
-        
-    def draw_screen(self, text, input=False):
-        os.system('cls||clear')
+        self.lines = self.empty_screen()
+
+    def empty_screen(self):
         lines = [str(self.BORDER_CHAR*self.WIDTH)]
-        lines.extend([f'▓{" ":<78}▓' for _ in range(self.HEIGHT-2)])
+        lines.extend(
+            [f'{self.BORDER_CHAR}{" ":<78}{self.BORDER_CHAR}' for _ in range(self.HEIGHT-2)])
         lines.append(str(self.BORDER_CHAR*self.WIDTH))
-        print(len(lines))
-        
+        return lines
+
+    def draw_screen(self, text):
+        os.system('cls||clear')
+
         if text is None:
             text = self.current_text
         else:
-            text = f'▓ {text:<77}▓'
+            text = f'{self.BORDER_CHAR} {text:<77}{self.BORDER_CHAR}'
             self.current_text = text
-        
-        for line in lines:
+
+        text = list(text)
+        text_len = len(text)
+
+        # Add text to lower part of display
+        for line in self.lines:
+
             print(f'{line}')
         print(text)
-        
-        if input:
-            return self.INPUT_PROMPT 
+
+
+    def draw_menu(self, text, is_error=None):
+        os.system('cls||clear')
+        result = f'{self.BORDER_CHAR} {text:<77}{self.BORDER_CHAR}'
+        if is_error:
+            self.lines.insert(22, result)
+            self.lines.pop(23)
+        else:
+            self.lines.insert(21, result)
+            self.lines.pop(22)
+
+        for line in self.lines:
+            print(f'{line}')
+
+
+    def draw_input(self):
+        return self.INPUT_PROMPT
+
 
 # Add logic: generate cadet dict with random skills, run trials and
 # save results in a new dict
@@ -339,7 +364,7 @@ class Mission:
 
         print(self.mission_log)
         return
-    
+
     def calculate_results(self, player, trials):
         """
 
@@ -355,7 +380,7 @@ class Mission:
 
         print("Calculating final player score:")
         print(player.calculate_score(trials.runs, trials.MAX_RUNS,
-            self))
+                                     self))
         return
 
 
@@ -381,16 +406,18 @@ class Menu:
         self.active_player = None
 
     def run_lvl1_loader(self, display):
+        display.draw_menu(self.texts_lvl1_loader)
         while True:
-            display.draw_screen(self.texts_lvl1_loader)
-            choice = input(display.draw_screen(None, True)).strip()
+            # display.draw_screen(self.texts_lvl1_loader)
+            
+            choice = input(display.draw_input()).strip()
             if choice == '3':
                 run(self, None)
             else:
                 try:
                     self.lvl1_loader[choice](self, self.active_player)
                 except:
-                    print(f"Please provide a valid choice")
+                    display.draw_menu(f"Please provide a valid choice", True)
 
     def run_lvl2_trials(self, trials, cadets):
         while True:
@@ -419,7 +446,7 @@ class Menu:
                 break
             except:
                 print(f"Please provide a valid skill choice")
-            
+
         self.first_skill_chosen = True
         self.run_lvl4_cadets(trials, cadets, skill_nr)
         return
@@ -465,11 +492,11 @@ class Menu:
                 available_cadets[choice]
                 break
             except:
-                print(f"---Please provide a valid choice for the Cadet to fill this role---")
+                print(
+                    f"---Please provide a valid choice for the Cadet to fill this role---")
         print(choice)
         return choice
 
-        
     def reset_menu(self):
         self.texts_lvl3_skill = ""
         self.texts_lvl4_cadets = ""
@@ -492,9 +519,8 @@ def run(menu, player):
     else:
         player = Player()
         player.name = input("Please enter your name: ").strip()
-        
+
     menu.active_player = player
-    
 
     cadets = Cadets()
     cadets.recruit()
@@ -505,7 +531,7 @@ def run(menu, player):
 
     # Final mission
     final_mission = Mission(cadets.SKILLS)
-    #menu.run_lvl2_mission(final_mission, cadets, trials)
+    # menu.run_lvl2_mission(final_mission, cadets, trials)
     final_mission.assemble_crew(menu, trials, cadets)
 
     final_mission.calculate_results(player, trials)
