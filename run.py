@@ -468,6 +468,7 @@ class Menu():
 
     def run_lvl3_skill(self, trials, cadets):
         self.display.clear([], is_error=True)
+        self.display.clear([1,2,3])
         self.texts_lvl3_skill = ' '.join(
             [f'{c[0]}. {c[1]} ' for c in enumerate(cadets.SKILLS, 1)])
 
@@ -490,6 +491,7 @@ class Menu():
         return
 
     def run_lvl4_cadets(self, trials, cadets, skill_nr=None):
+        self.display.clear([2,3])
         if self.chosen_skill is None:
             self.display.draw_menu(
                 "--- Please choose a skill first ---", is_error=True)
