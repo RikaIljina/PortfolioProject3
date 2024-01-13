@@ -44,6 +44,33 @@ class Player:
 
 # Add Display class to gather all prints and produce output (80x24)
 
+class Display:
+    def __init__(self):
+        self.HEIGHT = 24
+        self.WIDTH = 80
+        self.BORDER_CHAR = "▓"
+        self.INPUT_PROMPT = '▓ :: '
+        self.current_text = ""
+        
+    def draw_screen(self, text, input=False):
+        os.system('cls||clear')
+        lines = [str(self.BORDER_CHAR*self.WIDTH)]
+        lines.extend([f'▓{" ":<78}▓' for _ in range(self.HEIGHT-2)])
+        lines.append(str(self.BORDER_CHAR*self.WIDTH))
+        print(len(lines))
+        
+        if text is None:
+            text = self.current_text
+        else:
+            text = f'▓ {text:<77}▓'
+            self.current_text = text
+        
+        for line in lines:
+            print(f'{line}')
+        print(text)
+        
+        if input:
+            return self.INPUT_PROMPT 
 
 # Add logic: generate cadet dict with random skills, run trials and
 # save results in a new dict
@@ -332,22 +359,6 @@ class Mission:
         return
 
 
-# def initialize_player():
-#     new_player = Player()
-#     run()
-#     return
-
-
-# def recruit_cadets(cadets):
-#     # Can be modified to allow n cadets to be recruited instead of 6
-#     cadets.recruit()
-#     pprint(cadets.cadets)
-#     return
-
-
-
-
-
 def show_highscore(*args):
     return
 
@@ -369,10 +380,10 @@ class Menu:
         self.stay_in_trial_menu = True
         self.active_player = None
 
-    def run_lvl1_loader(self):
+    def run_lvl1_loader(self, display):
         while True:
-            print(self.texts_lvl1_loader)
-            choice = input().strip()
+            display.draw_screen(self.texts_lvl1_loader)
+            choice = input(display.draw_screen(None, True)).strip()
             if choice == '3':
                 run(self, None)
             else:
@@ -507,7 +518,8 @@ def main():
     """
     os.system('cls||clear')
     menu = Menu()
-    menu.run_lvl1_loader()
+    display = Display()
+    menu.run_lvl1_loader(display)
 
 
 if __name__ == '__main__':
