@@ -468,7 +468,7 @@ class Menu():
 
     def run_lvl3_skill(self, trials, cadets):
         self.display.clear([], is_error=True)
-        self.display.clear([1,2,3])
+        self.display.clear([1])
         self.texts_lvl3_skill = ' '.join(
             [f'{c[0]}. {c[1]} ' for c in enumerate(cadets.SKILLS, 1)])
 
@@ -491,14 +491,15 @@ class Menu():
         return
 
     def run_lvl4_cadets(self, trials, cadets, skill_nr=None):
-        self.display.clear([2,3])
+        #self.display.clear([2,3])
         if self.chosen_skill is None:
             self.display.draw_menu(
                 "--- Please choose a skill first ---", is_error=True)
             return
         else:
             self.display.clear([], is_error=True)
-            self.display.draw_screen(self.chosen_skill, line_nr=1)
+            trial_status =f'{self.chosen_skill}:  '
+            self.display.draw_screen(trial_status, line_nr=1)
             
 
         short_names = [name.split(" ")[1] for name in cadets.NAMES]
@@ -506,32 +507,34 @@ class Menu():
             [f'{c[0]}. {c[1]} ' for c in enumerate(short_names, 1)])
         self.display.draw_menu(self.texts_lvl4_cadets)
         while True:
-            c1 = input(self.display.draw_input("Choose Cadet 1 ::")).strip()
+            c1 = input(self.display.draw_input("Choose first cadet ::")).strip()
             try:
                 c1 = int(c1) - 1
                 cadets.NAMES[c1]
             except:
                 self.display.draw_menu(
-                    f"--- Please provide a valid choice for Cadet 1 ---", is_error=True)
+                    f"--- Please provide a valid choice for first cadet ---", is_error=True)
             else:
                 self.display.clear([], is_error=True)
                 break
                 
-        self.display.draw_screen(f'Chosen as Cadet 1: {cadets.NAMES[c1]}', line_nr=2)
+        trial_status += f'{cadets.NAMES[c1]} vs ...'
+        self.display.draw_screen(trial_status, line_nr=1)
         
         while True:
-            c2 = input(self.display.draw_input("Choose Cadet 2 ::")).strip()
+            c2 = input(self.display.draw_input("Choose second cadet ::")).strip()
             try:
                 c2 = int(c2) - 1
                 cadets.NAMES[c2]
             except:
                 self.display.draw_menu(
-                    f"--- Please provide a valid choice for Cadet 2 ---", is_error=True)
+                    f"--- Please provide a valid choice for second cadet ---", is_error=True)
             else:
                 self.display.clear([], is_error=True)
                 break
-            
-        self.display.draw_screen(f'Chosen as Cadet 2: {cadets.NAMES[c2]}', line_nr=3)
+        
+        trial_status = trial_status[:-3] + f'{cadets.NAMES[c2]}'
+        self.display.draw_screen(trial_status, line_nr=1)
 
         self.stay_in_trial_menu = trials.fill_trials(cadets, skill_nr, c1, c2)
         return
