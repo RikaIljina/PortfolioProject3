@@ -432,9 +432,10 @@ class Menu():
 
     def run_lvl1_loader(self):
         self.display.clear([], is_error=True)
-        self.display.draw_menu(self.texts_lvl1_loader)
         while True:
+            self.display.draw_menu(self.texts_lvl1_loader)
             choice = input(self.display.draw_input()).strip()
+            self.display.clear([], is_error=True)
             if choice == '3':
                 run(self, None, self.display)
             else:
@@ -443,17 +444,18 @@ class Menu():
                 except:
                     self.display.draw_menu(
                         f"--- Please provide a valid choice ---", is_error=True)
-                else:
-                    self.display.clear([], is_error=True)
+
 
     def run_lvl2_trials(self, trials, cadets):
-        self.display.clear([], is_error=True)
         while True:
             self.display.draw_menu(self.texts_lvl2_trials)
             if not self.stay_in_trial_menu:
+                self.display.clear([], is_error=True)
                 break
 
             choice = input(self.display.draw_input()).strip()
+            self.display.clear([], is_error=True)
+            
             if choice == '3':
                 break
             try:
@@ -475,6 +477,8 @@ class Menu():
         while True:
             self.display.draw_menu(self.texts_lvl3_skill)
             skill_nr = input(self.display.draw_input()).strip()
+            self.display.clear([], is_error=True)
+            
             try:
                 skill_nr = int(skill_nr)-1
                 cadets.SKILLS[skill_nr]
@@ -507,7 +511,7 @@ class Menu():
             [f'{c[0]}. {c[1]} ' for c in enumerate(short_names, 1)])
         self.display.draw_menu(self.texts_lvl4_cadets)
         while True:
-            c1 = input(self.display.draw_input("Choose first cadet ::")).strip()
+            c1 = input(self.display.draw_input("Choose first cadet :: ")).strip()
             try:
                 c1 = int(c1) - 1
                 cadets.NAMES[c1]
@@ -523,6 +527,8 @@ class Menu():
         
         while True:
             c2 = input(self.display.draw_input("Choose second cadet ::")).strip()
+            self.display.clear([], is_error=True)
+            
             try:
                 c2 = int(c2) - 1
                 cadets.NAMES[c2]
@@ -540,12 +546,12 @@ class Menu():
         return
 
     def run_lvl2_mission(self, available_cadets):
-        self.display.clear([], is_error=True)
         self.texts_lvl2_mission = ' '.join([
             f'{c[0]}. {c[1]} ' for c in enumerate(available_cadets, 1)])
         self.display.draw_menu(self.texts_lvl2_mission)
         while True:
             choice = input(self.display.draw_input()).strip()
+            self.display.clear([], is_error=True)
             try:
                 choice = int(choice) - 1
                 available_cadets[choice]
