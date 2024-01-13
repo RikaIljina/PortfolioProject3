@@ -7,6 +7,7 @@ import random
 import math
 import os
 import textwrap
+import time
 # from typing import Any
 
 
@@ -50,7 +51,7 @@ class Display:
         self.HEIGHT = 23
         self.WIDTH = 80
         self.BORDER_CHAR = "▓"
-        self.INPUT_PROMPT = '▓ :: '
+        self.INPUT_PROMPT = '▓▓▓ :: '
         self.EMPTY_LINE = f'{self.BORDER_CHAR}{" ":<78}{self.BORDER_CHAR}'
         self.ERROR_LINE_NR = 21
         self.MENU_LINE_NR = 20
@@ -59,13 +60,15 @@ class Display:
 
     def empty_screen(self):
         lines = [str(self.BORDER_CHAR*self.WIDTH)]
-        lines.extend([self.EMPTY_LINE for _ in range(self.HEIGHT-2)])
+        lines.extend([self.EMPTY_LINE for _ in range(self.HEIGHT-5)])
+        lines.extend([self.BORDER_CHAR*self.WIDTH for _ in range(3)])
         lines.append(str(self.BORDER_CHAR*self.WIDTH))
         return lines
 
-    def clear(self, indexes=[1,2,3,4,5,6,7,8,9,10], is_error=False):
+    def clear(self, indexes=[i for i in range(1, 19)], is_error=False):
         if is_error:
-            self.lines[self.ERROR_LINE_NR] = self.EMPTY_LINE
+            self.lines[self.ERROR_LINE_NR] = self.BORDER_CHAR * \
+                self.WIDTH  # self.EMPTY_LINE
         else:
             for index in indexes:
                 self.lines[index] = self.EMPTY_LINE
@@ -73,18 +76,19 @@ class Display:
     def draw(self):
         os.system('cls||clear')
         for line in self.lines:
+            # time.sleep(0.05)
             print(f'{line}')
 
-    def draw_screen(self, text=None, line_nr=1):
+    def draw_screen(self, text=None, line_nr=1, center=False):
        # os.system('cls||clear')
 
         if text:
             if type(text) == list:
                 text_len = len(text)
                 for i in range(text_len):
+                    result = f'{self.BORDER_CHAR}{" "*26 + text[i]:<77} {self.BORDER_CHAR}' if center else f'{self.BORDER_CHAR} {text[i]:<77}{self.BORDER_CHAR}'
                     self.lines.pop(line_nr + i)
-                    self.lines.insert(line_nr + i,
-                                      f'{self.BORDER_CHAR} {text[i]:<77}{self.BORDER_CHAR}')
+                    self.lines.insert(line_nr + i, result)
             else:
                 result = f'{self.BORDER_CHAR} {text:<77}{self.BORDER_CHAR}'
                 self.lines.pop(line_nr)
@@ -93,7 +97,6 @@ class Display:
         self.draw()
 
     def draw_menu(self, text, is_error=False):
-        # os.system('cls||clear')
 
         if is_error:
             result = f'{self.BORDER_CHAR} {text:>77}{self.BORDER_CHAR}'
@@ -104,8 +107,6 @@ class Display:
             result = f'{self.BORDER_CHAR} {text:<77}{self.BORDER_CHAR}'
             self.lines.pop(self.MENU_LINE_NR)
             self.lines.insert(self.MENU_LINE_NR, result)
-
-        # self.draw_screen()
 
     def draw_input(self, prompt=''):
         self.draw()
@@ -411,9 +412,9 @@ def show_highscore(*args):
 class Menu():
     def __init__(self, display):  # rename levels
         self.display = display
-        self.texts_lvl1_loader = "1. Start game   2. New player   3. Show highscore"
+        self.texts_lvl1_loader = "1. Start game             2. New player             3. Show highscore"
         self.lvl1_loader = {'1': run, '3': show_highscore}
-        self.texts_lvl2_trials = "1. Choose skill   2. Choose cadets   3. End trials"
+        self.texts_lvl2_trials = "1. Choose skill              2. Choose cadets              3. End trials"
         self.lvl2_trials = {'1': self.run_lvl3_skill,
                             '2': self.run_lvl4_cadets}
         self.texts_lvl3_skill = ""
@@ -423,16 +424,19 @@ class Menu():
         self.active_player = None
 
     def run_lvl0_player(self):
-        self.display.clear([], is_error=True)
+        self.display.clear(is_error=True)
+        loading_screen(self.display, part=2)
         self.display.draw_menu("Please enter your name:")
         name = input(self.display.draw_input()).strip()
         return name
 
     def run_lvl1_loader(self):
+        loading_screen(self.display, part=1)
         while True:
             self.display.draw_menu(self.texts_lvl1_loader)
             choice = input(self.display.draw_input()).strip()
-            self.display.clear([], is_error=True)
+            self.display.clear(is_error=True)
+            self.display.clear()
             if choice == '2':
                 run(self, None, self.display)
             else:
@@ -570,6 +574,36 @@ class Menu():
         return
 
 
+def loading_screen(display, part=1):
+    match part:
+        case 1:
+            logo = ['         AD ASTRA',
+                    '          ______',
+                    '       _-´ .   .`-_',
+                    "   |/ /  .. . '   .\ \|",
+                    '  |/ /            ..\ \|',
+                    '\|/ |: .   ._|_ .. . | \|/',
+                    ' \/ |   _|_ .| . .:  | \/',
+                    '\ / |.   |  .  .    .| \ /',
+                    ' \||| .  . .  _|_   .|||/',
+                    '\__| \  . :.  .|.  ./ |__/',
+                    '  __| \_  .    .. _/ |__',
+                    "   __|  `-______-'  |__",
+                    '      -,____  ____,-',
+                    '        ---´  `---',
+                    'UNITED FEDERATION OF PLANETS']
+            display.draw_screen(logo, 2, center=True)
+            return
+        case 2:
+            message = ['Welcome, Assessor!', ' ']
+            message.extend(textwrap.wrap(
+                'I am CAT, short for "Cadet Assessment Terminal". Since the speech module is currently undergoing a personality adjustment, I ask you to use your keyboard today (if you can remember how).'))
+            message.append("")
+            message.extend(textwrap.wrap("As usual, you will be assessing a group of young cadets who have volunteered to go on an important mission. The mission requires a crew, and each role on the crew must be filled with one cadet. Please run a few trials where you let two cadets compete against each other, and note their performance. The sooner you finish the trials, the better, of course. Be as thorough as you need to, but don't miss the deadline!"))
+            message.extend("", "Don't forget to provide your full name for the log.")
+            display.draw_screen(message)
+
+
 # Game Manager that will instantiate objects, pass them to their
 # respective functions
 
@@ -589,8 +623,10 @@ def run(menu, player, display):
 
     cadets = Cadets()
     cadets.recruit()
-    message = [f'The following cadets have volunteered for the mission:', '']
-    message.extend(textwrap.wrap(f'{", ".join(cadets.NAMES)}', display.WIDTH - 4))
+    message = [f'Welcome to CAT, the Cadet Assessment Terminal, {player.name}!',
+               '', f'The following cadets have volunteered for the upcoming mission:', '']
+    message.extend(textwrap.wrap(
+        f'{", ".join(cadets.NAMES)}', display.WIDTH - 4))
     display.draw_screen(message, line_nr=2)
 
     trials = Trials()
