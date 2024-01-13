@@ -6,7 +6,7 @@ from pprint import pprint
 import random
 import math
 import os
-from typing import Any
+# from typing import Any
 
 
 # Establish connection to Google sheets for highscore management
@@ -21,7 +21,7 @@ class Player:
     def get_name(self):
         # All print statements should be passed to class Display later
         print("Please enter your name:")
-        self.name = input()
+        self.name = input().strip()
 
     # mission_score, mission_difficulty, mission_prognosis):
     def calculate_score(self, trial_runs, trial_max_runs, mission_data):
@@ -207,15 +207,7 @@ class Mission:
             print(f'\n{skill}: Please assign a cadet:')
             print(available_cadets)
 
-            while True:
-                index = menu.run_lvl2_mission(available_cadets)
-                try:
-                    available_cadets[index]
-                    # break
-                except:
-                    print("Wrong input")
-                else:
-                    break
+            index = menu.run_lvl2_mission(available_cadets)
             self.crew[skill] = [available_cadets[index],
                                 cadets.cadets[available_cadets[index]][skill]]
             available_cadets.pop(index)
@@ -380,45 +372,43 @@ class Menu:
     def run_lvl1_loader(self):
         while True:
             print(self.texts_lvl1_loader)
-            choice = input()
+            choice = input().strip()
             if choice == '3':
                 run(self, None)
             else:
                 try:
                     self.lvl1_loader[choice](self, self.active_player)
-                except Exception as e:
-                    print(f"Wrong input 1", e)
+                except:
+                    print(f"Please provide a valid choice")
 
     def run_lvl2_trials(self, trials, cadets):
         while True:
             if not self.stay_in_trial_menu:
                 break
             print(self.texts_lvl2_trials)
-            choice = input()
+            choice = input().strip()
             if choice == '3':
                 break
             try:
-                print("trying lvl2")
-                print(self.lvl2_trials[choice])
+                self.lvl2_trials[choice]
+            except:
+                print(f"Please provide a valid choice")
+            else:
                 self.lvl2_trials[choice](trials, cadets)
-            except Exception as e:
-                print(f"Wrong input 2", e)
 
     def run_lvl3_skill(self, trials, cadets):
-        print("so far...")
         self.texts_lvl3_skill = list(
             f'{c[0]}. {c[1]} ' for c in enumerate(cadets.SKILLS, 1))
         print(self.texts_lvl3_skill)
         while True:
-            skill_nr = int(input()) - 1
+            skill_nr = input().strip()
             try:
-                print(cadets.SKILLS, skill_nr)
+                skill_nr = int(skill_nr)-1
                 cadets.SKILLS[skill_nr]
-                print(cadets.SKILLS[skill_nr])
                 break
-            except Exception as e:
-                print(f"Wrong input 3", e)
-    #            self.run_lvl3(self, trials, cadets)
+            except:
+                print(f"Please provide a valid skill choice")
+            
         self.first_skill_chosen = True
         self.run_lvl4_cadets(trials, cadets, skill_nr)
         return
@@ -432,23 +422,23 @@ class Menu:
             f'{c[0]}. {c[1]} ' for c in enumerate(cadets.NAMES, 1))
         print(self.texts_lvl4_cadets)
         while True:
-            print("Choose Cadet 1:")
-            c1 = int(input()) - 1
+            print("Choose Cadet 1:\n")
+            c1 = input().strip()
             try:
-                print(cadets.NAMES[c1])
+                c1 = int(c1) - 1
                 cadets.NAMES[c1]
                 break
-            except Exception as e:
-                print(f"Wrong input 41", e)
+            except:
+                print(f"--- Please provide a valid choice for Cadet 1 ---")
         while True:
-            print("Choose Cadet 2:")
-            c2 = int(input()) - 1
+            print("Choose Cadet 2:\n")
+            c2 = input().strip()
             try:
-                print(cadets.NAMES[c2])
+                c2 = int(c2) - 1
                 cadets.NAMES[c2]
                 break
             except Exception as e:
-                print(f"Wrong input 42", e)
+                print(f"--- Please provide a valid choice for Cadet 2 ---")
 
         self.stay_in_trial_menu = trials.fill_trials(cadets, skill_nr, c1, c2)
         return
@@ -457,7 +447,14 @@ class Menu:
         self.texts_lvl2_mission = [
             f'{c[0]}. {c[1]} ' for c in enumerate(available_cadets, 1)]
         print(self.texts_lvl2_mission)
-        choice = int(input()) - 1
+        while True:
+            choice = input().strip()
+            try:
+                choice = int(choice) - 1
+                available_cadets[choice]
+                break
+            except:
+                print(f"---Please provide a valid choice for the Cadet to fill this role---")
         print(choice)
         return choice
 
@@ -483,7 +480,7 @@ def run(menu, player):
         player.score = 0
     else:
         player = Player()
-        player.name = input("Please enter your name: ")
+        player.name = input("Please enter your name: ").strip()
         
     menu.active_player = player
     
