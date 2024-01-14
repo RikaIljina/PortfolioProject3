@@ -8,6 +8,7 @@ import math
 import os
 import textwrap
 import time
+import menu
 # from typing import Any
 
 
@@ -36,8 +37,8 @@ class Player:
             trial_max_runs - trial_runs) * 10
         mission_difficulty_bonus = 0 if mission_failed_penalty != 0 else mission_data.difficulty - \
             mission_data.prognosis
-        print(f'{trial_runs} {trial_run_bonus} {mission_failed_penalty} + {mission_score_penalty} + {mission_prognosis_penalty} + {skill_penalty}')
-        print(mission_difficulty_bonus)
+        # print(f'{trial_runs} {trial_run_bonus} {mission_failed_penalty} + {mission_score_penalty} + {mission_prognosis_penalty} + {skill_penalty}')
+        # print(mission_difficulty_bonus)
         result = 1000 - mission_failed_penalty - mission_score_penalty - \
             mission_prognosis_penalty - skill_penalty + \
             mission_difficulty_bonus + trial_run_bonus
@@ -89,10 +90,24 @@ class Display:
                     result = f'{self.BORDER_CHAR}{" "*26 + text[i]:<77} {self.BORDER_CHAR}' if center else f'{self.BORDER_CHAR} {text[i]:<77}{self.BORDER_CHAR}'
                     self.lines.pop(line_nr + i)
                     self.lines.insert(line_nr + i, result)
+            elif type(text) == dict:
+                j = 0
+                for key, value in text.items():
+                    string = [f'{key}: ']
+                    for v in value:
+                        string.append(v)
+                    text_len = len(string)
+                    for i in range(text_len):
+                        result = f'{self.BORDER_CHAR} {string[i]:<77}{self.BORDER_CHAR}'
+                        self.lines.pop(line_nr + j+i)
+                        self.lines.insert(line_nr + j+i, result)
+                    j += i + 1
             else:
                 result = f'{self.BORDER_CHAR} {text:<77}{self.BORDER_CHAR}'
                 self.lines.pop(line_nr)
                 self.lines.insert(line_nr, result)
+        else:
+            return
 
         self.draw()
 
@@ -119,7 +134,7 @@ class Display:
 
 class Cadets:
 
-    def __init__(self):
+    def __init__(self, display, player_name):
         # The skills which the cadets are being tested for
         self.SKILLS = ["Diplomacy", "Science",
                        "Engineering", "Medicine", "Pilot"]
@@ -127,12 +142,21 @@ class Cadets:
         self.NAMES = random.sample(["Cadet Janeway", "Cadet Picard", "Cadet Kirk", "Cadet Kim", "Cadet Paris",
                                     "Cadet Whorf", "Cadet Crusher", "Cadet Torres", "Cadet Spock", "Cadet Troi"], 6)
         self.cadets = {}
+        self.display = display
+        self.player_name = player_name
 
     def recruit(self):
         # Build initial cadet dictionary with 6 cadets and their respective random skill values.
         # The player has no access to these values.
         self.cadets = {key: {key: value for key, value in zip(
             self.SKILLS, self.cadet_skill_generator())} for key in self.NAMES}
+        message = [f'Welcome to CAT, the Cadet Assessment Terminal, {self.player_name}!',
+                   '', f'The following cadets have volunteered for the upcoming mission:', '']
+        message.extend(textwrap.wrap(
+            f'{", ".join(self.NAMES)}', self.display.WIDTH - 4))
+        self.display.draw_screen(message, line_nr=2)
+        
+        return
 
     def cadet_skill_generator(self):
         """
@@ -193,12 +217,13 @@ class Cadets:
 
             skill_points.append(points)
 
-        print(sum(skill_points))
+        # print(sum(skill_points))
         return skill_points
 
 
 class Trials:
-    def __init__(self):
+    def __init__(self, display):
+        self.display = display
         self.skill = ""
         self.c1 = ""
         self.c2 = ""
@@ -209,22 +234,25 @@ class Trials:
     def fill_trials(self, cadets, skill_nr, c1, c2):
 
         self.skill = cadets.SKILLS[skill_nr] if skill_nr is not None else self.skill
-        print(self.skill)
+        # print(self.skill)
 
         self.c1 = cadets.NAMES[c1]
         self.c2 = cadets.NAMES[c2]
 
-        print(self.run_trials(cadets))
-
+        result = self.run_trials(cadets)
+        self.display.draw_screen(result, 1)
+        #print(self.trials_log.values())
+        #input()
+        self.display.draw_screen(self.trials_log, 2)
+        
         if self.runs == self.MAX_RUNS:
             print("No more time for trials! On to the real mission!")
             return False
         else:
-            print(f'{self.runs} trials run\n')
+            self.display.draw_screen(f'{self.runs} trials run', 15)
             return True
 
     def run_trials(self, cadets):
-        print(self.trials_log)
         # print(f'Comparing cadets {self.c1} and {self.c2} for skill {self.skill}:')
         skill_c1 = cadets.cadets[self.c1][self.skill]
         skill_c2 = cadets.cadets[self.c2][self.skill]
@@ -272,7 +300,7 @@ class Mission:
         # cadet_list = []
         available_cadets = cadets.NAMES
         for skill in self.roles:
-            print(trials.show_log(skill))
+            self.display.draw_screen(trials.show_log(skill), 5)
             print(f'\n{skill}: Please assign a cadet:')
             print(available_cadets)
 
@@ -602,7 +630,8 @@ def loading_screen(display, part=1):
                 'I am Cat, short for "Cadet Assessment Terminal". Since the speech module is currently undergoing a personality adjustment, I ask you to use your keyboard today (if you can remember how).'))
             message.append("")
             message.extend(textwrap.wrap("As usual, you will be assessing a group of young cadets who have volunteered to go on an important mission. The mission requires a crew, and each role on the crew must be filled with one cadet. Please run a few trials where you let two cadets compete against each other, and note their performance. The sooner you finish the trials, the better, of course. Be as thorough as you need to, but don't miss the deadline!"))
-            message.extend(["", "Don't forget to provide your full name for the log."])
+            message.extend(
+                ["", "Don't forget to provide your full name for the log."])
             display.draw_screen(message)
 
 
@@ -623,15 +652,10 @@ def run(menu, player, display):
         menu.active_player = player
         menu.run_lvl0_player()
 
-    cadets = Cadets()
+    cadets = Cadets(display, player.name)
     cadets.recruit()
-    message = [f'Welcome to CAT, the Cadet Assessment Terminal, {player.name}!',
-               '', f'The following cadets have volunteered for the upcoming mission:', '']
-    message.extend(textwrap.wrap(
-        f'{", ".join(cadets.NAMES)}', display.WIDTH - 4))
-    display.draw_screen(message, line_nr=2)
 
-    trials = Trials()
+    trials = Trials(display)
     menu.run_lvl2_trials(trials, cadets)
 
     # Final mission
@@ -649,6 +673,7 @@ def main():
     """
     os.system('cls||clear')
     display = Display()
+    # menu1 = menu.Menu(display) # Menu(display)
     menu = Menu(display)
     menu.run_lvl1_loader()
 
