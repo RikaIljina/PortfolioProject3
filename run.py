@@ -46,6 +46,7 @@ class Player:
 
 
 # Add Display class to gather all prints and produce output (80x24)
+# TODO: remove redundant screen drawings
 
 class Display:
     def __init__(self):
@@ -97,15 +98,22 @@ class Display:
                     for v in value:
                         string.append(v)
                     text_len = len(string)
-                    for i in range(text_len):
-                        result = f'{self.BORDER_CHAR} {string[i]:<77}{self.BORDER_CHAR}'
-                        self.lines.pop(line_nr + j+i)
-                        self.lines.insert(line_nr + j+i, result)
+                    for i in range(text_len-1):
+                        if i == 0:
+                            result = f'{self.BORDER_CHAR} {string[i]:<13}{string[i+1]:<64}{self.BORDER_CHAR}'
+                            self.lines.pop(line_nr + j+i)
+                            self.lines.insert(line_nr + j+i, result)
+                        else:
+                            result = f'{self.BORDER_CHAR} {" " * 13}{string[i+1]:<64}{self.BORDER_CHAR}'
+                            self.lines.pop(line_nr + j+i)
+                            self.lines.insert(line_nr + j+i, result)
                     j += i + 1
-            else:
+            elif type(text) == str:
                 result = f'{self.BORDER_CHAR} {text:<77}{self.BORDER_CHAR}'
                 self.lines.pop(line_nr)
                 self.lines.insert(line_nr, result)
+            else:
+                return
         else:
             return
 
@@ -155,7 +163,7 @@ class Cadets:
         message.extend(textwrap.wrap(
             f'{", ".join(self.NAMES)}', self.display.WIDTH - 4))
         self.display.draw_screen(message, line_nr=2)
-        
+
         return
 
     def cadet_skill_generator(self):
@@ -241,10 +249,10 @@ class Trials:
 
         result = self.run_trials(cadets)
         self.display.draw_screen(result, 1)
-        #print(self.trials_log.values())
-        #input()
+        # print(self.trials_log.values())
+        # input()
         self.display.draw_screen(self.trials_log, 2)
-        
+
         if self.runs == self.MAX_RUNS:
             print("No more time for trials! On to the real mission!")
             return False
