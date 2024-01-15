@@ -135,9 +135,8 @@ class Display:
                 text_len = len(text)
                 for i in range(text_len):
                     result = f'{self.BORDER_CHAR}{" "*26 + text[i]:<77} {self.BORDER_CHAR}' if center else f'{self.BORDER_CHAR} {text[i]:<77}{self.BORDER_CHAR}'
-                    #self.lines.pop(line_nr + i)
-                    #self.lines.insert(line_nr + i, result)
                     self.lines[line_nr + i] = result
+
             elif type(text) == dict:
                 j = 0
                 for key, value in text.items():
@@ -148,35 +147,32 @@ class Display:
                     for i in range(text_len-1):
                         if i == 0:
                             result = f'{self.BORDER_CHAR} {string[i]:<13}{string[i+1]:<64}{self.BORDER_CHAR}'
-                            self.lines.pop(line_nr + j+i)
-                            self.lines.insert(line_nr + j+i, result)
+                            self.lines[line_nr + i + j] = result
                         else:
                             result = f'{self.BORDER_CHAR} {" " * 13}{string[i+1]:<64}{self.BORDER_CHAR}'
-                            self.lines.pop(line_nr + j+i)
-                            self.lines.insert(line_nr + j+i, result)
+                            self.lines[line_nr + i + j] = result
                     j += i + 1
+
             elif type(text) == str:
                 result = f'{self.BORDER_CHAR} {text:<77}{self.BORDER_CHAR}'
-                self.lines.pop(line_nr)
-                self.lines.insert(line_nr, result)
+                self.lines[line_nr] = result
+
             else:
                 return
+
         else:
             return
 
-        #self.draw()
 
     def build_menu(self, text, is_error=False):
 
         if is_error:
             result = f'{self.BORDER_CHAR} {text:>77}{self.BORDER_CHAR}'
-            self.lines.pop(self.ERROR_LINE_NR)
-            self.lines.insert(self.ERROR_LINE_NR, result)
+            self.lines[self.ERROR_LINE_NR] = result
 
         else:
             result = f'{self.BORDER_CHAR} {text:<77}{self.BORDER_CHAR}'
-            self.lines.pop(self.MENU_LINE_NR)
-            self.lines.insert(self.MENU_LINE_NR, result)
+            self.lines[self.MENU_LINE_NR] = result
 
     def build_input(self, prompt=''):
         self.__draw()
