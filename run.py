@@ -8,48 +8,83 @@ import math
 import os
 import textwrap
 import time
-import menu
-# from typing import Any
 
 
 # Establish connection to Google sheets for highscore management
 
 
-# Player object with name and score
 class Player:
+    """
+    Contains player data and performs player-related operations.
+    """
     def __init__(self):
+        """
+        Initializes attributes:
+            self.name - Player name as entered by user
+            self.score - Player score as calculated by class method            
+        """
         self.name = ""
         self.score = 0
 
-    # def get_name(self):
-    #     # All print statements should be passed to class Display later
-    #     print("Please enter your name:")
-    #     self.name = input().strip()
 
-    # mission_score, mission_difficulty, mission_prognosis):
     def calculate_score(self, trial_runs, trial_max_runs, mission_data):
+        """
+        Calculates Player score at the end of the game.
+
+        Args:
+            trial_runs (int): Played trial runs as stored in Trial class
+            trial_max_runs (int): Max trial runs as stored in Trial class
+            mission_data (class): Reference to Mission class
+
+        Returns:
+            int: Resulting player score
+        """
         mission_failed_penalty = 0 if mission_data.score >= 3 else 500
         mission_score_penalty = (5 - mission_data.score) * 100
         mission_prognosis_penalty = 100 - mission_data.prognosis
         skill_penalty = 500 - sum([value[1]
                                   for value in mission_data.crew.values()])*10
         trial_run_bonus = 0 if mission_failed_penalty != 0 else (
-            trial_max_runs - trial_runs) * 10
-        mission_difficulty_bonus = 0 if mission_failed_penalty != 0 else mission_data.difficulty - \
-            mission_data.prognosis
-        # print(f'{trial_runs} {trial_run_bonus} {mission_failed_penalty} + {mission_score_penalty} + {mission_prognosis_penalty} + {skill_penalty}')
-        # print(mission_difficulty_bonus)
-        result = 1000 - mission_failed_penalty - mission_score_penalty - \
-            mission_prognosis_penalty - skill_penalty + \
-            mission_difficulty_bonus + trial_run_bonus
+                trial_max_runs - trial_runs) * 10
+        mission_difficulty_bonus = 0 if mission_failed_penalty != 0 else \
+                mission_data.difficulty - mission_data.prognosis
+        result = 1000 - mission_failed_penalty - mission_score_penalty \
+            - mission_prognosis_penalty - skill_penalty \
+            + mission_difficulty_bonus + trial_run_bonus
         return result
 
-
-# Add Display class to gather all prints and produce output (80x24)
 # TODO: remove redundant screen drawings
-
 class Display:
+    """
+    Contains viewport and output formatting data, formats and handles all
+    print operations.
+    ------------
+    Attributes:
+        self.HEIGHT        - Max allowed viewport height minus input line
+        self.WIDTH         - Max allowed viewport width
+        self.BORDER_CHAR   - Character to use for the outer border
+        self.INPUT_PROMPT  - Characters to show before the input line
+        self.EMPTY_LINE    - Empty line string with border chars
+        self.ERROR_LINE_NR - Index of the line with error output
+        self.MENU_LINE_NR  - Index of the line with menu elements
+        self.lines         - List of 23 strings containing all screen output
+    ------------
+    Methods:
+        __init__()       - Initializes all class attributes
+        __empty_screen() - Creates a list of strings for an empty terminal
+                           with all border chars in place
+        clear()          - Inserts empty lines to clear terminal output
+        build_screen()   - Formats and builds a list of strings passed from
+                           other functions to prepare terminal output
+        build_menu()     - Formats and builds menu string and error string
+                           to prepare terminal output
+        build_input()    - Formats input prompt and calls _draw to draw screen
+        __draw()         - Draws the screen from self.lines attribute
+    """
     def __init__(self):
+        """"
+        Initializes attributes
+        """
         self.HEIGHT = 23
         self.WIDTH = 80
         self.BORDER_CHAR = "▓"
@@ -57,40 +92,52 @@ class Display:
         self.EMPTY_LINE = f'{self.BORDER_CHAR}{" ":<78}{self.BORDER_CHAR}'
         self.ERROR_LINE_NR = 21
         self.MENU_LINE_NR = 20
-        self.current_text = ""
-        self.lines = self.empty_screen()
+        self.lines = self.__empty_screen()
 
-    def empty_screen(self):
+
+    def __empty_screen(self):
+        """
+        Creates a list of lines containing the border chars and empty space.
+
+        Returns:
+            list: Empty terminal screen with borders
+        """
         lines = [str(self.BORDER_CHAR*self.WIDTH)]
         lines.extend([self.EMPTY_LINE for _ in range(self.HEIGHT-5)])
         lines.extend([self.BORDER_CHAR*self.WIDTH for _ in range(3)])
         lines.append(str(self.BORDER_CHAR*self.WIDTH))
+        
         return lines
 
+
     def clear(self, indexes=[i for i in range(1, 19)], is_error=False):
+        """
+        Receives indexes to clear in the terminal and overwrites 
+
+        Args:
+            indexes (list, optional): _description_. Defaults to [i for i in range(1, 19)].
+            is_error (bool, optional): _description_. Defaults to False.
+        """
         if is_error:
             self.lines[self.ERROR_LINE_NR] = self.BORDER_CHAR * \
-                self.WIDTH  # self.EMPTY_LINE
+                self.WIDTH
         else:
             for index in indexes:
                 self.lines[index] = self.EMPTY_LINE
+        
+        return
 
-    def draw(self):
-        os.system('cls||clear')
-        for line in self.lines:
-            # time.sleep(0.05)
-            print(f'{line}')
 
-    def draw_screen(self, text=None, line_nr=1, center=False):
-       # os.system('cls||clear')
-
+    def build_screen(self, text=None, line_nr=1, center=False):
+        result = ''
         if text:
             if type(text) == list:
                 text_len = len(text)
                 for i in range(text_len):
                     result = f'{self.BORDER_CHAR}{" "*26 + text[i]:<77} {self.BORDER_CHAR}' if center else f'{self.BORDER_CHAR} {text[i]:<77}{self.BORDER_CHAR}'
-                    self.lines.pop(line_nr + i)
-                    self.lines.insert(line_nr + i, result)
+                    #self.lines.pop(line_nr + i)
+                    #self.lines.insert(line_nr + i, result)
+                    self.lines[line_nr + i] = result
             elif type(text) == dict:
                 j = 0
                 for key, value in text.items():
@@ -117,9 +164,9 @@ class Display:
         else:
             return
 
-        self.draw()
+        #self.draw()
 
-    def draw_menu(self, text, is_error=False):
+    def build_menu(self, text, is_error=False):
 
         if is_error:
             result = f'{self.BORDER_CHAR} {text:>77}{self.BORDER_CHAR}'
@@ -131,9 +178,14 @@ class Display:
             self.lines.pop(self.MENU_LINE_NR)
             self.lines.insert(self.MENU_LINE_NR, result)
 
-    def draw_input(self, prompt=''):
-        self.draw()
+    def build_input(self, prompt=''):
+        self.__draw()
         return self.INPUT_PROMPT + prompt
+    
+    def __draw(self):
+        os.system('cls||clear')
+        for line in self.lines:
+            print(f'{line}')
 
 
 # Add logic: generate cadet dict with random skills, run trials and
@@ -162,7 +214,7 @@ class Cadets:
                    '', f'The following cadets have volunteered for the upcoming mission:', '']
         message.extend(textwrap.wrap(
             f'{", ".join(self.NAMES)}', self.display.WIDTH - 4))
-        self.display.draw_screen(message, line_nr=2)
+        self.display.build_screen(message, line_nr=2)
 
         return
 
@@ -248,16 +300,18 @@ class Trials:
         self.c2 = cadets.NAMES[c2]
 
         result = self.run_trials(cadets)
-        self.display.draw_screen(result, 1)
+        self.display.build_screen(result, 1)
         # print(self.trials_log.values())
         # input()
-        self.display.draw_screen(self.trials_log, 1)
+        self.display.build_screen(self.trials_log, 1)
 
         if self.runs == self.MAX_RUNS:
-            self.display.draw_screen("No more time for trials! On to the real mission!", 18)
+            self.display.build_screen(
+                "No more time for trials! On to the real mission!", 18)
             return False
         else:
-            self.display.draw_screen(f'{self.MAX_RUNS - self.runs} trials left', 18) # align to the right
+            self.display.build_screen(
+                f'{self.MAX_RUNS - self.runs} trials left', 18)  # align to the right
             return True
 
     def run_trials(self, cadets):
@@ -307,10 +361,10 @@ class Mission:
 
         # cadet_list = []
         available_cadets = cadets.NAMES
-        self.display.draw_screen("Please assemble the crew" ,1)
+        self.display.build_screen("Please assemble the crew", 1)
         for skill in self.roles:
-            self.display.draw_screen(f'For {skill}: ')
-            self.display.draw_screen(trials.show_log(skill), 5)
+            self.display.build_screen(f'For {skill}: ')
+            self.display.build_screen(trials.show_log(skill), 5)
             print(f'\n{skill}: Please assign a cadet:')
             print(available_cadets)
 
@@ -353,74 +407,97 @@ class Mission:
             match key:
                 case 'Diplomacy':
                     if mission_parameters[i] >= 7:
-                        self.mission_log[key].append("This was a real diplomatic crisis!\n")
+                        self.mission_log[key].append(
+                            "This was a real diplomatic crisis!\n")
                     elif 4 < mission_parameters[i] < 7:
-                        self.mission_log[key].append("This mission had challenging diplomatic issues.\n")
+                        self.mission_log[key].append(
+                            "This mission had challenging diplomatic issues.\n")
                     else:
-                        self.mission_log[key].append("There was only a minor diplomatic issue on this mission.\n")
+                        self.mission_log[key].append(
+                            "There was only a minor diplomatic issue on this mission.\n")
                     if value[1] >= mission_parameters[i]:
                         self.score += 1
-                        self.mission_log[key].append(f"{value[0]} solved it masterfully.")
+                        self.mission_log[key].append(
+                            f"{value[0]} solved it masterfully.")
                     else:
-                        self.mission_log[key].append(f"Unfortunately, {value[0]} was unable to deal with it.")
+                        self.mission_log[key].append(
+                            f"Unfortunately, {value[0]} was unable to deal with it.")
                 case 'Medicine':
                     if mission_parameters[i] >= 7:
-                        self.mission_log[key].append("This was a real medical crisis! A planet-wide outbreak!")
+                        self.mission_log[key].append(
+                            "This was a real medical crisis! A planet-wide outbreak!")
                     elif 4 < mission_parameters[i] < 7:
-                        self.mission_log[key].append("An alien guest had a challenging medical problem.")
+                        self.mission_log[key].append(
+                            "An alien guest had a challenging medical problem.")
                     else:
-                        self.mission_log[key].append("A couple crew members sustained minor injuries on the Holodeck.")
+                        self.mission_log[key].append(
+                            "A couple crew members sustained minor injuries on the Holodeck.")
                     if value[1] >= mission_parameters[i]:
                         self.score += 1
-                        self.mission_log[key].append(f"{value[0]} was a real miracle worker!")
+                        self.mission_log[key].append(
+                            f"{value[0]} was a real miracle worker!")
                     else:
-                        self.mission_log[key].append(f"Unfortunately, {value[0]} was unable to handle the stress of the medical profession.")
+                        self.mission_log[key].append(
+                            f"Unfortunately, {value[0]} was unable to handle the stress of the medical profession.")
                 case 'Science':
                     if mission_parameters[i] >= 7:
-                        self.mission_log[key].append("This was a real scientific crisis!")
+                        self.mission_log[key].append(
+                            "This was a real scientific crisis!")
                     elif 4 < mission_parameters[i] < 7:
-                        self.mission_log[key].append("An alien guest had a challenging scientific problem.")
+                        self.mission_log[key].append(
+                            "An alien guest had a challenging scientific problem.")
                     else:
-                        self.mission_log[key].append("There was a minor scientific issue.")
+                        self.mission_log[key].append(
+                            "There was a minor scientific issue.")
                     if value[1] >= mission_parameters[i]:
                         self.score += 1
-                        self.mission_log[key].append(f"{value[0]} was a real miracle worker!")
+                        self.mission_log[key].append(
+                            f"{value[0]} was a real miracle worker!")
                     else:
-                        self.mission_log[key].append(f"Unfortunately, {value[0]} was unable to handle the stress of being a scientist.")
+                        self.mission_log[key].append(
+                            f"Unfortunately, {value[0]} was unable to handle the stress of being a scientist.")
                 case 'Pilot':
                     if mission_parameters[i] >= 7:
-                        self.mission_log[key].append("This was a real piloting crisis!")
+                        self.mission_log[key].append(
+                            "This was a real piloting crisis!")
                     elif 4 < mission_parameters[i] < 7:
-                        self.mission_log[key].append("An alien guest had a challenging piloting problem.")
+                        self.mission_log[key].append(
+                            "An alien guest had a challenging piloting problem.")
                     else:
-                        self.mission_log[key].append("There was a minor piloting issue.")
+                        self.mission_log[key].append(
+                            "There was a minor piloting issue.")
                     if value[1] >= mission_parameters[i]:
                         self.score += 1
-                        self.mission_log[key].append(f"{value[0]} was a real miracle worker!")
+                        self.mission_log[key].append(
+                            f"{value[0]} was a real miracle worker!")
                     else:
-                        self.mission_log[key].append(f"Unfortunately, {value[0]} was unable to handle the stress of being a pilot.")
+                        self.mission_log[key].append(
+                            f"Unfortunately, {value[0]} was unable to handle the stress of being a pilot.")
                 case 'Engineering':
                     if mission_parameters[i] >= 7:
-                        self.mission_log[key].append("This was a real engineering crisis!")
+                        self.mission_log[key].append(
+                            "This was a real engineering crisis!")
                     elif 4 < mission_parameters[i] < 7:
-                        self.mission_log[key].append("An alien guest had a challenging engineering problem.")
+                        self.mission_log[key].append(
+                            "An alien guest had a challenging engineering problem.")
                     else:
-                        self.mission_log[key].append("There was a minor engineering issue.")
+                        self.mission_log[key].append(
+                            "There was a minor engineering issue.")
                     if value[1] >= mission_parameters[i]:
                         self.score += 1
-                        self.mission_log[key].append(f"{value[0]} was a real miracle worker!")
+                        self.mission_log[key].append(
+                            f"{value[0]} was a real miracle worker!")
                     else:
-                        self.mission_log[key].append(f"Unfortunately, {value[0]} was unable to handle the stress of being an engineer.")
-
-            
+                        self.mission_log[key].append(
+                            f"Unfortunately, {value[0]} was unable to handle the stress of being an engineer.")
 
             # print(
             #     f'{value[0]} has {"succeeded" if value[1] >= mission_parameters[i] else "failed"}')
-            
+
             i += 1
 
-        self.display.draw_screen(self.mission_log, 1) # should be a dictionary
-        input()
+        self.display.build_screen(self.mission_log, 1)  # should be a dictionary
+        input(self.display.build_input())
         return
 
     def calculate_results(self, player, trials):
@@ -467,17 +544,17 @@ class Menu():
     def run_lvl0_player(self):
         self.display.clear(is_error=True)
         loading_screen(self.display, part=2)
-        self.display.draw_menu("Please enter your name:")
-        name = input(self.display.draw_input()).strip()
+        self.display.build_menu("Please enter your name:")
+        name = input(self.display.build_input()).strip()
         self.active_player.name = name
         self.display.clear()
         return
 
     def run_lvl1_loader(self):
         while True:
-            self.display.draw_menu(self.texts_lvl1_loader)
+            self.display.build_menu(self.texts_lvl1_loader)
             loading_screen(self.display, part=1)
-            choice = input(self.display.draw_input()).strip()
+            choice = input(self.display.build_input()).strip()
             self.display.clear(is_error=True)
             self.display.clear()
             if choice == '2':
@@ -487,18 +564,18 @@ class Menu():
                     self.lvl1_loader[choice](
                         self, self.active_player, self.display)
                 except:
-                    self.display.draw_menu(
+                    self.display.build_menu(
                         f"--- Please provide a valid choice ---", is_error=True)
 
     def run_lvl2_trials(self, trials, cadets):
         while True:
-            self.display.draw_menu(self.texts_lvl2_trials)
+            self.display.build_menu(self.texts_lvl2_trials)
             if not self.stay_in_trial_menu:
                 self.display.clear(is_error=True)
                 self.display.clear()
                 break
 
-            choice = input(self.display.draw_input()).strip()
+            choice = input(self.display.build_input()).strip()
             self.display.clear(is_error=True)
 
             if choice == '3':
@@ -508,7 +585,7 @@ class Menu():
             try:
                 self.lvl2_trials[choice]
             except:
-                self.display.draw_menu(
+                self.display.build_menu(
                     f"--- Please provide a valid choice ---", is_error=True)
             else:
                 self.display.clear()
@@ -522,15 +599,15 @@ class Menu():
             [f'{c[0]}. {c[1]} ' for c in enumerate(cadets.SKILLS, 1)])
 
         while True:
-            self.display.draw_menu(self.texts_lvl3_skill)
-            skill_nr = input(self.display.draw_input()).strip()
+            self.display.build_menu(self.texts_lvl3_skill)
+            skill_nr = input(self.display.build_input()).strip()
             self.display.clear(is_error=True)
 
             try:
                 skill_nr = int(skill_nr)-1
                 cadets.SKILLS[skill_nr]
             except:
-                self.display.draw_menu(
+                self.display.build_menu(
                     f"--- Please provide a valid skill choice ---", is_error=True)
             else:
                 self.display.clear(is_error=True)
@@ -543,37 +620,37 @@ class Menu():
     def run_lvl4_cadets(self, trials, cadets, skill_nr=None):
         # self.display.clear([2,3])
         if self.chosen_skill is None:
-            self.display.draw_menu(
+            self.display.build_menu(
                 "--- Please choose a skill first ---", is_error=True)
             return
         else:
             self.display.clear(is_error=True)
             trial_status = ['Active trial:']
             trial_status.append(f'{self.chosen_skill}:  ')
-            self.display.draw_screen(trial_status, line_nr=16)
+            self.display.build_screen(trial_status, line_nr=16)
 
         short_names = [name.split(" ")[1] for name in cadets.NAMES]
         self.texts_lvl4_cadets = ' '.join(
             [f'{c[0]}. {c[1]} ' for c in enumerate(short_names, 1)])
-        self.display.draw_menu(self.texts_lvl4_cadets)
+        self.display.build_menu(self.texts_lvl4_cadets)
         while True:
-            c1 = input(self.display.draw_input(
+            c1 = input(self.display.build_input(
                 "Choose first cadet :: ")).strip()
             try:
                 c1 = int(c1) - 1
                 cadets.NAMES[c1]
             except:
-                self.display.draw_menu(
+                self.display.build_menu(
                     f"--- Please provide a valid choice for first cadet ---", is_error=True)
             else:
                 self.display.clear([], is_error=True)
                 break
 
         trial_status[1] += f'{cadets.NAMES[c1]} vs ...'
-        self.display.draw_screen(trial_status, line_nr=16)
+        self.display.build_screen(trial_status, line_nr=16)
 
         while True:
-            c2 = input(self.display.draw_input(
+            c2 = input(self.display.build_input(
                 "Choose second cadet :: ")).strip()
             self.display.clear(is_error=True)
 
@@ -581,14 +658,14 @@ class Menu():
                 c2 = int(c2) - 1
                 cadets.NAMES[c2]
             except:
-                self.display.draw_menu(
+                self.display.build_menu(
                     f"--- Please provide a valid choice for second cadet ---", is_error=True)
             else:
                 self.display.clear(is_error=True)
                 break
 
         trial_status[1] = trial_status[1][:-3] + f'{cadets.NAMES[c2]}'
-        self.display.draw_screen(trial_status, line_nr=16)
+        self.display.build_screen(trial_status, line_nr=16)
         time.sleep(0.5)
 
         self.stay_in_trial_menu = trials.fill_trials(cadets, skill_nr, c1, c2)
@@ -598,18 +675,18 @@ class Menu():
         short_names = [name.split(" ")[1] for name in available_cadets]
         self.texts_lvl2_mission = ' '.join([
             f'{c[0]}. {c[1]} ' for c in enumerate(short_names, 1)])
-        self.display.draw_menu(self.texts_lvl2_mission)
+        self.display.build_menu(self.texts_lvl2_mission)
         while True:
-            choice = input(self.display.draw_input()).strip()
+            choice = input(self.display.build_input()).strip()
             self.display.clear([], is_error=True)
             try:
                 choice = int(choice) - 1
                 available_cadets[choice]
                 break
             except:
-                self.display.draw_menu(
+                self.display.build_menu(
                     f"---Please provide a valid choice for the Cadet to fill this role---", is_error=True)
-        # self.display.draw_screen(available_cadets[choice])
+        # self.display.build_screen(available_cadets[choice])
         return choice
 
     def reset_menu(self):
@@ -639,7 +716,7 @@ def loading_screen(display, part=1):
                     '        ---´  `---',
                     'UNITED FEDERATION OF PLANETS']
             display.clear()
-            display.draw_screen(logo, 2, center=True)
+            display.build_screen(logo, 2, center=True)
             return
         case 2:
             message = ['Welcome, Assessor!', ' ']
@@ -650,7 +727,7 @@ def loading_screen(display, part=1):
             message.extend(
                 ["", "Don't forget to provide your full name for the log."])
             display.clear()
-            display.draw_screen(message)
+            display.build_screen(message)
 
 
 # Game Manager that will instantiate objects, pass them to their
