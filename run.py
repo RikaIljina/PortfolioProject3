@@ -14,27 +14,30 @@ import time
 
 
 class Player:
-    """
-    Contains player data and performs player-related operations.
+    """Contains player data and performs player-related operations
+    
+    Attributes:
+        name (str): Player name as entered by user, set by a method in 
+            the Menu object
+        score (int): Player score as calculated by class method
+        
+    Methods:
+        calculate_score(): Calculates player score at the end of the game
+    
     """
     def __init__(self):
-        """
-        Initializes attributes:
-            self.name - Player name as entered by user
-            self.score - Player score as calculated by class method            
-        """
         self.name = ""
         self.score = 0
 
 
-    def calculate_score(self, trial_runs, trial_max_runs, mission_data):
-        """
-        Calculates Player score at the end of the game.
+    def calculate_score(self, trial_runs: int, trial_max_runs: int, \
+                        mission_data: object) -> int:
+        """Calculates player score at the end of the game
 
         Args:
-            trial_runs (int): Played trial runs as stored in Trial class
-            trial_max_runs (int): Max trial runs as stored in Trial class
-            mission_data (class): Reference to Mission class
+            trial_runs: Played trial runs as stored in Trial class object
+            trial_max_runs: Max trial runs as stored in Trial class object
+            mission_data: Reference to Mission class object
 
         Returns:
             int: Resulting player score
@@ -51,40 +54,35 @@ class Player:
         result = 1000 - mission_failed_penalty - mission_score_penalty \
             - mission_prognosis_penalty - skill_penalty \
             + mission_difficulty_bonus + trial_run_bonus
+        
         return result
 
 # TODO: remove redundant screen drawings
 class Display:
-    """
+    """Processes text and renders the screen output
+    
     Contains viewport and output formatting data, formats and handles all
     print operations.
-    ------------
+    
     Attributes:
-        self.HEIGHT        - Max allowed viewport height minus input line
-        self.WIDTH         - Max allowed viewport width
-        self.BORDER_CHAR   - Character to use for the outer border
-        self.INPUT_PROMPT  - Characters to show before the input line
-        self.EMPTY_ROW     - Empty row string with border chars
-        self.ERROR_ROW_NR  - Index of the row with error output
-        self.MENU_ROW_NR   - Index of the row with menu elements
-        self.rows          - List of 23 strings containing all screen output
-    ------------
+        HEIGHT (int): Max allowed viewport height minus input line
+        WIDTH (int): Max allowed viewport width
+        BORDER_CHAR (str): Character to use for the outer border
+        INPUT_PROMPT (str): Characters to show before the input line
+        EMPTY_ROW (str): Empty row string with border chars
+        ERROR_ROW_NR int): Index of the row with error output
+        MENU_ROW_NR (int): Index of the row with menu elements
+        rows (list): 23 strings containing all screen output
+    
     Methods:
-        __init__()       - Initializes all class attributes
-        __empty_screen() - Creates a list of strings for an empty terminal
-                           with all border chars in place
-        clear()          - Inserts empty rows to clear terminal output
-        build_screen()   - Formats and builds a list of strings passed from
-                           other functions to prepare terminal output
-        build_menu()     - Formats and builds menu string and error string
-                           to prepare terminal output
-        build_input()    - Formats input prompt and calls _draw to draw screen
-        __draw()         - Draws the screen from self.rows attribute
+        clear(): Inserts empty rows to clear terminal output
+        build_screen():  Formats and builds a list of strings passed from
+            other functions to prepare terminal output
+        build_menu(): Formats and builds menu string and error string
+            to prepare terminal output
+        build_input(): Formats input prompt and calls _draw to draw screen
     """
     def __init__(self):
-        """"
-        Initializes attributes
-        """
         self.HEIGHT = 23
         self.WIDTH = 80
         self.BORDER_CHAR = "▓"
@@ -95,9 +93,8 @@ class Display:
         self.rows = self.__empty_screen()
 
 
-    def __empty_screen(self):
-        """
-        Creates a list of rows containing the border chars and empty space.
+    def __empty_screen(self) -> list:
+        """Creates a list of rows containing the border chars and empty space
 
         Returns:
             list: Empty terminal screen with borders
@@ -110,16 +107,17 @@ class Display:
         return rows
 
 
-    def clear(self, indexes=[i for i in range(1, 19)], is_error=False):
-        """
+    def clear(self, indexes=[i for i in range(1, 19)], is_error=False) -> None:
+        """Clears specific rows in the terminal
+        
         Receives indexes to clear in the terminal and overwrites them in the 
         self.row attribute with empty rows.
 
         Args:
-            indexes (list, optional)  - List with indexes to be cleared.
-                                        Defaults to all rows above the menu.
-            is_error (bool, optional) - States whether the row to clear is
-                                        the error row. Defaults to False.
+            indexes (list, optional): List with indexes to be cleared.
+                Defaults to all rows above the menu row.
+            is_error (bool, optional): States whether the row to clear is
+                the error row. Defaults to False.
         """
         if is_error:
             self.rows[self.ERROR_ROW_NR] = self.BORDER_CHAR * self.WIDTH
@@ -130,21 +128,17 @@ class Display:
         return
 
 
-    def build_screen(self, text, row_nr=1, center=False):
-        """
-        Prepares a text for terminal output above the menu row:
+    def build_screen(self, text: str|list|dict, row_nr=1, center=False) -> None:
+        """Prepares a text for terminal output above the menu row
+        
         Receives a string, list, or dictionary, formats its contents,
         and overwrites the specified rows of self.rows with the contents.
 
         Args:
-            text (str, list, dict)  - Message to print on screen.
-            row_nr (int, optional)  - ROW index at which to start.
-                                      Defaults to 1.
-            center (bool, optional) - States whether the message should be
-                                      centered on screen. Defaults to False.
-        
-        Local var:
-            result (str)            - String containing one assembled row
+            text (str, list, dict): Message to print on screen.
+            row_nr (int, optional): Row index at which to start. Defaults to 1.
+            center (bool, optional): States whether the message should be
+                centered on screen. Defaults to False.
         """
         result = ''
         if text:
@@ -160,7 +154,7 @@ class Display:
                               f'{self.BORDER_CHAR}' if center 
                               else f'{self.BORDER_CHAR}{" "}{text[i]:<76}{" "}'
                               f'{self.BORDER_CHAR}')
-                    # Fill the final list starting at received row index
+                    # Fill the final list starting at specified row index
                     self.rows[row_nr + i] = result
             # Dictionary processing:
             # The dictionaries passed have the following format:
@@ -202,16 +196,15 @@ class Display:
             return
 
 
-    def build_menu(self, text, is_error=False):
-        """
-        Prepares the menu row for terminal output:
+    def build_menu(self, text: str, is_error=False) -> None:
+        """Prepares the menu row for terminal output
+        
         Formats the string and overwrites the specified row index in self.rows.
         
         Args:
-            text (str)                - String containing the menu elements, 
-                                        max 76 chars
-            is_error (bool, optional) - States if text is an error message.
-                                        Defaults to False.
+            text (str): String containing the menu elements, max 76 chars
+            is_error (bool, optional): States if text is an error message.
+                Defaults to False.
         """
         if is_error:
             result = f'{self.BORDER_CHAR}{" "}{text:>76}{" "}{self.BORDER_CHAR}'
@@ -223,14 +216,15 @@ class Display:
         return
 
 
-    def build_input(self, prompt=''):
-        """
-        Calls __draw() to draw the terminal and returns a user input prompt.
-        Thus, the screen is only re-drawn whenever user input is required.
+    def build_input(self, prompt='') -> str:
+        """Draws the terminal and returns a user input prompt
+        
+        Calls __draw() to draw the terminal. Thus, the screen is only re-drawn
+        whenever user input is required.
 
         Args:
-            prompt (str, optional) - Prompt to put before the user input.
-                                     Defaults to ''.
+            prompt (str, optional): Prompt to put before the user input.
+                Defaults to ''.
 
         Returns:
             str: String with user input decoration and prompt
@@ -240,121 +234,168 @@ class Display:
         return self.INPUT_PROMPT + prompt
     
     
-    def __draw(self):
-        """
-        Clears the previous input and draws the new terminal from self.rows.
-        """
+    def __draw(self) -> None:
+        """Clears the previous screen and re-draws the new terminal"""
         os.system('cls||clear')
         for row in self.rows:
             print(f'{row}')
+        return
 
 
 class Cadets:
-    """
+    """Cadet object
+    
+    Contains all cadet-related data and creates a cadets dictionary with
+    names, skills and skill values.
+    
+    Args:
+        display (object): Reference to Display class object
+        player_name (object): Reference to Player class object
     
     Attributes:
-        self.SKILLS       -
-        self.NAMES        -
-        self.cadets       -
-        self.display      -
-        self.player_name  -
+        SKILLS (list): Five skills the cadets are being tested for
+        NAMES (list): Names to randomly choose from when building dict
+        cadets (dict): Dict in the format {name: {skill: value, ...}, ... }
+        display (object): Reference to Display class object
+        player_name (str): Name chosen by the user
         
     Methods:
-        __init__()              -
-        recruit()               -
-        cadet_skill_generator() -
-        
+        recruit(): Builds cadet dict and outputs message on screen
     """
 
-    def __init__(self, display, player_name):
-        # The skills which the cadets are being tested for
-        self.SKILLS = ["Captain", "Security Chief",
-                       "Engineer", "Doctor", "Pilot"]
-        # Selection of names for cadets (TODO: randomize selection!)
-        self.NAMES = random.sample(["Cadet Janeway", "Cadet Picard", "Cadet Kirk", "Cadet Kim", "Cadet Paris",
-                                    "Cadet Whorf", "Cadet Crusher", "Cadet Torres", "Cadet Spock", "Cadet Troi"], 6)
+    def __init__(self, display: object, player_name: object):
+        self.SKILLS = ["Captain", "Security Chief", "Engineer", "Doctor",
+                       "Pilot"]
+        self.NAMES = random.sample(["Cadet Janeway", "Cadet Picard",
+                                    "Cadet Kirk", "Cadet Kim", "Cadet Paris",
+                                    "Cadet Whorf", "Cadet Crusher",
+                                    "Cadet Torres", "Cadet Spock", "Cadet Yar",
+                                    "Cadet Troi", "Cadet Sisko"], 6)
         self.cadets = {}
         self.display = display
         self.player_name = player_name
 
-    def recruit(self):
-        # Build initial cadet dictionary with 6 cadets and their respective random skill values.
-        # The player has no access to these values.
+    def recruit(self) -> None:
+        """Initializes cadet dictionary
+    
+        Builds initial cadet dictionary with 6 cadets and their respective
+        secret skill values. Outputs a message to the player.
+        """
         self.cadets = {key: {key: value for key, value in zip(
-            self.SKILLS, self.cadet_skill_generator())} for key in self.NAMES}
-        message = [f'Welcome to CAT, the Cadet Assessment Terminal, {self.player_name}!',
-                   '', f'The following cadets have volunteered for the upcoming mission:', '']
-        message.extend(textwrap.wrap(
-            f'{", ".join(self.NAMES)}', self.display.WIDTH - 4))
+                             self.SKILLS, self.__cadet_skill_generator())} 
+                             for key in self.NAMES}
+        message = [f'Welcome to Cat, {self.player_name}!', '', 
+                   (f'The following cadets have volunteered for the upcoming '
+                    f'mission:'), '']
+        message.extend(textwrap.wrap(f'{", ".join(self.NAMES)}',
+                                     self.display.WIDTH - 4))
         self.display.build_screen(message, row_nr=2)
 
         return
 
-    def cadet_skill_generator(self):
+    def __cadet_skill_generator(self) -> list:
+        """Generates a list with 5 random skill values
+        
+        Each value lies between LOWEST_SKILL and HIGHEST_SKILL (1 - 10),
+        with a total sum of MAX_POINTS (25).
+        
+        Attributes:
+            MAX_POINTS (int): Total amount of skill points to divide among all 
+                skills for each cadet
+            LOWEST_SKILL (int): Lowest possible skill value
+            HIGHEST_SKILL (int): Highest possible skill value
+            skill_points (list): Five skill values
+            skill_amount (int): Amount of skills currently used in the game (5)
         """
-        This function generates and returns a list with 5 random skill numbers,
-        each between LOWEST_SKILL and HIGHEST_SKILL (1 - 10), with a total sum of
-        MAX_POINTS (25).
-        """
-        # Total amount of skill points to divide among all skills for each cadet
         MAX_POINTS = 25
-        # Lowest and highest possible skill level on a scale of 1-10
         LOWEST_SKILL = 1
         HIGHEST_SKILL = 10
         skill_points = []
         skill_amount = len(self.SKILLS)
 
         for i in range(1, skill_amount + 1):
-            # The 5th skill to be calculated always takes the remaining difference
-            # between the maximum possible points and the sum of used-up points
+            # The 5th skill to be calculated always takes the remaining 
+            # difference between the maximum possible points and the sum of 
+            # used-up points
             if i == 5:
                 points = MAX_POINTS - sum(skill_points)
 
-            # The 4th skill to be calculated needs an upper range and a lower range for the randomizer:
-            # - upper range is the remaining points minus the minimum necessary points for the
-            #   last skill OR HIGHEST_SKILL, depending on which is lower
-            # - lower range is the remainder of the remaining points divided by (HIGHEST_SKILL * 2)
-            # For example:
-            # - The numbers [1,1,3] have been chosen for i 1-3. 20 points remain to be distributed,
-            # which equals (HIGHEST_SKILL * 2). As a result, lower_range is set to HIGHEST_SKILL (10)
-            # to make sure that the last two skills receive enough points to add up to 20.
-            # - The numbers [10,1,1] have been chosen for i 1-3. 13 points remain to be distributed,
-            # which is lower than (HIGHEST_SKILL * 2) but higher than HIGHEST_SKILL. As a result,
-            # lower_range is set to the maximum of 1 or (13%(10*1)), which is 3.
-            # This makes sure that the skill on i=4 receives at least 3 points, leaving max 10 for i=5.
+            # The 4th skill to be calculated needs an upper range and a lower
+            # range for the randomizer:
+            # - upper range is the remaining points minus the minimum necessary
+            # points for the last skill OR HIGHEST_SKILL, depending on which 
+            # is lower
+            # - lower range is the remainder of the remaining points divided by
+            # (HIGHEST_SKILL*2)
+            # # For example:
+            # - The numbers [1,1,3] have been chosen for i 1-3. 20 points
+            # remain to be distributed, which equals to (HIGHEST_SKILL*2).
+            # As a result, lower_range is set to HIGHEST_SKILL (10) to make
+            # sure that the last two skills receive enough points to add up
+            # to 20.
+            # - The numbers [10,1,1] have been chosen for i 1-3. 13 points
+            # remain to be distributed, which is lower than (HIGHEST_SKILL*2)
+            # but higher than HIGHEST_SKILL. As a result, lower_range is set to
+            # the maximum of 1 or (13%(10*1)), which is 3. This makes sure that
+            # the skill on i=4 receives at least 3 points, leaving max 10 
+            # for i=5.
             elif i == 4:
-                upper_range = min(
-                    MAX_POINTS - sum(skill_points[0:i-1]) - (skill_amount - i) + 1, HIGHEST_SKILL + 1)
+                upper_range = min(MAX_POINTS - sum(skill_points[0:i-1])
+                                  - (skill_amount-i) + 1, HIGHEST_SKILL + 1)
                 if (MAX_POINTS - sum(skill_points[0:i-1])) < HIGHEST_SKILL:
                     lower_range = LOWEST_SKILL
-                elif (MAX_POINTS - sum(skill_points[0:i-1])) == HIGHEST_SKILL*2:
+                elif ((MAX_POINTS - sum(skill_points[0:i-1])) 
+                      == HIGHEST_SKILL * 2):
                     lower_range = HIGHEST_SKILL
                 else:
-                    lower_range = max(
-                        (MAX_POINTS - sum(skill_points[0:i-1])) % (HIGHEST_SKILL*(skill_amount - i)), 1)
+                    lower_range = max((MAX_POINTS - sum(skill_points[0:i-1]))
+                                     % (HIGHEST_SKILL * (skill_amount-i)), 1)
                 points = random.randrange(lower_range, upper_range)
 
             elif i == 3:
-                upper_range = min(
-                    MAX_POINTS - sum(skill_points[0:i-1]) - (skill_amount - i) + 1, HIGHEST_SKILL + 1)
+            # Analogous to 4th skill calculations
+                upper_range = min(MAX_POINTS - sum(skill_points[0:i-1])
+                                  - (skill_amount-i) + 1, HIGHEST_SKILL + 1)
                 if (MAX_POINTS - sum(skill_points[0:i-1])) < HIGHEST_SKILL*2:
                     lower_range = LOWEST_SKILL
                 else:
                     lower_range = max(
-                        (MAX_POINTS - sum(skill_points[0:i-1])) % (HIGHEST_SKILL*(skill_amount - i)), 1)
+                        (MAX_POINTS - sum(skill_points[0:i-1]))
+                        % (HIGHEST_SKILL * (skill_amount-i)), 1)
                 points = random.randrange(lower_range, upper_range)
 
             else:
+            # The first two values can be chosen randomly
                 points = random.randrange(LOWEST_SKILL, HIGHEST_SKILL + 1)
 
             skill_points.append(points)
 
-        # print(sum(skill_points))
         return skill_points
 
 
 class Trials:
-    def __init__(self, display):
+    """Calculates and stores results of the 'Trials' game phase
+    
+    Calculates the results of two competing cadets and collects all results
+    in a trials log. Keeps track of the maximum allowed amount of trial runs.
+    
+    Args:
+        display (object): Reference to Display class object
+        
+    Attributes:
+        display (object): Reference to Display class object
+        skill (str): The skill name to test the cadets for
+        c1 (int): Index of the first cadet to test
+        c2 (int): Index of the second cadet to test
+        trials_log (dict): Contains all results, format {skill: [result]}
+        runs (int): Current count of trial runs
+        MAX_RUNS (int): Maximum allowed amount of trial runs
+        
+    Methods:
+        fill_trials(): Receives cadet indexes and starts the trial run
+        show_log(): Outputs the trial results for each skill
+    """
+    def __init__(self, display: object):
         self.display = display
         self.skill = ""
         self.c1 = ""
@@ -363,31 +404,43 @@ class Trials:
         self.runs = 0
         self.MAX_RUNS = 5
 
-    def fill_trials(self, cadets, skill_nr, c1, c2):
+    def fill_trials(self, cadets: object, skill_nr: int, c1: int, c2: int) \
+                    -> bool:
+        """Receives cadet indexes from the menu and starts the trial run
 
-        self.skill = cadets.SKILLS[skill_nr] if skill_nr is not None else self.skill
-        # print(self.skill)
-
+        Calls __run_trials() for each skill and cadet pair, outputs the
+        results to the terminal, and keeps track of the amount of allowed runs.
+        
+        Returns:
+            bool: True if more trials can be run, False if max amount reached
+        """
+        # In case the player skips the skill choice, the previous skill is used
+        self.skill = cadets.SKILLS[skill_nr] if skill_nr is not None \
+                                             else self.skill
         self.c1 = cadets.NAMES[c1]
         self.c2 = cadets.NAMES[c2]
-
-        result = self.run_trials(cadets)
-        self.display.build_screen(result, 1)
-        # print(self.trials_log.values())
-        # input()
-        self.display.build_screen(self.trials_log, 1)
+        self.__run_trials(cadets)
+        self.display.build_screen(self.trials_log, row_nr=1)
 
         if self.runs == self.MAX_RUNS:
             self.display.build_screen(
-                "No more time for trials! On to the real mission!", 18)
+                "No more time for trials! On to the real mission!", 18)  # TODO: delay
             return False
         else:
             self.display.build_screen(
-                f'{self.MAX_RUNS - self.runs} trials left', 18)  # align to the right
+                f'{self.MAX_RUNS - self.runs} trials left', 18)  # TODO: align to the right
             return True
 
-    def run_trials(self, cadets):
-        # print(f'Comparing cadets {self.c1} and {self.c2} for skill {self.skill}:')
+
+    def __run_trials(self, cadets: object) -> None:
+        """Compares skill values for a cadet pair and logs result
+
+        Args:
+            cadets (object): Reference to Cadet class object
+
+        Returns:
+            _type_: _description_
+        """
         skill_c1 = cadets.cadets[self.c1][self.skill]
         skill_c2 = cadets.cadets[self.c2][self.skill]
         if skill_c1 - skill_c2 <= -4:
@@ -404,10 +457,12 @@ class Trials:
         if self.trials_log.get(self.skill):
             self.trials_log[self.skill].append(result_string)
         else:
+            # Result must be stored as a list to ensure correct processing by
+            # the Display class
             self.trials_log[self.skill] = [result_string]
 
         self.runs += 1
-        return f'{self.skill}: {result_string}'
+        return #f'{self.skill}: {result_string}'
 
     def show_log(self, skill):
         if self.trials_log.get(skill):
