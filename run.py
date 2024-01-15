@@ -1,17 +1,15 @@
-# Your code goes here.
-# You can delete these comments, but do not change the name of this file
 # Write your code to expect a terminal of 80 characters wide and 24 rows high
 
-from pprint import pprint
+import os
+import sys
 import random
 import math
-import os
 import textwrap
 import time
 
 
 # Establish connection to Google sheets for highscore management
-
+# Create Worksheet object for access to texts and highscore
 
 class Player:
     """Contains player data and performs player-related operations
@@ -107,7 +105,7 @@ class Display:
         return rows
 
 
-    def clear(self, indexes=[i for i in range(1, 19)], is_error=False) -> None:
+    def clear(self, indexes=[_ for _ in range(1, 19)], is_error=False) -> None:
         """Clears specific rows in the terminal
         
         Receives indexes to clear in the terminal and overwrites them in the 
@@ -157,7 +155,7 @@ class Display:
                     # Fill the final list starting at specified row index
                     self.rows[row_nr + i] = result
             # Dictionary processing:
-            # The dictionaries passed have the following format:
+            # The received dictionaries have the following format:
             # {key : ['', ..., '']}
             elif type(text) == dict:
                 # Counter to keep track of current row index
@@ -183,6 +181,7 @@ class Display:
                             result = (f'{self.BORDER_CHAR}{" " * 17}'
                                       f'{temp_list[i]:<61}{self.BORDER_CHAR}')
                             self.rows[row_nr + i + k - 1] = result
+                    # Update row index to skip already added lines
                     k += i
             else:
                 print("Internal error: text is not str, list, or dict")
@@ -246,7 +245,7 @@ class Cadets:
     """Cadet object
     
     Contains all cadet-related data and creates a cadets dictionary with
-    names, skills and skill values.
+    names, skills, and skill values.
     
     Args:
         display (object): Reference to Display class object
@@ -385,8 +384,8 @@ class Trials:
     Attributes:
         display (object): Reference to Display class object
         skill (str): The skill name to test the cadets for
-        c1 (int): Index of the first cadet to test
-        c2 (int): Index of the second cadet to test
+        c1 (str): Name of the first cadet to test
+        c2 (str): Name of the second cadet to test
         trials_log (dict): Contains all results, format {skill: [result]}
         runs (int): Current count of trial runs
         MAX_RUNS (int): Maximum allowed amount of trial runs
@@ -437,22 +436,19 @@ class Trials:
 
         Args:
             cadets (object): Reference to Cadet class object
-
-        Returns:
-            _type_: _description_
         """
         skill_c1 = cadets.cadets[self.c1][self.skill]
         skill_c2 = cadets.cadets[self.c2][self.skill]
         if skill_c1 - skill_c2 <= -4:
-            result_string = (f'{self.c1} is much worse than {self.c2}')
+            result_string = (f'{self.c1} performed much worse than {self.c2}')
         elif skill_c1 - skill_c2 < 0:
-            result_string = (f'{self.c1} is worse than {self.c2}')
+            result_string = (f'{self.c1} performed worse than {self.c2}')
         elif skill_c1 - skill_c2 >= 4:
-            result_string = (f'{self.c1} is much better than {self.c2}')
+            result_string = (f'{self.c1} performed much better than {self.c2}')
         elif skill_c1 - skill_c2 > 0:
-            result_string = (f'{self.c1} is better than {self.c2}')
+            result_string = (f'{self.c1} performed better than {self.c2}')
         else:
-            result_string = (f'{self.c1} and {self.c2} are equals')
+            result_string = (f'{self.c1} and {self.c2} performed equally well')
 
         if self.trials_log.get(self.skill):
             self.trials_log[self.skill].append(result_string)
@@ -460,11 +456,20 @@ class Trials:
             # Result must be stored as a list to ensure correct processing by
             # the Display class
             self.trials_log[self.skill] = [result_string]
-
         self.runs += 1
-        return #f'{self.skill}: {result_string}'
+        
+        return
 
-    def show_log(self, skill):
+
+    def show_log(self, skill: str) -> list:
+        """Return the results for the specified skill
+
+        Args:
+            skill (str): Name of the skill for which to return the results 
+
+        Returns:
+            list: All trial results for this particular skill
+        """
         if self.trials_log.get(skill):
             return (self.trials_log[skill])
         else:
@@ -472,10 +477,10 @@ class Trials:
             return (self.trials_log[skill])
 
 
-# Add Mission class with roles and crew, it handles the assignment of cadets
-
 class Mission:
-    def __init__(self, roles, display):
+    """_summary_
+    """
+    def __init__(self, roles: list, display: object):
         self.crew = {key: [] for key in roles}
         self.roles = roles
         self.prognosis = 0
@@ -484,41 +489,34 @@ class Mission:
         self.mission_log = {}
         self.display = display
 
-    def assemble_crew(self, menu, trials, cadets):
 
-        # cadet_list = []
+    def assemble_crew(self, menu: object, trials: object, cadets: object) \
+                      -> None:
+        """_summary_
+        """
         available_cadets = cadets.NAMES
         self.display.build_screen("Please assemble the crew", 1)
         for skill in self.roles:
             self.display.build_screen(f'For {skill}: ')
             self.display.build_screen(trials.show_log(skill), 5)
-            print(f'\n{skill}: Please assign a cadet:')
-            print(available_cadets)
-
             index = menu.run_lvl2_mission(available_cadets)
             self.crew[skill] = [available_cadets[index],
                                 cadets.cadets[available_cadets[index]][skill]]
             available_cadets.pop(index)
 
-        # get list from menu
-        # loop through skills and cadet list
-        print("assembling")
-        # self.crew.update({skill: [cadet, cadets.cadets[cadet][skill]] for cadet, skill in zip(cadet_list, self.roles)}) #
-        # i = 0
-        # for skill in self.roles:
-        #     self.crew[skill] = [cadet_list[i], cadets.cadets[cadet_list[i]][skill]]
-        #     i += 1
-        print(self.crew)
         return
 
-    def calculate_prognosis(self):
+
+    def calculate_prognosis(self) -> int:
         result = 0
         for value in self.crew.values():
             result += value[1]*10
         self.prognosis = math.floor(result/len(self.crew.values()))
+
         return self.prognosis
 
-    def calculate_success(self):
+
+    def calculate_success(self) -> None:
         # Mission difficulty starts at 2
         # 5 should be replaced with len(skills)
         mission_parameters = [random.randrange(2, 11) for _ in range(5)]
@@ -622,17 +620,15 @@ class Mission:
                 case _:
                     print("Internal error: no such role in the crew")
                     input()
-
-            # print(
-            #     f'{value[0]} has {"succeeded" if value[1] >= mission_parameters[i] else "failed"}')
-
             i += 1
 
-        self.display.build_screen(self.mission_log, 1)  # should be a dictionary
-        input(self.display.build_input())
+        self.display.build_screen(self.mission_log, 1)
+        input(self.display.build_input()) # debug input
+        
         return
 
-    def calculate_results(self, player, trials):
+
+    def calculate_results(self, player: object, trials: object) -> None:
         """
 
         Args:
@@ -654,13 +650,11 @@ class Mission:
 def show_highscore(*args):
     return
 
-# Add Menu class with Stage 1 - name input, Stage 2 - cadet trial runs,
-# Stage 3 - assignments, Stage 4 - final mission start,
-# Stage 5 - view highscore, restart, exit
-
 
 class Menu():
-    def __init__(self, display):  # rename levels
+    """_summary_
+    """
+    def __init__(self, display: object):  # rename levels
         self.display = display
         self.texts_lvl1_loader = "1. Start game             2. New player             3. Show highscore"
         self.lvl1_loader = {'1': run, '3': show_highscore}
@@ -673,16 +667,19 @@ class Menu():
         self.stay_in_trial_menu = True
         self.active_player = None
 
-    def run_lvl0_player(self):
+
+    def run_lvl0_player(self) -> None:
         self.display.clear(is_error=True)
         loading_screen(self.display, part=2)
         self.display.build_menu("Please enter your name:")
         name = input(self.display.build_input()).strip()
         self.active_player.name = name
         self.display.clear()
+        
         return
 
-    def run_lvl1_loader(self):
+
+    def run_lvl1_loader(self) -> None:
         while True:
             self.display.build_menu(self.texts_lvl1_loader)
             loading_screen(self.display, part=1)
@@ -691,6 +688,9 @@ class Menu():
             self.display.clear()
             if choice == '2':
                 run(self, None, self.display)
+            elif choice == '4':
+                # Return to main() and exit game
+                return
             else:
                 try:
                     self.lvl1_loader[choice](
@@ -698,8 +698,9 @@ class Menu():
                 except:
                     self.display.build_menu(
                         f"--- Please provide a valid choice ---", is_error=True)
+    
 
-    def run_lvl2_trials(self, trials, cadets):
+    def run_lvl2_trials(self, trials: object, cadets: object) -> None:
         while True:
             self.display.build_menu(self.texts_lvl2_trials)
             if not self.stay_in_trial_menu:
@@ -722,9 +723,11 @@ class Menu():
             else:
                 self.display.clear()
                 self.lvl2_trials[choice](trials, cadets)
-               # self.display.clear([], is_error=True)
+        
+        return
 
-    def run_lvl3_skill(self, trials, cadets):
+
+    def run_lvl3_skill(self, trials: object, cadets: object) -> None:
         self.display.clear(is_error=True)
         self.display.clear([1])
         self.texts_lvl3_skill = ' '.join(
@@ -747,9 +750,12 @@ class Menu():
 
         self.chosen_skill = cadets.SKILLS[skill_nr]
         self.run_lvl4_cadets(trials, cadets, skill_nr)
+        
         return
+    
 
-    def run_lvl4_cadets(self, trials, cadets, skill_nr=None):
+    def run_lvl4_cadets(self, trials: object, cadets: object, skill_nr=None) \
+                        -> None:
         # self.display.clear([2,3])
         if self.chosen_skill is None:
             self.display.build_menu(
@@ -801,9 +807,11 @@ class Menu():
         time.sleep(0.5)
 
         self.stay_in_trial_menu = trials.fill_trials(cadets, skill_nr, c1, c2)
+        
         return
 
-    def run_lvl2_mission(self, available_cadets):
+
+    def run_lvl2_mission(self, available_cadets: list) -> int:
         short_names = [name.split(" ")[1] for name in available_cadets]
         self.texts_lvl2_mission = ' '.join([
             f'{c[0]}. {c[1]} ' for c in enumerate(short_names, 1)])
@@ -818,10 +826,10 @@ class Menu():
             except:
                 self.display.build_menu(
                     f"---Please provide a valid choice for the Cadet to fill this role---", is_error=True)
-        # self.display.build_screen(available_cadets[choice])
+        
         return choice
 
-    def reset_menu(self):
+    def reset_menu(self) -> None:
         self.texts_lvl3_skill = ""
         self.texts_lvl4_cadets = ""
         self.chosen_skill = None
@@ -829,7 +837,7 @@ class Menu():
         return
 
 
-def loading_screen(display, part=1):
+def loading_screen(display: object, part=1) -> None:
     match part:
         case 1:
             logo = ['         AD ASTRA',
@@ -861,12 +869,10 @@ def loading_screen(display, part=1):
             display.clear()
             display.build_screen(message)
 
-
-# Game Manager that will instantiate objects, pass them to their
-# respective functions
+    return
 
 
-def run(menu, player, display):
+def run(menu: object, player: object, display: object) -> None:
 
     menu.reset_menu()
 
@@ -900,9 +906,9 @@ def main():
     """
     os.system('cls||clear')
     display = Display()
-    # menu1 = menu.Menu(display) # Menu(display)
     menu = Menu(display)
     menu.run_lvl1_loader()
+    sys.exit()
 
 
 if __name__ == '__main__':
