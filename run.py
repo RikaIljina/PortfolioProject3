@@ -251,13 +251,13 @@ class Trials:
         self.display.draw_screen(result, 1)
         # print(self.trials_log.values())
         # input()
-        self.display.draw_screen(self.trials_log, 2)
+        self.display.draw_screen(self.trials_log, 1)
 
         if self.runs == self.MAX_RUNS:
-            print("No more time for trials! On to the real mission!")
+            self.display.draw_screen("No more time for trials! On to the real mission!", 18)
             return False
         else:
-            self.display.draw_screen(f'{self.runs} trials run', 15)
+            self.display.draw_screen(f'{self.MAX_RUNS - self.runs} trials left', 18) # align to the right
             return True
 
     def run_trials(self, cadets):
@@ -300,14 +300,16 @@ class Mission:
         self.prognosis = 0
         self.score = 0
         self.difficulty = 0
-        self.mission_log = ""
+        self.mission_log = {}
         self.display = display
 
     def assemble_crew(self, menu, trials, cadets):
 
         # cadet_list = []
         available_cadets = cadets.NAMES
+        self.display.draw_screen("Please assemble the crew" ,1)
         for skill in self.roles:
+            self.display.draw_screen(f'For {skill}: ')
             self.display.draw_screen(trials.show_log(skill), 5)
             print(f'\n{skill}: Please assign a cadet:')
             print(available_cadets)
@@ -345,77 +347,80 @@ class Mission:
         for key, value in self.crew.items():
             descriptor = ""
             print(key)
-
+            cadet_performance = f'{value[0]} has {"succeeded" if value[1] >= mission_parameters[i] else "failed"}'
+            self.mission_log[key] = [cadet_performance]
             # TODO: Move strings into a Google sheet or use gettext module
             match key:
                 case 'Diplomacy':
                     if mission_parameters[i] >= 7:
-                        descriptor += "This was a real diplomatic crisis!"
+                        self.mission_log[key].append("This was a real diplomatic crisis!\n")
                     elif 4 < mission_parameters[i] < 7:
-                        descriptor += "This mission had challenging diplomatic issues."
+                        self.mission_log[key].append("This mission had challenging diplomatic issues.\n")
                     else:
-                        descriptor += "There was only a minor diplomatic issue on this mission."
+                        self.mission_log[key].append("There was only a minor diplomatic issue on this mission.\n")
                     if value[1] >= mission_parameters[i]:
                         self.score += 1
-                        descriptor += f"{value[0]} solved it masterfully."
+                        self.mission_log[key].append(f"{value[0]} solved it masterfully.")
                     else:
-                        descriptor += f"Unfortunately, {value[0]} was unable to deal with it."
+                        self.mission_log[key].append(f"Unfortunately, {value[0]} was unable to deal with it.")
                 case 'Medicine':
                     if mission_parameters[i] >= 7:
-                        descriptor += "This was a real medical crisis! A planet-wide outbreak!"
+                        self.mission_log[key].append("This was a real medical crisis! A planet-wide outbreak!")
                     elif 4 < mission_parameters[i] < 7:
-                        descriptor += "An alien guest had a challenging medical problem."
+                        self.mission_log[key].append("An alien guest had a challenging medical problem.")
                     else:
-                        descriptor += "A couple crew members sustained minor injuries on the Holodeck."
+                        self.mission_log[key].append("A couple crew members sustained minor injuries on the Holodeck.")
                     if value[1] >= mission_parameters[i]:
                         self.score += 1
-                        descriptor += f"{value[0]} was a real miracle worker!"
+                        self.mission_log[key].append(f"{value[0]} was a real miracle worker!")
                     else:
-                        descriptor += f"Unfortunately, {value[0]} was unable to handle the stress of the medical profession."
+                        self.mission_log[key].append(f"Unfortunately, {value[0]} was unable to handle the stress of the medical profession.")
                 case 'Science':
                     if mission_parameters[i] >= 7:
-                        descriptor += "This was a real scientific crisis!"
+                        self.mission_log[key].append("This was a real scientific crisis!")
                     elif 4 < mission_parameters[i] < 7:
-                        descriptor += "An alien guest had a challenging scientific problem."
+                        self.mission_log[key].append("An alien guest had a challenging scientific problem.")
                     else:
-                        descriptor += "There was a minor scientific issue."
+                        self.mission_log[key].append("There was a minor scientific issue.")
                     if value[1] >= mission_parameters[i]:
                         self.score += 1
-                        descriptor += f"{value[0]} was a real miracle worker!"
+                        self.mission_log[key].append(f"{value[0]} was a real miracle worker!")
                     else:
-                        descriptor += f"Unfortunately, {value[0]} was unable to handle the stress of being a scientist."
+                        self.mission_log[key].append(f"Unfortunately, {value[0]} was unable to handle the stress of being a scientist.")
                 case 'Pilot':
                     if mission_parameters[i] >= 7:
-                        descriptor += "This was a real piloting crisis!"
+                        self.mission_log[key].append("This was a real piloting crisis!")
                     elif 4 < mission_parameters[i] < 7:
-                        descriptor += "An alien guest had a challenging piloting problem."
+                        self.mission_log[key].append("An alien guest had a challenging piloting problem.")
                     else:
-                        descriptor += "There was a minor piloting issue."
+                        self.mission_log[key].append("There was a minor piloting issue.")
                     if value[1] >= mission_parameters[i]:
                         self.score += 1
-                        descriptor += f"{value[0]} was a real miracle worker!"
+                        self.mission_log[key].append(f"{value[0]} was a real miracle worker!")
                     else:
-                        descriptor += f"Unfortunately, {value[0]} was unable to handle the stress of being a pilot."
+                        self.mission_log[key].append(f"Unfortunately, {value[0]} was unable to handle the stress of being a pilot.")
                 case 'Engineering':
                     if mission_parameters[i] >= 7:
-                        descriptor += "This was a real engineering crisis!"
+                        self.mission_log[key].append("This was a real engineering crisis!")
                     elif 4 < mission_parameters[i] < 7:
-                        descriptor += "An alien guest had a challenging engineering problem."
+                        self.mission_log[key].append("An alien guest had a challenging engineering problem.")
                     else:
-                        descriptor += "There was a minor engineering issue."
+                        self.mission_log[key].append("There was a minor engineering issue.")
                     if value[1] >= mission_parameters[i]:
                         self.score += 1
-                        descriptor += f"{value[0]} was a real miracle worker!"
+                        self.mission_log[key].append(f"{value[0]} was a real miracle worker!")
                     else:
-                        descriptor += f"Unfortunately, {value[0]} was unable to handle the stress of being an engineer."
+                        self.mission_log[key].append(f"Unfortunately, {value[0]} was unable to handle the stress of being an engineer.")
 
-            self.mission_log += descriptor
+            
 
-            print(
-                f'{value[0]} has {"succeeded" if value[1] >= mission_parameters[i] else "failed"}')
+            # print(
+            #     f'{value[0]} has {"succeeded" if value[1] >= mission_parameters[i] else "failed"}')
+            
             i += 1
 
-        print(self.mission_log)
+        self.display.draw_screen(self.mission_log, 1) # should be a dictionary
+        input()
         return
 
     def calculate_results(self, player, trials):
@@ -543,8 +548,9 @@ class Menu():
             return
         else:
             self.display.clear(is_error=True)
-            trial_status = f'{self.chosen_skill}:  '
-            self.display.draw_screen(trial_status, line_nr=1)
+            trial_status = ['Active trial:']
+            trial_status.append(f'{self.chosen_skill}:  ')
+            self.display.draw_screen(trial_status, line_nr=16)
 
         short_names = [name.split(" ")[1] for name in cadets.NAMES]
         self.texts_lvl4_cadets = ' '.join(
@@ -563,8 +569,8 @@ class Menu():
                 self.display.clear([], is_error=True)
                 break
 
-        trial_status += f'{cadets.NAMES[c1]} vs ...'
-        self.display.draw_screen(trial_status, line_nr=1)
+        trial_status[1] += f'{cadets.NAMES[c1]} vs ...'
+        self.display.draw_screen(trial_status, line_nr=16)
 
         while True:
             c2 = input(self.display.draw_input(
@@ -581,15 +587,17 @@ class Menu():
                 self.display.clear(is_error=True)
                 break
 
-        trial_status = trial_status[:-3] + f'{cadets.NAMES[c2]}'
-        self.display.draw_screen(trial_status, line_nr=1)
+        trial_status[1] = trial_status[1][:-3] + f'{cadets.NAMES[c2]}'
+        self.display.draw_screen(trial_status, line_nr=16)
+        time.sleep(0.5)
 
         self.stay_in_trial_menu = trials.fill_trials(cadets, skill_nr, c1, c2)
         return
 
     def run_lvl2_mission(self, available_cadets):
+        short_names = [name.split(" ")[1] for name in available_cadets]
         self.texts_lvl2_mission = ' '.join([
-            f'{c[0]}. {c[1]} ' for c in enumerate(available_cadets, 1)])
+            f'{c[0]}. {c[1]} ' for c in enumerate(short_names, 1)])
         self.display.draw_menu(self.texts_lvl2_mission)
         while True:
             choice = input(self.display.draw_input()).strip()
@@ -630,6 +638,7 @@ def loading_screen(display, part=1):
                     '      -,____  ____,-',
                     '        ---´  `---',
                     'UNITED FEDERATION OF PLANETS']
+            display.clear()
             display.draw_screen(logo, 2, center=True)
             return
         case 2:
@@ -640,6 +649,7 @@ def loading_screen(display, part=1):
             message.extend(textwrap.wrap("As usual, you will be assessing a group of young cadets who have volunteered to go on an important mission. The mission requires a crew, and each role on the crew must be filled with one cadet. Please run a few trials where you let two cadets compete against each other, and note their performance. The sooner you finish the trials, the better, of course. Be as thorough as you need to, but don't miss the deadline!"))
             message.extend(
                 ["", "Don't forget to provide your full name for the log."])
+            display.clear()
             display.draw_screen(message)
 
 
