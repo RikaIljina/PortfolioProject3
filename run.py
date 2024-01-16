@@ -90,21 +90,22 @@ class Display:
         self.EMPTY_ROW = f'{self.BORDER_CHAR}{" ":<78}{self.BORDER_CHAR}'
         self.ERROR_ROW_NR = 21
         self.MENU_ROW_NR = 20
-        self.rows = self.__empty_screen()
+        self.rows = [] # 
+        self.empty_screen()
 
 
-    def __empty_screen(self) -> list:
+    def empty_screen(self) -> list:
         """Creates a list of rows containing the border chars and empty space
 
         Returns:
             list: Empty terminal screen with borders
         """
-        rows = [str(self.BORDER_CHAR * self.WIDTH)]
-        rows.extend([self.EMPTY_ROW for _ in range(self.HEIGHT - 5)])
-        rows.extend([self.BORDER_CHAR * self.WIDTH for _ in range(3)])
-        rows.append(str(self.BORDER_CHAR * self.WIDTH))
+        self.rows = [str(self.BORDER_CHAR * self.WIDTH)]
+        self.rows.extend([self.EMPTY_ROW for _ in range(self.HEIGHT - 5)])
+        self.rows.extend([self.BORDER_CHAR * self.WIDTH for _ in range(3)])
+        self.rows.append(str(self.BORDER_CHAR * self.WIDTH))
         
-        return rows
+        return # rows
 
 
     def clear(self, indexes=[_ for _ in range(1, 19)], is_error=False) -> None:
@@ -712,15 +713,16 @@ class Menu():
         self.outer_loop_texts = "1. Start game     2. New player     3. Show highscore     4. Exit game"
         self.outer_loop_funcs = {'1': run, '3': show_highscore}
         self.trial_loop_texts = "1. Choose skill              2. Choose cadets              3. End trials"
-        self.trial_loop_funcs = {'1': self.run_lvl3_skill,
-                            '2': self.run_lvl4_cadets}
+        self.trial_loop_funcs = {'1': self.run_skill_choice,
+                            '2': self.run_cadet_choice}
         self.chosen_skill = None
         self.stay_in_trial_menu = True
         self.active_player = None
+        # Does the player access the trial menu for the first time? 
         self.first_time = True
 
 
-    def run_lvl0_player(self) -> None:
+    def run_player_init(self) -> None:
         self.display.clear(is_error=True)
         loading_screen(self.display, part=2)
         self.display.build_menu("Please enter your name:")
@@ -781,12 +783,12 @@ class Menu():
                     self.first_time = False
                 self.trial_loop_funcs[choice](trials, cadets)
         
+        # Returns to run()
         return
 
 
-    def run_lvl3_skill(self, trials: object, cadets: object) -> None:
+    def run_skill_choice(self, trials: object, cadets: object) -> None:
         self.display.clear(is_error=True)
-        #self.display.clear([1])
         skill_choice_texts = ' '.join(
             [f'{c[0]}. {c[1]} ' for c in enumerate(cadets.SKILLS, 1)])
 
@@ -806,14 +808,14 @@ class Menu():
                 break
 
         self.chosen_skill = cadets.SKILLS[skill_nr]
-        self.run_lvl4_cadets(trials, cadets, skill_nr)
+        self.run_cadet_choice(trials, cadets, skill_nr)
         
+        # Returns to run_trial_loop()
         return
     
 
-    def run_lvl4_cadets(self, trials: object, cadets: object, skill_nr=None) \
+    def run_cadet_choice(self, trials: object, cadets: object, skill_nr=None) \
                         -> None:
-        # self.display.clear([2,3])
         if self.chosen_skill is None:
             self.first_time = True
             self.display.build_menu(
@@ -864,8 +866,10 @@ class Menu():
         self.display.build_screen(trial_status, row_nr=16)
         time.sleep(0.5)
 
-        self.stay_in_trial_menu = trials.fill_trials(cadets, skill_nr, c1, c2)
+        trials.fill_trials(cadets, skill_nr, c1, c2)
+        self.stay_in_trial_menu = True if trials.MAX_RUNS > trials.runs else False
         
+        # Returns to run_skill_choice() or run_trial_loop()
         return
 
 
@@ -941,7 +945,7 @@ def run(menu: object, player: object, display: object) -> None:
     else:
         player = Player()
         menu.active_player = player
-        menu.run_lvl0_player()
+        menu.run_player_init()
     
     cadets = Cadets(display, player.name)
     cadets.recruit()
@@ -958,6 +962,8 @@ def run(menu: object, player: object, display: object) -> None:
     final_mission.assemble_crew(menu, trials, cadets)
 
     final_mission.show_results(player, trials)
+    
+    display.empty_screen()
 
     return          # returns to menu lvl1
 
