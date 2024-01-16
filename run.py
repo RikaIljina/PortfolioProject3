@@ -33,9 +33,9 @@ class Player:
         """Calculates player score at the end of the game
 
         Args:
-            trial_runs: Played trial runs as stored in Trial class object
-            trial_max_runs: Max trial runs as stored in Trial class object
-            mission_data: Reference to Mission class object
+            trial_runs: Played trial runs as stored in Trial class instance
+            trial_max_runs: Max trial runs as stored in Trial class instance
+            mission_data: Reference to Mission class instance
 
         Returns:
             int: Resulting player score
@@ -248,14 +248,14 @@ class Cadets:
     names, skills, and skill values.
     
     Args:
-        display (object): Reference to Display class object
-        player_name (object): Reference to Player class object
+        display (object): Reference to Display class instance
+        player_name (object): Reference to Player class instance
     
     Attributes:
         SKILLS (list): Five skills the cadets are being tested for
         NAMES (list): Names to randomly choose from when building dict
         cadets (dict): Dict in the format {name: {skill: value, ...}, ... }
-        display (object): Reference to Display class object
+        display (object): Reference to Display class instance
         player_name (str): Name chosen by the user
         
     Methods:
@@ -379,10 +379,10 @@ class Trials:
     in a trials log. Keeps track of the maximum allowed amount of trial runs.
     
     Args:
-        display (object): Reference to Display class object
+        display (object): Reference to Display class instance
         
     Attributes:
-        display (object): Reference to Display class object
+        display (object): Reference to Display class instance
         skill (str): The skill name to test the cadets for
         c1 (str): Name of the first cadet to test
         c2 (str): Name of the second cadet to test
@@ -435,7 +435,7 @@ class Trials:
         """Compares skill values for a cadet pair and logs result
 
         Args:
-            cadets (object): Reference to Cadet class object
+            cadets (object): Reference to Cadet class instance
         """
         skill_c1 = cadets.cadets[self.c1][self.skill]
         skill_c2 = cadets.cadets[self.c2][self.skill]
@@ -462,7 +462,7 @@ class Trials:
 
 
     def show_log(self, skill: str) -> list:
-        """Return the results for the specified skill
+        """Return the trial results for the specified skill
 
         Args:
             skill (str): Name of the skill for which to return the results 
@@ -478,26 +478,53 @@ class Trials:
 
 
 class Mission:
-    """_summary_
+    """Calculates and stores the results of the mission phase
+    
+    Args:
+        roles (list): List with cadet skills
+        display (object): Reference to Display class instance
+    
+    Attributes:
+        crew (dict): Dict with all roles and a cadet and their skill value
+            for each role
+        roles (list): List with cadet skills
+        prognosis (int): Probability value for crew success
+        score (int): Indicates how many cadets succeeded in their roles 
+        difficulty (int): Average of the 5 randomly chosen mission parameters
+        mission_log (dict): Collection of all mission result texts
+        display (object): Reference to Display class instance
+    
+    Methods:
+        assemble_crew(): Lets player assign cadets to the roles via the menu
+        calculate_prognosis(): Calculates the probability for crew success
+        calculate_success(): Calculates the success of the chosen crew
+        show_results():
     """
     def __init__(self, roles: list, display: object):
         self.crew = {key: [] for key in roles}
         self.roles = roles
         self.prognosis = 0
-        self.score = 0
         self.difficulty = 0
+        self.score = 0
         self.mission_log = {}
         self.display = display
 
 
     def assemble_crew(self, menu: object, trials: object, cadets: object) \
                       -> None:
-        """_summary_
+        """Lets player assign cadets to the roles via the menu
+        
+        Outputs the trial log entries for each skill.
+        
+        Args:
+            menu (object): Reference to Menu class instance
+            trials (object): Reference to Trials class instance
+            cadets (object): Reference to Cadets class instance
         """
         available_cadets = cadets.NAMES
         self.display.build_screen("Please assemble the crew", 1)
         for skill in self.roles:
-            self.display.build_screen(f'For {skill}: ')
+            self.display.build_screen(f'For {skill}: ', 2)
             self.display.build_screen(trials.show_log(skill), 5)
             index = menu.run_lvl2_mission(available_cadets)
             self.crew[skill] = [available_cadets[index],
@@ -508,6 +535,13 @@ class Mission:
 
 
     def calculate_prognosis(self) -> int:
+        """Calculates the probability value for crew success
+        
+        The calculation is based on cadet skill values.
+
+        Returns:
+            int: Probability value for crew success
+        """
         result = 0
         for value in self.crew.values():
             result += value[1]*10
@@ -516,15 +550,20 @@ class Mission:
         return self.prognosis
 
 
-    def calculate_success(self) -> None:
-        # Mission difficulty starts at 2
-        # 5 should be replaced with len(skills)
-        mission_parameters = [random.randrange(2, 11) for _ in range(5)]
+    def calculate_success(self) -> dict:
+        """Calculates the success of the chosen crew
+        
+        The mission difficulty can be adjusted by changing the MIN_DIFF value.
+        THe value 5 is the amount of available skills/roles.
+        """
+        # TODO: implement wait
+        MIN_DIFF = 2
+        mission_parameters = [random.randrange(MIN_DIFF, 11) for _ in range(5)]
         self.difficulty = (sum(mission_parameters)/5)*10
-        print(f'The mission difficulty is {self.difficulty}')
+        self.display.build_screen(f'The mission difficulty is '
+                                  f'{self.difficulty}', 3)
         i = 0
         for key, value in self.crew.items():
-            descriptor = ""
             print(key)
             cadet_performance = f'{value[0]} has {"succeeded" if value[1] >= mission_parameters[i] else "failed"}'
             self.mission_log[key] = [cadet_performance]
@@ -622,28 +661,32 @@ class Mission:
                     input()
             i += 1
 
-        self.display.build_screen(self.mission_log, 1)
-        input(self.display.build_input()) # debug input
+        # self.display.build_screen(self.mission_log, 1)
+        # input(self.display.build_input()) # debug input
         
-        return
+        return self.mission_log
 
 
-    def calculate_results(self, player: object, trials: object) -> None:
+    def show_results(self, display: object, player: object, trials: object) \
+                     -> None:
         """
 
         Args:
-            player (class Player): player object
-            mission (class Mission): mission object
-            trials (class Trials): trials object
+            display (object): Reference to Display class instance
+            player (object): Reference to Player class instance
+            trials (object): Reference to Trials class instance
         """
         # Calculate mission success
 
-        print("Success rate: ", self.calculate_prognosis())
-        print("Mission success: ", self.calculate_success())
-
-        print("Calculating final player score:")
-        print(player.calculate_score(trials.runs, trials.MAX_RUNS,
-                                     self))
+        display.build_screen(f"Success rate: {self.calculate_prognosis()}", 1)
+        #display.display__draw()
+        input(display.build_input())
+        # Implement wait for keypress: keyboard module
+        display.build_screen(self.calculate_success(), 1)
+        input(display.build_input())
+        display.build_screen("Calculating final player score:", 1)
+        display.build_screen(f'{player.calculate_score(trials.runs, trials.MAX_RUNS, self)}', 2)
+        input(display.build_input())
         return
 
 
@@ -896,7 +939,7 @@ def run(menu: object, player: object, display: object) -> None:
     # menu.run_lvl2_mission(final_mission, cadets, trials)
     final_mission.assemble_crew(menu, trials, cadets)
 
-    final_mission.calculate_results(player, trials)
+    final_mission.show_results(display, player, trials)
 
     return          # returns to menu lvl1
 
