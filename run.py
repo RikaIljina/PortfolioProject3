@@ -6,6 +6,8 @@ import random
 import math
 import textwrap
 import time
+#import keyboard
+#from pynput import keyboard
 
 
 # Establish connection to Google sheets for highscore management
@@ -401,7 +403,7 @@ class Trials:
         self.c2 = ""
         self.trials_log = {}
         self.runs = 0
-        self.MAX_RUNS = 5
+        self.MAX_RUNS = 15
 
     def fill_trials(self, cadets: object, skill_nr: int, c1: int, c2: int) \
                     -> bool:
@@ -525,7 +527,7 @@ class Mission:
         self.display.build_screen("Please assemble the crew:", 1)
         self.display.build_screen(trials.trials_log, 2)
         for skill in self.roles:
-            self.display.build_screen(f'For {skill}: ', 16)
+            self.display.build_screen(f'For {skill}: ', 18)
            # self.display.build_screen(trials.show_log(skill), 5)
             index = menu.run_lvl2_mission(available_cadets)
             self.crew[skill] = [available_cadets[index],
@@ -680,7 +682,7 @@ class Mission:
             trials (object): Reference to Trials class instance
         """
         # Calculate mission success
-
+        display.clear()
         display.build_screen(f"Success rate: {self.calculate_prognosis()}", 1)
         #display.display__draw()
         input(display.build_input())
@@ -702,7 +704,7 @@ class Menu():
     """
     def __init__(self, display: object):  # rename levels
         self.display = display
-        self.texts_lvl1_loader = "1. Start game             2. New player             3. Show highscore"
+        self.texts_lvl1_loader = "1. Start game     2. New player     3. Show highscore     4. Exit game"
         self.lvl1_loader = {'1': run, '3': show_highscore}
         self.texts_lvl2_trials = "1. Choose skill              2. Choose cadets              3. End trials"
         self.lvl2_trials = {'1': self.run_lvl3_skill,
@@ -712,6 +714,7 @@ class Menu():
         self.chosen_skill = None
         self.stay_in_trial_menu = True
         self.active_player = None
+        self.first_time = True
 
 
     def run_lvl0_player(self) -> None:
@@ -748,6 +751,8 @@ class Menu():
 
     def run_lvl2_trials(self, trials: object, cadets: object) -> None:
         self.display.clear()
+        if self.first_time:
+            self.display.build_screen("First, choose a skill.", 1)
         while True:
             self.display.build_menu(self.texts_lvl2_trials)
             if not self.stay_in_trial_menu:
@@ -768,7 +773,9 @@ class Menu():
                 self.display.build_menu(
                     f"--- Please provide a valid choice ---", is_error=True)
             else:
-                #self.display.clear()
+                if self.first_time and choice is not '2':
+                    self.display.clear()
+                    self.first_time = False
                 self.lvl2_trials[choice](trials, cadets)
         
         return
@@ -805,6 +812,7 @@ class Menu():
                         -> None:
         # self.display.clear([2,3])
         if self.chosen_skill is None:
+            self.first_time = True
             self.display.build_menu(
                 "--- Please choose a skill first ---", is_error=True)
             return
@@ -881,6 +889,7 @@ class Menu():
         self.texts_lvl4_cadets = ""
         self.chosen_skill = None
         self.stay_in_trial_menu = True
+        self.first_time = True
         return
 
 
@@ -924,17 +933,19 @@ def run(menu: object, player: object, display: object) -> None:
     menu.reset_menu()
 
     if player:
-        print(f'Hello {player.name}')
         player.score = 0
         menu.active_player = player
     else:
         player = Player()
         menu.active_player = player
         menu.run_lvl0_player()
-
+    
     cadets = Cadets(display, player.name)
     cadets.recruit()
 
+    display.build_menu('Press ENTER when ready')
+    input(display.build_input())
+    
     trials = Trials(display)
     menu.run_lvl2_trials(trials, cadets)
 
