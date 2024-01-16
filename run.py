@@ -534,89 +534,89 @@ class Mission:
             match key:
                 case 'Captain':
                     if mission_parameters[i] >= 7:
-                        self.mission_log[key].append(
-                            "This was a real diplomatic crisis!")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            "This was a real diplomatic crisis!", 60))
                     elif 4 < mission_parameters[i] < 7:
-                        self.mission_log[key].append(
-                            "This mission had challenging diplomatic issues.")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            "This mission had challenging diplomatic issues.", 60))
                     else:
-                        self.mission_log[key].append(
-                            "There was only a minor diplomatic issue on this mission.")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            "There was only a minor diplomatic issue on this mission.", 60))
                     if value[1] >= mission_parameters[i]:
                         self.score += 1
-                        self.mission_log[key].append(
-                            f"{value[0]} solved it masterfully.")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            f"{value[0]} solved it masterfully.", 60))
                     else:
-                        self.mission_log[key].append(
-                            f"Unfortunately, {value[0]} was unable to deal with it.")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            f"Unfortunately, {value[0]} was unable to deal with it.", 60))
                 case 'Doctor':
                     if mission_parameters[i] >= 7:
-                        self.mission_log[key].append(
-                            "This was a real medical crisis! A planet-wide outbreak!")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            "This was a real medical crisis! A planet-wide outbreak!", 60))
                     elif 4 < mission_parameters[i] < 7:
-                        self.mission_log[key].append(
-                            "An alien guest had a challenging medical problem.")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            "An alien guest had a challenging medical problem.", 60))
                     else:
-                        self.mission_log[key].append(
-                            "A couple crew members sustained minor injuries on the Holodeck.")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            "A couple crew members sustained minor injuries on the Holodeck.", 60))
                     if value[1] >= mission_parameters[i]:
                         self.score += 1
-                        self.mission_log[key].append(
-                            f"{value[0]} was a real miracle worker!")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            f"{value[0]} was a real miracle worker!", 60))
                     else:
-                        self.mission_log[key].append(
-                            f"Unfortunately, {value[0]} was unable to handle the stress of the medical profession.")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            f"Unfortunately, {value[0]} was unable to handle the stress of the medical profession.", 60))
                 case 'Security Chief':
                     if mission_parameters[i] >= 7:
-                        self.mission_log[key].append(
-                            "This was a real scientific crisis!")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            "This was a real scientific crisis!", 60))
                     elif 4 < mission_parameters[i] < 7:
-                        self.mission_log[key].append(
-                            "An alien guest had a challenging scientific problem.")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            "An alien guest had a challenging scientific problem.", 60))
                     else:
-                        self.mission_log[key].append(
-                            "There was a minor scientific issue.")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            "There was a minor scientific issue.", 60))
                     if value[1] >= mission_parameters[i]:
                         self.score += 1
-                        self.mission_log[key].append(
-                            f"{value[0]} was a real miracle worker!")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            f"{value[0]} was a real miracle worker!", 60))
                     else:
-                        self.mission_log[key].append(
-                            f"Unfortunately, {value[0]} was unable to handle the stress of being a scientist.")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            f"Unfortunately, {value[0]} was unable to handle the stress of being a scientist.", 60))
                 case 'Pilot':
                     if mission_parameters[i] >= 7:
-                        self.mission_log[key].append(
-                            "This was a real piloting crisis!")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            "This was a real piloting crisis!", 60))
                     elif 4 < mission_parameters[i] < 7:
-                        self.mission_log[key].append(
-                            "An alien guest had a challenging piloting problem.")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            "An alien guest had a challenging piloting problem.", 60))
                     else:
-                        self.mission_log[key].append(
-                            "There was a minor piloting issue.")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            "There was a minor piloting issue.", 60))
                     if value[1] >= mission_parameters[i]:
                         self.score += 1
-                        self.mission_log[key].append(
-                            f"{value[0]} was a real miracle worker!")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            f"{value[0]} was a real miracle worker!", 60))
                     else:
-                        self.mission_log[key].append(
-                            f"Unfortunately, {value[0]} was unable to handle the stress of being a pilot.")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            f"Unfortunately, {value[0]} was unable to handle the stress of being a pilot.", 60))
                 case 'Engineer':
                     if mission_parameters[i] >= 7:
-                        self.mission_log[key].append(
-                            "This was a real engineering crisis!")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            "This was a real engineering crisis!", 60))
                     elif 4 < mission_parameters[i] < 7:
-                        self.mission_log[key].append(
-                            "An alien guest had a challenging engineering problem.")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            "An alien guest had a challenging engineering problem.", 60))
                     else:
-                        self.mission_log[key].append(
-                            "There was a minor engineering issue.")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            "There was a minor engineering issue.", 60))
                     if value[1] >= mission_parameters[i]:
                         self.score += 1
-                        self.mission_log[key].append(
-                            f"{value[0]} was a real miracle worker!")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            f"{value[0]} was a real miracle worker!", 60))
                     else:
-                        self.mission_log[key].append(
-                            f"Unfortunately, {value[0]} was unable to handle the stress of being an engineer.")
+                        self.mission_log[key].extend(textwrap.wrap(
+                            f"Unfortunately, {value[0]} was unable to handle the stress of being an engineer.", 60))
                 case _:
                     print("Internal error: no such role in the crew")
                     input()
@@ -863,7 +863,7 @@ def loading_screen(display: object, part=1) -> None:
             message.extend(textwrap.wrap(
                 'I am Cat, short for "Cadet Assessment Terminal". Since the speech module is currently undergoing a personality adjustment, I ask you to use your keyboard today (if you can remember how).'))
             message.append("")
-            message.extend(textwrap.wrap("As usual, you will be assessing a group of young cadets who have volunteered to go on an important mission. The mission requires a crew, and each role on the crew must be filled with one cadet. Please run a few trials where you let two cadets compete against each other, and note their performance. The sooner you finish the trials, the better, of course. Be as thorough as you need to, but don't miss the deadrow!"))
+            message.extend(textwrap.wrap("As usual, you will be assessing a group of young cadets who have volunteered to go on an important mission. The mission requires a crew, and each role on the crew must be filled with one cadet. Please run a few trials where you let two cadets compete against each other, and note their performance. The sooner you finish the trials, the better, of course. Be as thorough as you need to, but don't miss the deadline!"))
             message.extend(
                 ["", "Don't forget to provide your full name for the log."])
             display.clear()
