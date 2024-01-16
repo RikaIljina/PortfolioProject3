@@ -522,10 +522,11 @@ class Mission:
             cadets (object): Reference to Cadets class instance
         """
         available_cadets = cadets.NAMES
-        self.display.build_screen("Please assemble the crew", 1)
+        self.display.build_screen("Please assemble the crew:", 1)
+        self.display.build_screen(trials.trials_log, 2)
         for skill in self.roles:
-            self.display.build_screen(f'For {skill}: ', 2)
-            self.display.build_screen(trials.show_log(skill), 5)
+            self.display.build_screen(f'For {skill}: ', 16)
+           # self.display.build_screen(trials.show_log(skill), 5)
             index = menu.run_lvl2_mission(available_cadets)
             self.crew[skill] = [available_cadets[index],
                                 cadets.cadets[available_cadets[index]][skill]]
@@ -553,12 +554,13 @@ class Mission:
     def calculate_success(self) -> dict:
         """Calculates the success of the chosen crew
         
-        The mission difficulty can be adjusted by changing the MIN_DIFF value.
+        The mission difficulty can be adjusted by changing the MIN/MAX values.
         THe value 5 is the amount of available skills/roles.
         """
         # TODO: implement wait
-        MIN_DIFF = 2
-        mission_parameters = [random.randrange(MIN_DIFF, 11) for _ in range(5)]
+        MIN = 2
+        MAX = 10
+        mission_parameters = [random.randrange(MIN, MAX+1) for _ in range(5)]
         self.difficulty = (sum(mission_parameters)/5)*10
         self.display.build_screen(f'The mission difficulty is '
                                   f'{self.difficulty}', 3)
@@ -657,6 +659,7 @@ class Mission:
                         self.mission_log[key].extend(textwrap.wrap(
                             f"Unfortunately, {value[0]} was unable to handle the stress of being an engineer.", 60))
                 case _:
+                    # TODO: print in error message row
                     print("Internal error: no such role in the crew")
                     input()
             i += 1
@@ -744,6 +747,7 @@ class Menu():
     
 
     def run_lvl2_trials(self, trials: object, cadets: object) -> None:
+        self.display.clear()
         while True:
             self.display.build_menu(self.texts_lvl2_trials)
             if not self.stay_in_trial_menu:
@@ -764,7 +768,7 @@ class Menu():
                 self.display.build_menu(
                     f"--- Please provide a valid choice ---", is_error=True)
             else:
-                self.display.clear()
+                #self.display.clear()
                 self.lvl2_trials[choice](trials, cadets)
         
         return
@@ -772,7 +776,7 @@ class Menu():
 
     def run_lvl3_skill(self, trials: object, cadets: object) -> None:
         self.display.clear(is_error=True)
-        self.display.clear([1])
+        #self.display.clear([1])
         self.texts_lvl3_skill = ' '.join(
             [f'{c[0]}. {c[1]} ' for c in enumerate(cadets.SKILLS, 1)])
 
@@ -904,9 +908,9 @@ def loading_screen(display: object, part=1) -> None:
         case 2:
             message = ['Welcome, Assessor!', ' ']
             message.extend(textwrap.wrap(
-                'I am Cat, short for "Cadet Assessment Terminal". Since the speech module is currently undergoing a personality adjustment, I ask you to use your keyboard today (if you can remember how).'))
+                'I am Cat, short for "Cadet Assessment Terminal". Since the speech module is currently undergoing a personality adjustment, I ask you to use your keyboard today (if you can remember how).', 76))
             message.append("")
-            message.extend(textwrap.wrap("As usual, you will be assessing a group of young cadets who have volunteered to go on an important mission. The mission requires a crew, and each role on the crew must be filled with one cadet. Please run a few trials where you let two cadets compete against each other, and note their performance. The sooner you finish the trials, the better, of course. Be as thorough as you need to, but don't miss the deadline!"))
+            message.extend(textwrap.wrap("As usual, you will be assessing a group of young cadets who have volunteered to go on an important mission. The mission requires a crew, and each role on the crew must be filled with one cadet. Please run a few trials where you let two cadets compete against each other, and note their performance. The sooner you finish the trials, the better, of course. Be as thorough as you need to, but don't miss the deadline!", 76))
             message.extend(
                 ["", "Don't forget to provide your full name for the log."])
             display.clear()
