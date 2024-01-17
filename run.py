@@ -497,7 +497,8 @@ class Mission:
         calculate_success(): Calculates the success of the chosen crew
         show_results():
     """
-
+    DIFF_MIN = 2
+    DIFF_MAX = 10
 
     def __init__(self, roles: list, display: object):
         self.roles = roles
@@ -552,9 +553,8 @@ class Mission:
         THe value 5 is the amount of available skills/roles.
         """
         # TODO: implement wait
-        MIN = 2
-        MAX = 10
-        mission_parameters = [random.randrange(MIN, MAX+1) for _ in range(5)]
+        
+        mission_parameters = [random.randrange(self.DIFF_MIN, self.DIFF_MAX+1) for _ in range(5)]
         self.difficulty = (sum(mission_parameters)/5)*10
         
         # Output mission data before the actual mission start
@@ -563,8 +563,8 @@ class Mission:
                                   f'{self.difficulty}', 3)
         self.display.build_menu("Press ENTER to continue :: ")
         input(self.display.build_input())
-        
-        # Assign mission description according to each mission parameter and 
+
+        # Assign mission description according to each mission parameter and
         # calculate success for each cadet.
         for param, (key, value) in zip(mission_parameters, self.crew.items()):
             cadet_performance = f'{value[0]} has {"succeeded" if value[1] >= param else "failed"}'
@@ -575,93 +575,71 @@ class Mission:
             match key:
                 case 'Captain':
                     if param >= 7:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            "This was a real diplomatic crisis!", 70))
+                        msg = "This was a real diplomatic crisis!"
                     elif 4 < param < 7:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            "This mission had challenging diplomatic issues.", 70))
+                        msg = "This mission had challenging diplomatic issues."
                     else:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            "There was only a minor diplomatic issue on this mission.", 70))
+                        msg = "There was only a minor diplomatic issue on this mission."
                     if value[1] >= param:
                         self.score += 1
-                        self.mission_log[key].extend(textwrap.wrap(
-                            f"{value[0]} solved it masterfully.", 70))
+                        msg2 = f"{value[0]} solved it masterfully."
                     else:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            f"Unfortunately, {value[0]} was unable to deal with it.", 70))
+                        msg2 = f"Unfortunately, {value[0]} was unable to deal with it."
                 case 'Doctor':
                     if param >= 7:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            "This was a real medical crisis! A planet-wide outbreak!", 70))
+                        msg = "This was a real medical crisis! A planet-wide outbreak!"
                     elif 4 < param < 7:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            "An alien guest had a challenging medical problem.", 70))
+                        msg = "An alien guest had a challenging medical problem."
                     else:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            "A couple crew members sustained minor injuries on the Holodeck.", 70))
+                        msg = "A couple crew members sustained minor injuries on the Holodeck."
                     if value[1] >= param:
                         self.score += 1
-                        self.mission_log[key].extend(textwrap.wrap(
-                            f"{value[0]} was a real miracle worker!", 70))
+                        msg2 = f"{value[0]} was a real miracle worker!"
                     else:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            f"Unfortunately, {value[0]} was unable to handle the stress of the medical profession.", 70))
+                        msg2 = f"Unfortunately, {value[0]} was unable to handle the stress of the medical profession."
                 case 'Security Chief':
                     if param >= 7:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            "This was a real scientific crisis!", 70))
+                        msg = "This was a real scientific crisis!"
                     elif 4 < param < 7:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            "An alien guest had a challenging scientific problem.", 70))
+                        msg = "An alien guest had a challenging scientific problem."
                     else:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            "There was a minor scientific issue.", 70))
+                        msg = "There was a minor scientific issue."
                     if value[1] >= param:
                         self.score += 1
-                        self.mission_log[key].extend(textwrap.wrap(
-                            f"{value[0]} was a real miracle worker!", 70))
+                        msg2 = f"{value[0]} was a real miracle worker!"
                     else:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            f"Unfortunately, {value[0]} was unable to handle the stress of being a scientist.", 70))
+                        msg2 = f"Unfortunately, {value[0]} was unable to handle the stress of being a scientist."
                 case 'Pilot':
                     if param >= 7:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            "This was a real piloting crisis!", 70))
+                        msg = "This was a real piloting crisis!"
                     elif 4 < param < 7:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            "An alien guest had a challenging piloting problem.", 70))
+                        msg = "An alien guest had a challenging piloting problem."
                     else:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            "There was a minor piloting issue.", 70))
+                        msg = "There was a minor piloting issue."
                     if value[1] >= param:
                         self.score += 1
-                        self.mission_log[key].extend(textwrap.wrap(
-                            f"{value[0]} was a real miracle worker!", 70))
+                        msg2 = f"{value[0]} was a real miracle worker!"
                     else:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            f"Unfortunately, {value[0]} was unable to handle the stress of being a pilot.", 70))
+                        msg2 = f"Unfortunately, {value[0]} was unable to handle the stress of being a pilot."
                 case 'Engineer':
                     if param >= 7:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            "This was a real engineering crisis!", 70))
+                        msg = "This was a real engineering crisis!"
                     elif 4 < param < 7:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            "An alien guest had a challenging engineering problem.", 70))
+                        msg = "An alien guest had a challenging engineering problem."
                     else:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            "There was a minor engineering issue.", 70))
+                        msg = "There was a minor engineering issue."
                     if value[1] >= param:
                         self.score += 1
-                        self.mission_log[key].extend(textwrap.wrap(
-                            f"{value[0]} was a real miracle worker!", 70))
+                        msg2 = f"{value[0]} was a real miracle worker!"
                     else:
-                        self.mission_log[key].extend(textwrap.wrap(
-                            f"Unfortunately, {value[0]} was unable to handle the stress of being an engineer.", 70))
+                        msg2 = f"Unfortunately, {value[0]} was unable to handle the stress of being an engineer."
                 case _:
                     # TODO: print in error message row
                     print("Internal error: no such role in the crew")
                     input()
+                
+            self.mission_log[key].extend(textwrap.wrap(msg, 70))
+            self.mission_log[key].extend(textwrap.wrap(msg2, 70))
 
 
     def show_results(self, player: object, trials: object):
@@ -674,18 +652,18 @@ class Mission:
         self.display.clear()
         # Method prints mission info to the screen and builds mission log
         self.calculate_success()
-        
+
         for key, value in self.mission_log.items():
             self.display.build_screen([f'{key}: '], 2, center=True) # TODO: Fix to accept strings for centering
             self.display.build_screen(value, 3, center=True)
             input(self.display.build_input())
             self.display.clear()
-        
+
         self.display.build_screen("Calculating final player score:", 1)
         final_score = player.calculate_score(trials.runs, trials.MAX_RUNS, self)
         self.display.build_screen(f'{final_score}', 2)
         input(self.display.build_input())
-        
+
 
 
 def show_highscore(*args):
@@ -695,32 +673,56 @@ def show_highscore(*args):
 class Menu():
     """Builds menu elements and handles all relevant user input
     
-     
+    The purpose of the Menu class is:
+    - to create and render static and dynamic menu elements
+    - to take player choices and react to them by
+        * displaying an error message
+        * calling a function
+        * returning the chosen value
+        
+    The Display class object is used to print on screen:
+    - Print menu choices on the screen:
+        self.display.build_menu(menu_text_string)
+    - Print an error message on the screen:
+        self.display.build_menu(error_message_string, is_error=True)
+    - Print a text above the menu:
+        self.display.build_screen(str|list|dict, starting_row_nr)
+        Valid starting_row_nr values: 1-18.
+    - Clear error message:
+        self.display.clear(is_error=True)
+    - Clear all text above the menu:
+        self.display.clear()
+    - Clear specific rows:
+        self.display.clear([1,2,...])
+    - Take user input with correct placement and formatting of the prompt:
+        input(self.display.build_input()).strip()
+        
+    The output is finally rendered on screen only when input() is called.
+    
+    Args:
+    display (object): Reference to Display class instance
+    run_game (object): Reference to global function run()
     """
-    def __init__(self, display: object):  # rename levels
+    def __init__(self, display: object, run_game: object):
         self.display = display
         self.outer_loop_texts = "1. Start game     2. New player     3. Show highscore     4. Exit game"
-        self.outer_loop_funcs = {'1': run, '3': show_highscore}
+        self.outer_loop_funcs = {'1': run_game, '3': show_highscore}
         self.trial_loop_texts = "1. Choose skill              2. Choose cadets              3. End trials"
         self.trial_loop_funcs = {'1': self.run_skill_choice,
                             '2': self.run_cadet_choice}
+        self.run_game = run_game
         self.chosen_skill = None
         self.stay_in_trial_menu = True
         self.active_player = None
-        # Does the player access the trial menu for the first time?
+        # Is the player accessing the trial menu for the first time?
         self.first_time = True
 
 
-    def run_player_init(self):
-        self.display.clear(is_error=True)
-        loading_screen(self.display, part=2)
-        self.display.build_menu("Please enter your name:")
-        name = input(self.display.build_input()).strip()
-        self.active_player.name = name
-        self.display.clear()
-
-
-    def run_outer_loop(self) -> None:
+    def run_outer_loop(self):
+        """Displays the outer menu choices and waits for player input
+        
+        
+        """
         while True:
             self.display.build_menu(self.outer_loop_texts)
             loading_screen(self.display, part=1)
@@ -728,7 +730,8 @@ class Menu():
             self.display.clear(is_error=True)
             self.display.clear()
             if choice == '2':
-                run(self, None, self.display)
+                # Restart the game without re-initializing the player
+                self.run_game(self, None, self.display)
             elif choice == '4':
                 # Return to main() and exit game
                 return
@@ -739,7 +742,16 @@ class Menu():
                 except:
                     self.display.build_menu(
                         f"--- Please provide a valid choice ---", is_error=True)
-    
+
+
+    def run_player_init(self):
+        self.display.clear(is_error=True)
+        loading_screen(self.display, part=2)
+        self.display.build_menu("Please enter your name:")
+        name = input(self.display.build_input()).strip()
+        self.active_player.name = name
+        self.display.clear()
+
 
     def run_trial_loop(self, trials: object, cadets: object) -> None:
         self.display.clear()
@@ -769,12 +781,12 @@ class Menu():
                     self.display.clear()
                     self.first_time = False
                 self.trial_loop_funcs[choice](trials, cadets)
-        
+
         # Returns to run()
         return
 
 
-    def run_skill_choice(self, trials: object, cadets: object) -> None:
+    def run_skill_choice(self, trials: object, cadets: object):
         self.display.clear(is_error=True)
         skill_choice_texts = ' '.join(
             [f'{c[0]}. {c[1]} ' for c in enumerate(cadets.SKILLS, 1)])
@@ -796,13 +808,11 @@ class Menu():
 
         self.chosen_skill = cadets.SKILLS[skill_nr]
         self.run_cadet_choice(trials, cadets, skill_nr)
-        
-        # Returns to run_trial_loop()
-        return
-    
 
-    def run_cadet_choice(self, trials: object, cadets: object, skill_nr=None) \
-                        -> None:
+        # Returns to run_trial_loop()
+
+
+    def run_cadet_choice(self, trials: object, cadets: object, skill_nr=None):
         if self.chosen_skill is None:
             self.first_time = True
             self.display.build_menu(
@@ -855,9 +865,7 @@ class Menu():
 
         trials.fill_trials(cadets, skill_nr, c1, c2)
         self.stay_in_trial_menu = True if trials.MAX_RUNS > trials.runs else False
-        
         # Returns to run_skill_choice() or run_trial_loop()
-        return
 
 
     def run_mission_loop(self, available_cadets: list) -> int:
@@ -962,7 +970,7 @@ def main():
     """
     os.system('cls||clear')
     display = Display()
-    menu = Menu(display)
+    menu = Menu(display, run)
     menu.run_outer_loop()
     sys.exit()
 
