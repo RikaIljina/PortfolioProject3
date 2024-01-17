@@ -144,12 +144,12 @@ class Display:
         result = ''
         if text:
             # String processing
-            if type(text) == str:
+            if isinstance(text, str):
                 result = (f'{self.BORDER_CHAR}{" "}{text:<76}{" "}'
                          f'{self.BORDER_CHAR}')
                 self.rows[row_nr] = result
             # List processing
-            elif type(text) == list:
+            elif isinstance(text, list):
                 for i in range(len(text)):
                     if center_logo:
                         result = (f'{self.BORDER_CHAR}{" "*26 + text[i]:<78}'
@@ -167,7 +167,7 @@ class Display:
             # Dictionary processing:
             # The received dictionaries have the following format:
             # {key : ['', ..., '']}
-            elif type(text) == dict:
+            elif isinstance(text, dict):
                 # Counter to keep track of current row index
                 k = 0
                 for key, value in text.items():
