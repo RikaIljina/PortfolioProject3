@@ -129,7 +129,7 @@ class Display:
         return
 
 
-    def build_screen(self, text: str|list|dict, row_nr=1, center=False) -> None:
+    def build_screen(self, text: str|list|dict, row_nr=1, center=False, center_logo=False) -> None:
         """Prepares a text for terminal output above the menu row
         
         Receives a string, list, or dictionary, formats its contents,
@@ -151,10 +151,17 @@ class Display:
             # List processing
             elif type(text) == list:
                 for i in range(len(text)):
-                    result = (f'{self.BORDER_CHAR}{" "*26 + text[i]:<78}'
-                              f'{self.BORDER_CHAR}' if center 
-                              else f'{self.BORDER_CHAR}{" "}{text[i]:<76}{" "}'
-                              f'{self.BORDER_CHAR}')
+                    if center_logo:
+                        result = (f'{self.BORDER_CHAR}{" "*26 + text[i]:<78}'
+                                  f'{self.BORDER_CHAR}')
+                    elif center:
+                        str_len = len(text[i])
+                        result = (f'{self.BORDER_CHAR}{" "*math.ceil((78-str_len)/2) + text[i]:<78}'
+                                  f'{self.BORDER_CHAR}')
+                    else:
+                        result = (f'{self.BORDER_CHAR}{" "}{text[i]:<76}{" "}'
+                                 f'{self.BORDER_CHAR}')
+
                     # Fill the final list starting at specified row index
                     self.rows[row_nr + i] = result
             # Dictionary processing:
@@ -386,7 +393,7 @@ class Trials:
         
     Attributes:
         display (object): Reference to Display class instance
-        skill (str): The skill name to test the cadets for
+        skill (str): Name of the skill to test the cadets for
         c1 (str): Name of the first cadet to test
         c2 (str): Name of the second cadet to test
         trials_log (dict): Contains all results, format {skill: [result]}
@@ -689,9 +696,12 @@ class Mission:
         self.display.clear()
         # Method prints mission info to the screen and builds mission log
         self.calculate_success()
-        self.display.build_screen(self.mission_log, 1)
-        input(self.display.build_input())
-        self.display.clear()
+        
+        for key, value in self.mission_log.items():
+            self.display.build_screen(value, 3, center=True)
+            input(self.display.build_input())
+            self.display.clear()
+        
         self.display.build_screen("Calculating final player score:", 1)
         final_score = player.calculate_score(trials.runs, trials.MAX_RUNS, self)
         self.display.build_screen(f'{final_score}', 2)
@@ -798,7 +808,7 @@ class Menu():
             self.display.clear(is_error=True)
 
             try:
-                skill_nr = int(skill_nr)-1
+                skill_nr = int(skill_nr) - 1
                 cadets.SKILLS[skill_nr]
             except:
                 self.display.build_menu(
@@ -892,8 +902,6 @@ class Menu():
         return choice
 
     def reset_menu(self) -> None:
-        #self.skill_choice_texts = ""
-        #self.cadet_choice_texts = ""
         self.chosen_skill = None
         self.stay_in_trial_menu = True
         self.first_time = True
@@ -919,7 +927,7 @@ def loading_screen(display: object, part=1) -> None:
                     '        ---´  `---',
                     'UNITED FEDERATION OF PLANETS']
             display.clear()
-            display.build_screen(logo, 2, center=True)
+            display.build_screen(logo, 2, center_logo=True)
             return
         case 2:
             message = ['Welcome, Assessor!', ' ']
