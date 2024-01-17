@@ -583,26 +583,28 @@ class Mission:
         # Assign mission description according to each mission parameter and 
         # calculate success for each cadet.
         # i is mission parameter index
-        i = 0
-        for key, value in self.crew.items():
-            # print(key)
-            cadet_performance = f'{value[0]} has {"succeeded" if value[1] >= mission_parameters[i] else "failed"}'
+        #i = 0
+        for param, (key, value) in zip(mission_parameters, self.crew.items()):
+            print(param)
+            print(key, value, value[0], value[1])
+            input()
+            cadet_performance = f'{value[0]} has {"succeeded" if value[1] >= param else "failed"}'
             self.mission_log[key] = [cadet_performance]
             #print(self.mission_log[key])
             #input()
             # TODO: Move strings into a Google sheet or use gettext module
             match key:
                 case 'Captain':
-                    if mission_parameters[i] >= 7:
+                    if param >= 7:
                         self.mission_log[key].extend(textwrap.wrap(
                             "This was a real diplomatic crisis!", 60))
-                    elif 4 < mission_parameters[i] < 7:
+                    elif 4 < param < 7:
                         self.mission_log[key].extend(textwrap.wrap(
                             "This mission had challenging diplomatic issues.", 60))
                     else:
                         self.mission_log[key].extend(textwrap.wrap(
                             "There was only a minor diplomatic issue on this mission.", 60))
-                    if value[1] >= mission_parameters[i]:
+                    if value[1] >= param:
                         self.score += 1
                         self.mission_log[key].extend(textwrap.wrap(
                             f"{value[0]} solved it masterfully.", 60))
@@ -610,16 +612,16 @@ class Mission:
                         self.mission_log[key].extend(textwrap.wrap(
                             f"Unfortunately, {value[0]} was unable to deal with it.", 60))
                 case 'Doctor':
-                    if mission_parameters[i] >= 7:
+                    if param >= 7:
                         self.mission_log[key].extend(textwrap.wrap(
                             "This was a real medical crisis! A planet-wide outbreak!", 60))
-                    elif 4 < mission_parameters[i] < 7:
+                    elif 4 < param < 7:
                         self.mission_log[key].extend(textwrap.wrap(
                             "An alien guest had a challenging medical problem.", 60))
                     else:
                         self.mission_log[key].extend(textwrap.wrap(
                             "A couple crew members sustained minor injuries on the Holodeck.", 60))
-                    if value[1] >= mission_parameters[i]:
+                    if value[1] >= param:
                         self.score += 1
                         self.mission_log[key].extend(textwrap.wrap(
                             f"{value[0]} was a real miracle worker!", 60))
@@ -627,16 +629,16 @@ class Mission:
                         self.mission_log[key].extend(textwrap.wrap(
                             f"Unfortunately, {value[0]} was unable to handle the stress of the medical profession.", 60))
                 case 'Security Chief':
-                    if mission_parameters[i] >= 7:
+                    if param >= 7:
                         self.mission_log[key].extend(textwrap.wrap(
                             "This was a real scientific crisis!", 60))
-                    elif 4 < mission_parameters[i] < 7:
+                    elif 4 < param < 7:
                         self.mission_log[key].extend(textwrap.wrap(
                             "An alien guest had a challenging scientific problem.", 60))
                     else:
                         self.mission_log[key].extend(textwrap.wrap(
                             "There was a minor scientific issue.", 60))
-                    if value[1] >= mission_parameters[i]:
+                    if value[1] >= param:
                         self.score += 1
                         self.mission_log[key].extend(textwrap.wrap(
                             f"{value[0]} was a real miracle worker!", 60))
@@ -644,16 +646,16 @@ class Mission:
                         self.mission_log[key].extend(textwrap.wrap(
                             f"Unfortunately, {value[0]} was unable to handle the stress of being a scientist.", 60))
                 case 'Pilot':
-                    if mission_parameters[i] >= 7:
+                    if param >= 7:
                         self.mission_log[key].extend(textwrap.wrap(
                             "This was a real piloting crisis!", 60))
-                    elif 4 < mission_parameters[i] < 7:
+                    elif 4 < param < 7:
                         self.mission_log[key].extend(textwrap.wrap(
                             "An alien guest had a challenging piloting problem.", 60))
                     else:
                         self.mission_log[key].extend(textwrap.wrap(
                             "There was a minor piloting issue.", 60))
-                    if value[1] >= mission_parameters[i]:
+                    if value[1] >= param:
                         self.score += 1
                         self.mission_log[key].extend(textwrap.wrap(
                             f"{value[0]} was a real miracle worker!", 60))
@@ -661,16 +663,16 @@ class Mission:
                         self.mission_log[key].extend(textwrap.wrap(
                             f"Unfortunately, {value[0]} was unable to handle the stress of being a pilot.", 60))
                 case 'Engineer':
-                    if mission_parameters[i] >= 7:
+                    if param >= 7:
                         self.mission_log[key].extend(textwrap.wrap(
                             "This was a real engineering crisis!", 60))
-                    elif 4 < mission_parameters[i] < 7:
+                    elif 4 < param < 7:
                         self.mission_log[key].extend(textwrap.wrap(
                             "An alien guest had a challenging engineering problem.", 60))
                     else:
                         self.mission_log[key].extend(textwrap.wrap(
                             "There was a minor engineering issue.", 60))
-                    if value[1] >= mission_parameters[i]:
+                    if value[1] >= param:
                         self.score += 1
                         self.mission_log[key].extend(textwrap.wrap(
                             f"{value[0]} was a real miracle worker!", 60))
@@ -681,7 +683,7 @@ class Mission:
                     # TODO: print in error message row
                     print("Internal error: no such role in the crew")
                     input()
-            i += 1
+           # i += 1
 
         return
 
