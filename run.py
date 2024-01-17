@@ -6,6 +6,7 @@ import random
 import math
 import textwrap
 import time
+import re
 #import keyboard
 #from pynput import keyboard
 
@@ -30,6 +31,27 @@ class Player:
         self.score = 0
 
 
+    def set_name(self, name):
+        """Validates player name entry
+        
+        Checks if the name contains only latin letters and whitespaces
+        and makes sure that the name contains at least one letter.
+        Saves player name in self.name attribute.
+
+        Args:
+            name (str): User input for the player name
+
+        Returns:
+            bool: True if name valid, False if name invalid
+        """
+        pattern = r'^[A-Za-z\s]{1,50}$'
+        if re.match(pattern, name) and re.search(r'[a-zA-Z]', name):
+            self.name = name
+            return True
+        else:
+            return False
+
+
     def calculate_score(self, trial_runs: int, trial_max_runs: int, \
                         mission_data: object) -> int:
         """Calculates player score at the end of the game
@@ -42,6 +64,8 @@ class Player:
         Returns:
             int: Resulting player score
         """
+        # Reset score in case same player starts a new game
+        self.score = 0
         mission_failed_penalty = 0 if mission_data.score >= 3 else 500
         mission_score_penalty = (5 - mission_data.score) * 100
         mission_prognosis_penalty = 100 - mission_data.prognosis
@@ -89,6 +113,7 @@ class Display:
     EMPTY_ROW = f'{BORDER_CHAR}{" ":<78}{BORDER_CHAR}'
     ERROR_ROW_NR = 21
     MENU_ROW_NR = 20
+    ENTER = 'Press ENTER to continue :: '
 
 
     def __init__(self):
@@ -198,7 +223,7 @@ class Display:
             return
             
 
-    def build_menu(self, text: str, is_error=False):
+    def build_menu(self, text: str, is_error=False,):
         """Prepares the menu row for terminal output
         
         Formats the string and overwrites the specified row index in self.rows.
@@ -216,7 +241,7 @@ class Display:
             self.rows[self.MENU_ROW_NR] = result
 
 
-    def build_input(self, prompt='') -> str:
+    def build_input(self, prompt='', prompt_enter=False) -> str:
         """Draws the terminal and returns a user input prompt
         
         Calls __draw() to draw the terminal. Thus, the screen is only re-drawn
@@ -225,12 +250,16 @@ class Display:
         Args:
             prompt (str, optional): Prompt to put before the user input.
                 Defaults to ''.
+            prompt_enter (bool, optional): States whether player should be
+                prompted for the ENTER key
 
         Returns:
             str: String with user input decoration and prompt
         """
         self.__draw()
-
+        if prompt_enter:
+            prompt = self.ENTER
+            
         return self.INPUT_PROMPT + prompt
 
 
@@ -392,7 +421,7 @@ class Trials:
         fill_trials(): Receives cadet indexes and starts the trial run
         show_log(): Outputs the trial results for each skill
     """
-    MAX_RUNS = 15
+    MAX_RUNS = 3
 
 
     def __init__(self, display: object):
@@ -423,10 +452,8 @@ class Trials:
         self.display.build_screen(self.trials_log, row_nr=1)
 
         if self.runs == self.MAX_RUNS:
-            self.display.build_screen(
-                "No more time for trials! On to the real mission!", 18)  # TODO: delay
             return False
-        
+
         self.display.build_screen(
             f'{self.MAX_RUNS - self.runs} trials left', 18)  # TODO: align to the right
         return True
@@ -523,13 +550,19 @@ class Mission:
         available_cadets = cadets.names[:]
         self.display.build_screen("Please assemble the crew:", 1)
         self.display.build_screen(trials.trials_log, 2)
+        crew_list = ['Welcome onboard']
         for skill in self.roles:
-            self.display.build_screen(f'For {skill}: ', 18)
-           # self.display.build_screen(trials.show_log(skill), 5)
+            self.display.build_screen(f'For the role of {skill}: ', 18)
             index = menu.run_mission_loop(available_cadets)
+            crew_list.append(f'{skill} {available_cadets[index].split(" ")[1]}')
+            self.display.build_screen(textwrap.wrap(', '.join(crew_list)+'!', 76), 16)
             self.crew[skill] = [available_cadets[index],
                                 cadets.cadets[available_cadets[index]][skill]]
             available_cadets.pop(index)
+        # Clear menu and wait for player to read the output and press ENTER
+        self.display.clear([18])
+        self.display.build_menu("")
+        input(self.display.build_input(prompt_enter=True))
 
 
     def calculate_prognosis(self) -> int:
@@ -561,8 +594,8 @@ class Mission:
         self.display.build_screen(f"Predicted crew success rate: {self.calculate_prognosis()}", 1)
         self.display.build_screen(f'The mission difficulty is '
                                   f'{self.difficulty}', 3)
-        self.display.build_menu("Press ENTER to continue :: ")
-        input(self.display.build_input())
+        self.display.build_menu("")
+        input(self.display.build_input(prompt_enter=True))
 
         # Assign mission description according to each mission parameter and
         # calculate success for each cadet.
@@ -665,7 +698,6 @@ class Mission:
         input(self.display.build_input())
 
 
-
 def show_highscore(*args):
     return
 
@@ -719,47 +751,69 @@ class Menu():
 
 
     def run_outer_loop(self):
-        """Displays the outer menu choices and waits for player input
-        
-        
-        """
+        """Displays the outer menu choices and waits for player input"""
         while True:
+            # Before the input: Build the screen content
             self.display.build_menu(self.outer_loop_texts)
-            loading_screen(self.display, part=1)
+            loading_screen(self.display, part=1) # should come from a dict from Sheet class
+            # Draw the screen and take input
             choice = input(self.display.build_input()).strip()
+            # After the input: Clear error messages and previous screen content
             self.display.clear(is_error=True)
             self.display.clear()
-            if choice == '2':
-                # Restart the game without re-initializing the player
-                self.run_game(self, None, self.display)
-            elif choice == '4':
-                # Return to main() and exit game
-                return
-            else:
-                try:
-                    self.outer_loop_funcs[choice](
-                        self, self.active_player, self.display)
-                except:
+            match choice:
+                case '1':
+                    self.run_game(self, self.active_player, self.display)
+                case '2':
+                    # Restart the game without re-initializing the player
+                    self.run_game(self, None, self.display)
+                case '3':
+                    show_highscore()
+                case '4':
+                    # Return to main() and exit game
+                    return
+                case _:
                     self.display.build_menu(
-                        f"--- Please provide a valid choice ---", is_error=True)
+                        "--- Please provide a valid choice ---", is_error=True)
 
 
     def run_player_init(self):
+        """Prompts user to enter a player name until valid name is entered"""
         self.display.clear(is_error=True)
         loading_screen(self.display, part=2)
-        self.display.build_menu("Please enter your name:")
-        name = input(self.display.build_input()).strip()
-        self.active_player.name = name
+        self.display.build_menu("Please enter your full name:")
+        while True:
+            name = input(self.display.build_input()).strip()
+            if self.active_player.set_name(name):
+                break
+            else:
+                self.display.build_menu(
+                    "--- Please only enter between 1 and 50 latin letters and whitespaces ---",
+                    is_error=True)
+        self.display.clear(is_error=True)
         self.display.clear()
 
 
-    def run_trial_loop(self, trials: object, cadets: object) -> None:
+    def run_trial_loop(self, trials: object, cadets: object):
+        """Displays trial phase choices and waits for user input
+
+        Args:
+            trials (object): Reference to Trials class instance
+            cadets (object): reference to Cadets class instance
+        """
         self.display.clear()
         if self.first_time:
             self.display.build_screen("First, choose a skill.", 1)
         while True:
             self.display.build_menu(self.trial_loop_texts)
             if not self.stay_in_trial_menu:
+                self.display.build_menu("")
+                self.display.clear([18])
+                input(self.display.build_input(prompt_enter=True))
+                self.display.clear()
+                self.display.build_screen(
+                ["No more time for trials! On to the real mission!"], 10, center=True)  # TODO: delay
+                input(self.display.build_input(prompt_enter=True))
                 self.display.clear(is_error=True)
                 self.display.clear()
                 break
@@ -883,7 +937,7 @@ class Menu():
             except:
                 self.display.build_menu(
                     f"---Please provide a valid choice for the Cadet to fill this role---", is_error=True)
-        
+
         return choice
 
     def reset_menu(self):
@@ -936,10 +990,10 @@ def run(menu: object, player: object, display: object):
 
     menu.reset_menu()
 
-    if player:
-        player.score = 0
-        menu.active_player = player
-    else:
+    # if player:
+        # player.score = 0
+        # menu.active_player = player
+    if player is None:
         player = Player()
         menu.active_player = player
         menu.run_player_init()
@@ -947,8 +1001,8 @@ def run(menu: object, player: object, display: object):
     cadets = Cadets(display, player.name)
     cadets.recruit()
 
-    display.build_menu('Press ENTER when ready')
-    input(display.build_input())
+    display.build_menu('')
+    input(display.build_input(prompt_enter=True))
 
     trials = Trials(display)
     menu.run_trial_loop(trials, cadets)
