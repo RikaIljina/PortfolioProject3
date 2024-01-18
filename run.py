@@ -7,6 +7,7 @@ import math
 import textwrap
 import time
 import re
+import msvcrt
 #import keyboard
 #from pynput import keyboard
 
@@ -119,6 +120,7 @@ class Display:
     def __init__(self):
         self.rows = []
         self.empty_screen()
+        self.filled = []
 
 
     def empty_screen(self):
@@ -169,11 +171,61 @@ class Display:
                 self.rows[row_nr] = result
             # List processing
             elif isinstance(text, list):
-                for idx, line in enumerate(text):
-                    if center_logo:
+
+                if center_logo:
+                    # Draw screen filled with border chars, list form
+                    # make list out of each row of finished logo screen
+                    # make list with coord tuples
+                    # choose random tuple, remove from tuple list
+                    # set char to logo char
+                    
+                    # TODO: just do it once at game start
+                    
+                    time.sleep(0.5)
+                    rows_matrix_logo = []
+                    for idx, line in enumerate(text):
                         result = (f'{self.BORDER_CHAR}{" "*26 + line:<78}'
-                                  f'{self.BORDER_CHAR}')
-                    elif center:
+                                    f'{self.BORDER_CHAR}')
+                        self.rows[row_nr + idx] = result
+
+                    # list with finished logo screen
+                    for row in self.rows:
+                        rows_matrix_logo.append(list(row))
+                    #print(rows_matrix_logo)
+                    #input()
+
+                    # list with filled screen
+                    self.rows = [str(self.BORDER_CHAR * self.WIDTH) for _ in range(self.HEIGHT)]
+                    rows_matrix_filled = []
+                    for row in self.rows:
+                        rows_matrix_filled.append(list(row))
+                    #input(self.build_input())
+                    
+                    # list wth coord tuples
+                    coord_list = [(x, y) for x in range(self.HEIGHT) for y in range(self.WIDTH)]
+                    #print(coord_list)
+                    #input()
+                    len_coord = len(coord_list)
+                    for x in range(math.floor(len_coord/70)):
+                        for _ in range(10+x*5):
+                            if len(coord_list) > 0:
+                                idx = random.choice(range(len(coord_list)))
+                                rows_matrix_filled[coord_list[idx][0]][coord_list[idx][1]] = rows_matrix_logo[coord_list[idx][0]][coord_list[idx][1]]
+                                coord_list.pop(idx)
+                            else:
+                                break
+                        for i in range(len(self.rows)):
+                            self.rows[i] = ''.join(rows_matrix_filled[i])
+                        self.__draw()
+                        time.sleep(0.05)
+                        # Disable keyboard input while sleeping
+                        while msvcrt.kbhit():
+                            msvcrt.getwch()
+                    return
+                    
+                # fix to have loop inside if else
+                for idx, line in enumerate(text):
+                    if center:
                         str_len = len(line)
                         result = (f'{self.BORDER_CHAR}{" "*math.ceil((78-str_len)/2) + line:<78}'
                                   f'{self.BORDER_CHAR}')
