@@ -33,7 +33,7 @@ class Display:
     HEIGHT = 22
     WIDTH = 80
     BORDER_CHAR = "▓"
-    INPUT_PROMPT = '▓▓▓ :: \n'
+    INPUT_PROMPT = '▓▓▓ :: '
     EMPTY_ROW = f'{BORDER_CHAR}{" ":<78}{BORDER_CHAR}'
     ERROR_ROW_NR = 21
     MENU_ROW_NR = 20
@@ -49,7 +49,7 @@ class Display:
     def empty_screen(self):
         """Creates a list of rows containing border chars and empty space"""
         self.rows = [str(self.BORDER_CHAR * self.WIDTH)]
-        self.rows.extend([self.EMPTY_ROW for _ in range(self.HEIGHT - 5)])
+        self.rows.extend([self.EMPTY_ROW for _ in range(self.HEIGHT - 4)])
         self.rows.extend([self.BORDER_CHAR * self.WIDTH for _ in range(2)])
         self.rows.append(str(self.BORDER_CHAR * self.WIDTH))
 
@@ -128,8 +128,12 @@ class Display:
                     coord_list = [(x, y) for x in range(self.HEIGHT) for y in range(self.WIDTH)]
                     #print(coord_list)
                     #input()
+                   # print(coord_list)
+                   # print(len(coord_list))
+                   # print(coord_list[-1])
+                   # input()
                     len_coord = len(coord_list)
-                    for x in range(math.floor(len_coord/70)):
+                    for x in range(math.floor(len_coord/60)):
                         for _ in range(10+x*5):
                             if len(coord_list) > 0:
                                 idx = random.choice(range(len(coord_list)))
