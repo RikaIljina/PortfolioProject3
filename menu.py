@@ -1,5 +1,7 @@
 
+import os
 import textwrap
+import time
 
 
 class Menu():
@@ -35,11 +37,13 @@ class Menu():
     display (object): Reference to Display class instance
     run_game (object): Reference to global function run()
     """
+    outer_loop_texts = "1. Start game     2. New player     3. Show highscore     4. Exit game"
+    trial_loop_texts = "1. Choose skill              2. Choose cadets              3. End trials"
+
+
     def __init__(self, display: object, run_game: object):
         self.display = display
-        self.outer_loop_texts = "1. Start game     2. New player     3. Show highscore     4. Exit game"
         self.outer_loop_funcs = {'1': run_game, '3': show_highscore}
-        self.trial_loop_texts = "1. Choose skill              2. Choose cadets              3. End trials"
         self.trial_loop_funcs = {'1': self.run_skill_choice,
                             '2': self.run_cadet_choice}
         self.run_game = run_game
@@ -80,7 +84,7 @@ class Menu():
     def run_player_init(self):
         """Prompts user to enter a player name until valid name is entered"""
         self.display.clear(is_error=True)
-        loading_screen(self.display, part=2)
+        loading_screen(self.display, part=3) # TODO: testfix
         self.display.build_menu("Please enter your full name:")
         while True:
             name = input(self.display.build_input()).strip()
@@ -312,3 +316,28 @@ def loading_screen(display: object, part=1):
                 ["", "Don't forget to provide your full name for the log."])
             display.clear()
             display.build_screen(message)
+            
+        case 3:
+            ship = ["                                          ________.-._____",
+                    "                               _____.----'--'-------------`-------._____",
+                    " ,------.______________.----._'=========================================`",
+                    " ]======================<|# |_)------- `----._____________.----'",
+                    " `------.______________.----'[  ,--------/        `-'",
+                    "          `-.---.-'    _____/__/___     /",
+                    "        ____|   |-----'            `---<",
+                    "       /||__|---|________             //",
+                    "       `------------._       _______ //",
+                    "                      \        ---- //",
+                    "                       |__________.-'"]
+            parsed_ship = [f'{" "*80}{row:73}' for row in ship]
+            for i in range(-2,-153,-1):
+                all_lines = []
+                for line in parsed_ship:
+                    all_lines.append(line[i:-1 if i>-76 else i+76])
+                display.build_screen(all_lines, 3)
+                display.build_input()
+                #x = ((i*-1)**2)/100000
+                # TODO: make speed curve
+                time.sleep(0.03)
+            input()
+

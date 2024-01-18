@@ -130,4 +130,3 @@ class Cadets:
             skill_points.append(points)
 
         return skill_points
-
