@@ -52,7 +52,7 @@ def run(menu: object, player: object, display: object):
 def main():
     """Initializes Menu and Display and starts outer menu choice loop"""
     #os.system('cls||clear')
-    os.system('cls' if os.name=='nt' else 'clear')
+    os.system("clear")
     display = Display()
     menu = Menu(display, run)
     menu.run_outer_loop()
