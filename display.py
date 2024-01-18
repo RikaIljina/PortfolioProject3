@@ -3,6 +3,7 @@ import math
 import random
 import os
 import time
+from typing import Union
 
 # TODO: remove redundant screen drawings
 class Display:
@@ -72,7 +73,7 @@ class Display:
                 self.rows[index] = self.EMPTY_ROW
 
 
-    def build_screen(self, text: str|list|dict, row_nr=1, center=False, center_logo=False) -> None:
+    def build_screen(self, text: Union[str, list, dict], row_nr=1, center=False, center_logo=False) -> None:
         """Prepares a text for terminal output above the menu row
         
         Receives a string, list, or dictionary, formats its contents,
