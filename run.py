@@ -473,7 +473,7 @@ class Trials:
         fill_trials(): Receives cadet indexes and starts the trial run
         show_log(): Outputs the trial results for each skill
     """
-    MAX_RUNS = 3
+    MAX_RUNS = 15
 
 
     def __init__(self, display: object):
@@ -491,10 +491,14 @@ class Trials:
 
         Calls __run_trials() for each skill and cadet pair, outputs the
         results to the terminal, and keeps track of the amount of allowed runs.
-        
-        Returns:
-            bool: True if more trials can be run, False if max amount reached
         """
+        self.display.build_screen('... Trial ongoing ...' + f"{f'{self.MAX_RUNS - self.runs} trials left':>55}", row_nr=18)
+        self.display.build_input()
+        time.sleep(1)
+        while msvcrt.kbhit():
+            msvcrt.getwch()
+        self.display.clear([15])
+        
         # In case the player skips the skill choice, the previous skill is used
         self.skill = cadets.SKILLS[skill_nr] if skill_nr is not None \
                                              else self.skill
@@ -502,13 +506,8 @@ class Trials:
         self.c2 = cadets.names[c2]
         self.__run_trials(cadets)
         self.display.build_screen(self.trials_log, row_nr=1)
-
-        if self.runs == self.MAX_RUNS:
-            return False
-
         self.display.build_screen(
-            f'{self.MAX_RUNS - self.runs} trials left', 18)  # TODO: align to the right
-        return True
+            f"{f'{self.MAX_RUNS - self.runs} trials left':>76}", 18)
 
 
     def __run_trials(self, cadets: object):
@@ -684,16 +683,16 @@ class Mission:
                         msg2 = f"Unfortunately, {value[0]} was unable to handle the stress of the medical profession."
                 case 'Security Chief':
                     if param >= 7:
-                        msg = "This was a real scientific crisis!"
+                        msg = "This was a real security crisis!"
                     elif 4 < param < 7:
-                        msg = "An alien guest had a challenging scientific problem."
+                        msg = "An alien guest had a challenging security problem."
                     else:
-                        msg = "There was a minor scientific issue."
+                        msg = "There was a minor security issue."
                     if value[1] >= param:
                         self.score += 1
                         msg2 = f"{value[0]} was a real miracle worker!"
                     else:
-                        msg2 = f"Unfortunately, {value[0]} was unable to handle the stress of being a scientist."
+                        msg2 = f"Unfortunately, {value[0]} was unable to handle the stress of being a security chief."
                 case 'Pilot':
                     if param >= 7:
                         msg = "This was a real piloting crisis!"
@@ -737,10 +736,11 @@ class Mission:
         self.display.clear()
         # Method prints mission info to the screen and builds mission log
         self.calculate_success()
+        self.display.clear()
 
         for key, value in self.mission_log.items():
-            self.display.build_screen([f'{key}: '], 2, center=True) # TODO: Fix to accept strings for centering
-            self.display.build_screen(value, 3, center=True)
+            self.display.build_screen([f'{key}: '], 4, center=True)
+            self.display.build_screen(value, 5, center=True)
             input(self.display.build_input())
             self.display.clear()
 
@@ -860,7 +860,7 @@ class Menu():
             self.display.build_menu(self.trial_loop_texts)
             if not self.stay_in_trial_menu:
                 self.display.build_menu("")
-                self.display.clear([18])
+                self.display.clear([16, 17, 18])
                 input(self.display.build_input(prompt_enter=True))
                 self.display.clear()
                 self.display.build_screen(
@@ -919,26 +919,39 @@ class Menu():
 
 
     def run_cadet_choice(self, trials: object, cadets: object, skill_nr=None):
+        """Lets player choose two cadets to compete against each other
+
+        Args:
+            trials (object): Reference to Trials class instance
+            cadets (object): Reference to Cadets class instance
+            skill_nr (int, optional): Passed from run_skill_choice(). Indicates
+                chosen skill for the trials. Defaults to None.
+        """
         if self.chosen_skill is None:
             self.first_time = True
             self.display.build_menu(
                 "--- Please choose a skill first ---", is_error=True)
             return
-        else:
-            self.display.clear(is_error=True)
-            trial_status = ['Active trial:']
-            trial_status.append(f'{self.chosen_skill}:  ')
-            self.display.build_screen(trial_status, row_nr=16)
 
+        # Build info messages and menu elements
+        self.display.clear(is_error=True)
+        trial_status = ['Active trial:']
+        trial_status.append(f'{self.chosen_skill}:  ')
+        self.display.build_screen(trial_status, row_nr=16)
+        # Use only second part of cadet name to fit all cadets in one row
         short_names = [name.split(" ")[1] for name in cadets.names]
         cadet_choice_texts = ' '.join(
             [f'{c[0]}. {c[1]} ' for c in enumerate(short_names, 1)])
         self.display.build_menu(cadet_choice_texts)
+        # Get player input for first cadet
         while True:
             c1 = input(self.display.build_input(
                 "Choose first cadet :: ")).strip()
             try:
+                # Enumeration starts at 1, therefore "- 1" to get index
                 c1 = int(c1) - 1
+                # Check if player entered a valid index for the list before
+                # running trials
                 cadets.names[c1]
             except:
                 self.display.build_menu(
@@ -947,9 +960,10 @@ class Menu():
                 self.display.clear(is_error=True)
                 break
 
+        # Build info message
         trial_status[1] += f'{cadets.names[c1]} vs ...'
         self.display.build_screen(trial_status, row_nr=16)
-
+        # Get player input for second cadet
         while True:
             c2 = input(self.display.build_input(
                 "Choose second cadet :: ")).strip()
@@ -964,18 +978,30 @@ class Menu():
             else:
                 self.display.clear(is_error=True)
                 break
-
+        # Build info message
         trial_status[1] = trial_status[1][:-3] + f'{cadets.names[c2]}'
         self.display.build_screen(trial_status, row_nr=16)
-        time.sleep(0.5)
-
+        
+        # Start the trial for the chosen cadet pair
         trials.fill_trials(cadets, skill_nr, c1, c2)
-        self.stay_in_trial_menu = True if trials.MAX_RUNS > trials.runs else False
+        # Check if all allowed trial runs have been exhausted
+        self.stay_in_trial_menu = trials.MAX_RUNS > trials.runs
         # Returns to run_skill_choice() or run_trial_loop()
 
 
     def run_mission_loop(self, available_cadets: list) -> int:
+        """Lets player choose one cadet for a crew role in the Mission phase
+
+        Args:
+            available_cadets (list): Shrinking list of available cadets as set
+                in Mission class method assemble_crew()
+
+        Returns:
+            int: Index for available_cadets list
+        """
+        # Use only second part of cadet name to fit all cadets in one row
         short_names = [name.split(" ")[1] for name in available_cadets]
+        # Create menu elements out of the dynamic list
         mission_loop_texts = ' '.join([
             f'{c[0]}. {c[1]} ' for c in enumerate(short_names, 1)])
         self.display.build_menu(mission_loop_texts)
@@ -983,21 +1009,27 @@ class Menu():
             choice = input(self.display.build_input()).strip()
             self.display.clear(is_error=True)
             try:
+                # Enumeration starts at 1, therefore "- 1" to get index
                 choice = int(choice) - 1
+                # Check if the player entered a valid index for the list
                 available_cadets[choice]
                 break
             except:
                 self.display.build_menu(
                     f"---Please provide a valid choice for the Cadet to fill this role---", is_error=True)
 
+        # Returns to assemble_crew()
         return choice
 
+
     def reset_menu(self):
+        """Resets menu values on repeated playthrough"""
         self.chosen_skill = None
         self.stay_in_trial_menu = True
         self.first_time = True
 
 
+# TODO: should go into Sheet class
 def loading_screen(display: object, part=1):
     match part:
         case 1:
@@ -1032,19 +1064,17 @@ def loading_screen(display: object, part=1):
 
 
 def run(menu: object, player: object, display: object):
-    """_summary_
+    """Starts the different game phases
 
     Args:
-        menu (object): _description_
-        player (object): _description_
-        display (object): _description_
+        menu (object): Reference to Menu class instance
+        player (object): Reference to Player class instance
+        display (object): Reference to Display class instance
     """
-
     menu.reset_menu()
 
-    # if player:
-        # player.score = 0
-        # menu.active_player = player
+    # Only run player initialization if the game is running for the first time
+    # or if the user chooses to enter a new name in the outer menu
     if player is None:
         player = Player()
         menu.active_player = player
@@ -1053,6 +1083,7 @@ def run(menu: object, player: object, display: object):
     cadets = Cadets(display, player.name)
     cadets.recruit()
 
+    # Wait for the user to read screen and press ENTER before starting trials
     display.build_menu('')
     input(display.build_input(prompt_enter=True))
 
@@ -1061,9 +1092,7 @@ def run(menu: object, player: object, display: object):
 
     # Final mission
     final_mission = Mission(cadets.SKILLS, display)
-    # menu.run_mission_loop(final_mission, cadets, trials)
     final_mission.assemble_crew(menu, trials, cadets)
-
     final_mission.show_results(player, trials)
 
     display.empty_screen()
@@ -1072,8 +1101,7 @@ def run(menu: object, player: object, display: object):
 
 
 def main():
-    """
-    """
+    """Initializes Menu and Display and starts outer menu choice loop"""
     os.system('cls||clear')
     display = Display()
     menu = Menu(display, run)
