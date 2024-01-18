@@ -32,11 +32,11 @@ class Display:
     HEIGHT = 23
     WIDTH = 80
     BORDER_CHAR = "▓"
-    INPUT_PROMPT = '▓▓▓ :: '
+    INPUT_PROMPT = '▓▓▓ :: \n'
     EMPTY_ROW = f'{BORDER_CHAR}{" ":<78}{BORDER_CHAR}'
     ERROR_ROW_NR = 21
     MENU_ROW_NR = 20
-    ENTER = 'Press ENTER to continue :: '
+    ENTER = 'Press ENTER to continue :: \n'
 
 
     def __init__(self):
