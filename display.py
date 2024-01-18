@@ -239,7 +239,8 @@ class Display:
 
     def __draw(self):
         """Clears the previous screen and re-draws the new terminal"""
-        os.system('cls||clear')
+        #os.system('cls||clear')
+        os.system('cls' if os.name=='nt' else 'clear')
         for row in self.rows:
             print(f'{row}')
 
