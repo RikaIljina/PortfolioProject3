@@ -1,4 +1,4 @@
-import msvcrt
+# import msvcrt
 import time
 
 
@@ -45,8 +45,8 @@ class Trials:
         self.display.build_screen('... Trial ongoing ...' + f"{f'{self.MAX_RUNS - self.runs} trials left':>55}", row_nr=18)
         self.display.build_input()
         time.sleep(1)
-        while msvcrt.kbhit():
-            msvcrt.getwch()
+        #while msvcrt.kbhit():
+        #    msvcrt.getwch()
         self.display.clear([15])
         
         # In case the player skips the skill choice, the previous skill is used

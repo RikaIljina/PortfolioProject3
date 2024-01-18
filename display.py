@@ -1,5 +1,5 @@
 import math
-import msvcrt
+#import msvcrt
 import random
 import os
 import time
@@ -141,8 +141,8 @@ class Display:
                         self.__draw()
                         time.sleep(0.05)
                         # Disable keyboard input while sleeping
-                        while msvcrt.kbhit():
-                            msvcrt.getwch()
+                        #while msvcrt.kbhit():
+                        #    msvcrt.getwch()
                     return
                     
                 # fix to have loop inside if else
