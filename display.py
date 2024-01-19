@@ -133,18 +133,20 @@ class Display:
                    # print(coord_list[-1])
                    # input()
                     len_coord = len(coord_list)
-                    for x in range(math.floor(len_coord/60)):
+                    for x in range(math.floor(len_coord/60)-3):
                         for _ in range(10+x*5):
                             if len(coord_list) > 0:
                                 idx = random.choice(range(len(coord_list)))
                                 rows_matrix_filled[coord_list[idx][0]][coord_list[idx][1]] = rows_matrix_logo[coord_list[idx][0]][coord_list[idx][1]]
                                 coord_list.pop(idx)
                             else:
+                               # print(x, " ", x*60)
+                               # input()
                                 break
                         for i in range(len(self.rows)):
                             self.rows[i] = ''.join(rows_matrix_filled[i])
                         self.__draw()
-                        time.sleep(0.05)
+                        time.sleep(0.03)
                         # Disable keyboard input while sleeping
                         #while msvcrt.kbhit():
                         #    msvcrt.getwch()
@@ -243,8 +245,8 @@ class Display:
 
     def __draw(self):
         """Clears the previous screen and re-draws the new terminal"""
-        #os.system('cls||clear')
-        os.system("clear")
+        os.system('cls||clear')
+        #os.system("clear")
         for row in self.rows:
             print(f'{row}')
 

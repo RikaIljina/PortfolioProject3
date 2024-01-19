@@ -42,6 +42,7 @@ def run(menu: object, player: object, display: object):
     # Final mission
     final_mission = Mission(cadets.SKILLS, display)
     final_mission.assemble_crew(menu, trials, cadets)
+    menu.loading_screen(display, 3)
     final_mission.show_results(player, trials)
 
     display.empty_screen()
@@ -52,7 +53,7 @@ def run(menu: object, player: object, display: object):
 def main():
     """Initializes Menu and Display and starts outer menu choice loop"""
     #os.system('cls||clear')
-    os.system("clear")
+    os.system("clear||cls")
     display = Display()
     menu = Menu(display, run)
     menu.run_outer_loop()

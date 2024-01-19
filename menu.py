@@ -43,7 +43,7 @@ class Menu():
 
     def __init__(self, display: object, run_game: object):
         self.display = display
-        self.outer_loop_funcs = {'1': run_game, '3': show_highscore}
+        self.outer_loop_funcs = {'1': run_game, '3': self.show_highscore}
         self.trial_loop_funcs = {'1': self.run_skill_choice,
                             '2': self.run_cadet_choice}
         self.run_game = run_game
@@ -59,7 +59,7 @@ class Menu():
         while True:
             # Before the input: Build the screen content
             self.display.build_menu(self.outer_loop_texts)
-            loading_screen(self.display, part=1) # should come from a dict from Sheet class
+            self.loading_screen(self.display, part=1) # should come from a dict from Sheet class
             # Draw the screen and take input
             choice = input(self.display.build_input()).strip()
             # After the input: Clear error messages and previous screen content
@@ -72,7 +72,7 @@ class Menu():
                     # Restart the game without re-initializing the player
                     self.run_game(self, None, self.display)
                 case '3':
-                    show_highscore()
+                    self.show_highscore()
                 case '4':
                     # Return to main() and exit game
                     return
@@ -84,7 +84,7 @@ class Menu():
     def run_player_init(self):
         """Prompts user to enter a player name until valid name is entered"""
         self.display.clear(is_error=True)
-        loading_screen(self.display, part=3) # TODO: testfix
+        self.loading_screen(self.display, part=2) # TODO: testfix
         self.display.build_menu("Please enter your full name:")
         while True:
             name = input(self.display.build_input()).strip()
@@ -280,64 +280,65 @@ class Menu():
         self.first_time = True
 
 
-def show_highscore(*args):
-    return
+    def show_highscore(self, *args):
+        return
 
 
-# TODO: should go into Sheet class
-def loading_screen(display: object, part=1):
-    match part:
-        case 1:
-            logo = ['         AD ASTRA',
-                    '          ______',
-                    '       _-´ .   .`-_',
-                    "   |/ /  .. . '   .\ \|",
-                    '  |/ /            ..\ \|',
-                    '\|/ |: .   ._|_ .. . | \|/',
-                    ' \/ |   _|_ .| . .:  | \/',
-                    '\ / |.   |  .  .    .| \ /',
-                    ' \||| .  . .  _|_   .|||/',
-                    '\__| \  . :.  .|.  ./ |__/',
-                    '  __| \_  .    .. _/ |__',
-                    "   __|  `-______-'  |__",
-                    '      -,____  ____,-',
-                    '        ---´  `---',
-                    'UNITED FEDERATION OF PLANETS']
-            display.clear()
-            display.build_screen(logo, 2, center_logo=True)
-            return
-        case 2:
-            message = ['Welcome, Assessor!', ' ']
-            message.extend(textwrap.wrap(
-                'I am Cat, short for "Cadet Assessment Terminal". Since the speech module is currently undergoing a personality adjustment, I ask you to use your keyboard today (if you can remember how).', 76))
-            message.append("")
-            message.extend(textwrap.wrap("As usual, you will be assessing a group of young cadets who have volunteered to go on an important mission. The mission requires a crew, and each role on the crew must be filled with one cadet. Please run a few trials where you let two cadets compete against each other, and note their performance. The sooner you finish the trials, the better, of course. Be as thorough as you need to, but don't miss the deadline!", 76))
-            message.extend(
-                ["", "Don't forget to provide your full name for the log."])
-            display.clear()
-            display.build_screen(message)
-            
-        case 3:
-            ship = ["                                          ________.-._____",
-                    "                               _____.----'--'-------------`-------._____",
-                    " ,------.______________.----._'=========================================`",
-                    " ]======================<|# |_)------- `----._____________.----'",
-                    " `------.______________.----'[  ,--------/        `-'",
-                    "          `-.---.-'    _____/__/___     /",
-                    "        ____|   |-----'            `---<",
-                    "       /||__|---|________             //",
-                    "       `------------._       _______ //",
-                    "                      \        ---- //",
-                    "                       |__________.-'"]
-            parsed_ship = [f'{" "*80}{row:73}' for row in ship]
-            for i in range(-2,-153,-1):
-                all_lines = []
-                for line in parsed_ship:
-                    all_lines.append(line[i:-1 if i>-76 else i+76])
-                display.build_screen(all_lines, 3)
-                display.build_input()
-                #x = ((i*-1)**2)/100000
-                # TODO: make speed curve
-                time.sleep(0.03)
-            input()
+    # TODO: should go into Sheet class
+    def loading_screen(self, display: object, part=1):
+        match part:
+            case 1:
+                logo = ['         AD ASTRA',
+                        '          ______',
+                        '       _-´ .   .`-_',
+                        "   |/ /  .. . '   .\ \|",
+                        '  |/ /            ..\ \|',
+                        '\|/ |: .   ._|_ .. . | \|/',
+                        ' \/ |   _|_ .| . .:  | \/',
+                        '\ / |.   |  .  .    .| \ /',
+                        ' \||| .  . .  _|_   .|||/',
+                        '\__| \  . :.  .|.  ./ |__/',
+                        '  __| \_  .    .. _/ |__',
+                        "   __|  `-______-'  |__",
+                        '      -,____  ____,-',
+                        '        ---´  `---',
+                        'UNITED FEDERATION OF PLANETS']
+                display.clear()
+                display.build_screen(logo, 2, center_logo=True)
+                return
+            case 2:
+                message = ['Welcome, Assessor!', ' ']
+                message.extend(textwrap.wrap(
+                    'I am Cat, short for "Cadet Assessment Terminal". Since the speech module is currently undergoing a personality adjustment, I ask you to use your keyboard today (if you can remember how).', 76))
+                message.append("")
+                message.extend(textwrap.wrap("As usual, you will be assessing a group of young cadets who have volunteered to go on an important mission. The mission requires a crew, and each role on the crew must be filled with one cadet. Please run a few trials where you let two cadets compete against each other, and note their performance. The sooner you finish the trials, the better, of course. Be as thorough as you need to, but don't miss the deadline!", 76))
+                message.extend(
+                    ["", "Don't forget to provide your full name for the log."])
+                display.clear()
+                display.build_screen(message)
+                
+            case 3:
+                display.clear()
+                ship = ["                                          ________.-._____",
+                        "                               _____.----'--'-------------`-------._____",
+                        " ,------.______________.----._'=========================================`",
+                        " ]======================<|# |_)------- `----._____________.----'",
+                        " `------.______________.----'[  ,--------/        `-'",
+                        "          `-.---.-'    _____/__/___     /",
+                        "        ____|   |-----'            `---<",
+                        "       /||__|---|________             //",
+                        "       `------------._       _______ //",
+                        "                      \        ---- //",
+                        "                       |__________.-'"]
+                parsed_ship = [f'{" "*80}{row:73}' for row in ship]
+                for i in range(-2,-153,-1):
+                    all_lines = []
+                    for line in parsed_ship:
+                        all_lines.append(line[i:-1 if i>-76 else i+76])
+                    display.build_screen(all_lines, 3)
+                    display.build_input()
+                    #x = ((i*-1)**2)/100000
+                    # TODO: make speed curve
+                    time.sleep(0.03)
+                input()
 
