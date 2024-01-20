@@ -48,11 +48,10 @@ class Mission:
             cadets (object): Reference to Cadets class instance
         """
         available_cadets = cadets.names[:]
-        self.display.build_screen("Please assemble the crew:", 1)
-        self.display.build_screen(trials.trials_log, 2)
+        self.display.build_screen(trials.trials_log, 1)
         crew_list = ['Welcome onboard']
         for skill in self.roles:
-            self.display.build_screen(f'For the role of {skill}: ', 18)
+            self.display.build_screen(f'Please assemble the crew. For the role of {skill}: ', 18)
             index = menu.run_mission_loop(available_cadets)
             crew_list.append(f'{skill} {available_cadets[index].split(" ")[1]}')
             self.display.build_screen(textwrap.wrap(', '.join(crew_list)+'!', 76), 16)

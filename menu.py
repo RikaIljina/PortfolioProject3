@@ -38,7 +38,7 @@ class Menu():
     run_game (object): Reference to global function run()
     """
     outer_loop_texts = "1. Start game     2. New player     3. Show highscore     4. Exit game"
-    trial_loop_texts = "1. Choose skill              2. Choose cadets              3. End trials"
+    trial_loop_texts = "1. Choose skill              2. Choose cadets              3. Start mission"
 
 
     def __init__(self, display: object, run_game: object):
@@ -84,7 +84,7 @@ class Menu():
     def run_player_init(self):
         """Prompts user to enter a player name until valid name is entered"""
         self.display.clear(is_error=True)
-        self.loading_screen(self.display, part=2) # TODO: testfix
+        self.loading_screen(self.display, part=2)
         self.display.build_menu("Please enter your full name:")
         while True:
             name = input(self.display.build_input()).strip()
@@ -100,6 +100,10 @@ class Menu():
 
     def run_trial_loop(self, trials: object, cadets: object):
         """Displays trial phase choices and waits for user input
+        
+        During the trial phase, the player can choose to select a specific
+        as well as two cadets to test, or to end the trial phase and start
+        the mission.
 
         Args:
             trials (object): Reference to Trials class instance
@@ -107,40 +111,38 @@ class Menu():
         """
         self.display.clear()
         if self.first_time:
+            # TODO: add description
             self.display.build_screen("First, choose a skill.", 1)
         while True:
             self.display.build_menu(self.trial_loop_texts)
+            # Exit the menu loop if no more trial runs available
             if not self.stay_in_trial_menu:
                 self.display.build_menu("")
-                self.display.clear([16, 17, 18])            # TODO: move to run
-                input(self.display.build_input(prompt_enter=True))
-                self.display.clear()
-                self.display.build_screen(
-                ["No more time for trials! On to the real mission!"], 10, center=True)
-                input(self.display.build_input(prompt_enter=True))
-                self.display.clear(is_error=True)
-                self.display.clear()
                 break
 
             choice = input(self.display.build_input()).strip()
             self.display.clear(is_error=True)
 
-            if choice == '3':
-                self.display.clear(is_error=True)
-                self.display.clear()
-                break
+            match choice:
+               # case '1':
+                 #   self.run_skill_choice(trials, cadets)
+                #case '2':
+                case '3':
+                    self.display.clear(is_error=True)
+                    self.display.clear()
+                    break
             try:
                 self.trial_loop_funcs[choice]
             except:
                 self.display.build_menu(
-                    f"--- Please provide a valid choice ---", is_error=True)
+                    "--- Please provide a valid choice ---", is_error=True)
             else:
-                if self.first_time and choice is not '2':
+                if self.first_time and choice != '2':
                     self.display.clear()
                     self.first_time = False
                 self.trial_loop_funcs[choice](trials, cadets)
 
-        # Returns to run()
+        # Returns to run() to start mission phase
 
 
     def run_skill_choice(self, trials: object, cadets: object):
@@ -158,7 +160,7 @@ class Menu():
                 cadets.SKILLS[skill_nr]
             except:
                 self.display.build_menu(
-                    f"--- Please provide a valid skill choice ---", is_error=True)
+                    "--- Please provide a valid skill choice ---", is_error=True)
             else:
                 self.display.clear(is_error=True)
                 break
@@ -171,6 +173,8 @@ class Menu():
 
     def run_cadet_choice(self, trials: object, cadets: object, skill_nr=None):
         """Lets player choose two cadets to compete against each other
+
+        Calls the Trials method fill_trials() after validating all choices.
 
         Args:
             trials (object): Reference to Trials class instance
@@ -206,11 +210,10 @@ class Menu():
                 cadets.names[c1]
             except:
                 self.display.build_menu(
-                    f"--- Please provide a valid choice for first cadet ---", is_error=True)
+                    "--- Please provide a valid choice for first cadet ---", is_error=True)
             else:
                 self.display.clear(is_error=True)
                 break
-
         # Build info message
         trial_status[1] += f'{cadets.names[c1]} vs ...'
         self.display.build_screen(trial_status, row_nr=16)
@@ -232,7 +235,6 @@ class Menu():
         # Build info message
         trial_status[1] = trial_status[1][:-3] + f'{cadets.names[c2]}'
         self.display.build_screen(trial_status, row_nr=16)
-        
         # Start the trial for the chosen cadet pair
         trials.fill_trials(cadets, skill_nr, c1, c2)
         # Check if all allowed trial runs have been exhausted
@@ -331,14 +333,14 @@ class Menu():
                         "                      \        ---- //",
                         "                       |__________.-'"]
                 parsed_ship = [f'{" "*80}{row:73}' for row in ship]
-                for i in range(-2,-153,-1):
+                for i in range(-2,-153,-2):
                     all_lines = []
                     for line in parsed_ship:
                         all_lines.append(line[i:-1 if i>-76 else i+76])
                     display.build_screen(all_lines, 3)
-                    display.build_input()
+                    display.draw()
                     #x = ((i*-1)**2)/100000
                     # TODO: make speed curve
-                    time.sleep(0.03)
+                    time.sleep(0.07)
                 input()
 

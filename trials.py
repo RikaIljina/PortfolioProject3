@@ -43,7 +43,7 @@ class Trials:
         results to the terminal, and keeps track of the amount of allowed runs.
         """
         self.display.build_screen('... Trial ongoing ...' + f"{f'{self.MAX_RUNS - self.runs} trials left':>55}", row_nr=18)
-        self.display.build_input()
+        self.display.draw()
         time.sleep(1)
         #while msvcrt.kbhit():
         #    msvcrt.getwch()

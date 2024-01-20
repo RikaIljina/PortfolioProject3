@@ -44,6 +44,7 @@ class Display:
         self.rows = []
         self.empty_screen()
         self.filled = []
+        self.first_time = True
 
 
     def empty_screen(self):
@@ -103,54 +104,53 @@ class Display:
                     # set char to logo char
                     
                     # TODO: just do it once at game start
-                    
-                    time.sleep(0.5)
-                    rows_matrix_logo = []
-                    for idx, line in enumerate(text):
-                        result = (f'{self.BORDER_CHAR}{" "*26 + line:<78}'
-                                    f'{self.BORDER_CHAR}')
-                        self.rows[row_nr + idx] = result
+                    if self.first_time:
+                        self.first_time = False
+                        time.sleep(0.5)
+                        rows_matrix_logo = []
+                        for idx, line in enumerate(text):
+                            result = (f'{self.BORDER_CHAR}{" "*26 + line:<78}'
+                                        f'{self.BORDER_CHAR}')
+                            self.rows[row_nr + idx] = result
 
-                    # list with finished logo screen
-                    for row in self.rows:
-                        rows_matrix_logo.append(list(row))
-                    #print(rows_matrix_logo)
-                    #input()
+                        # list with finished logo screen
+                        for row in self.rows:
+                            rows_matrix_logo.append(list(row))
+                        #print(rows_matrix_logo)
+                        #input()
 
-                    # list with filled screen
-                    self.rows = [str(self.BORDER_CHAR * self.WIDTH) for _ in range(self.HEIGHT)]
-                    rows_matrix_filled = []
-                    for row in self.rows:
-                        rows_matrix_filled.append(list(row))
-                    #input(self.build_input())
-                    
-                    # list wth coord tuples
-                    coord_list = [(x, y) for x in range(self.HEIGHT) for y in range(self.WIDTH)]
-                    #print(coord_list)
-                    #input()
-                   # print(coord_list)
-                   # print(len(coord_list))
-                   # print(coord_list[-1])
-                   # input()
-                    len_coord = len(coord_list)
-                    for x in range(math.floor(len_coord/60)-3):
-                        for _ in range(10+x*5):
-                            if len(coord_list) > 0:
-                                idx = random.choice(range(len(coord_list)))
-                                rows_matrix_filled[coord_list[idx][0]][coord_list[idx][1]] = rows_matrix_logo[coord_list[idx][0]][coord_list[idx][1]]
-                                coord_list.pop(idx)
-                            else:
-                               # print(x, " ", x*60)
-                               # input()
-                                break
-                        for i in range(len(self.rows)):
-                            self.rows[i] = ''.join(rows_matrix_filled[i])
-                        self.__draw()
-                        time.sleep(0.03)
-                        # Disable keyboard input while sleeping
-                        #while msvcrt.kbhit():
-                        #    msvcrt.getwch()
-                    return
+                        # list with filled screen
+                        self.rows = [str(self.BORDER_CHAR * self.WIDTH) for _ in range(self.HEIGHT)]
+                        rows_matrix_filled = []
+                        for row in self.rows:
+                            rows_matrix_filled.append(list(row))
+                        #input(self.build_input())
+                        
+                        # list wth coord tuples
+                        coord_list = [(x, y) for x in range(self.HEIGHT) for y in range(self.WIDTH)]
+                        len_coord = len(coord_list)
+                        for x in range(math.floor(len_coord/60)-3):
+                            for _ in range(10+x*5):
+                                if len(coord_list) > 0:
+                                    idx = random.choice(range(len(coord_list)))
+                                    rows_matrix_filled[coord_list[idx][0]][coord_list[idx][1]] = rows_matrix_logo[coord_list[idx][0]][coord_list[idx][1]]
+                                    coord_list.pop(idx)
+                                else:
+                                    break
+                            for i in range(len(self.rows)):
+                                self.rows[i] = ''.join(rows_matrix_filled[i])
+                            self.draw()
+                            time.sleep(0.03)
+                            # Disable keyboard input while sleeping
+                            #while msvcrt.kbhit():
+                            #    msvcrt.getwch()
+                        return
+                    else:
+                        for idx, line in enumerate(text):
+                            result = (f'{self.BORDER_CHAR}{" "*26 + line:<78}'
+                                        f'{self.BORDER_CHAR}')
+                            self.rows[row_nr + idx] = result
+                        return
                     
                 # fix to have loop inside if else
                 for idx, line in enumerate(text):
@@ -237,14 +237,20 @@ class Display:
         Returns:
             str: String with user input decoration and prompt
         """
-        self.__draw()
+        self.draw()
         if prompt_enter:
             prompt = self.ENTER
             
         return self.INPUT_PROMPT + prompt
 
-    def __draw(self):
-        """Clears the previous screen and re-draws the new terminal"""
+    def draw(self):
+        """Clears the previous screen and re-draws the new terminal
+        
+        This function is usually called by build_input() to draw the screen
+        just before receiving user input. It should be used on its own only
+        before time.sleep() in order to avoid unnecessary re-drawing of the
+        screen when the user can't even see the result.
+        """
         os.system('cls||clear')
         #os.system("clear")
         for row in self.rows:
