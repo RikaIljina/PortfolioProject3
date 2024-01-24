@@ -1,12 +1,12 @@
 # Write your code to expect a terminal of 80 characters wide and 24 rows high
 import os
 import sys
-from player import Player
-from display import Display
-from cadets import Cadets
-from trials import Trials
-from mission import Mission
-from menu import Menu
+from game.components.player import Player
+from game.UI.display import Display
+from game.components.cadets import Cadets
+from game.phases.trials import Trials
+from game.phases.mission import Mission
+from game.UI.menu import Menu
 
 # Establish connection to Google sheets for highscore management
 # Create Worksheet object for access to texts and highscore
