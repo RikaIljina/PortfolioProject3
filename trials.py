@@ -42,13 +42,15 @@ class Trials:
         Calls __run_trials() for each skill and cadet pair, outputs the
         results to the terminal, and keeps track of the amount of allowed runs.
         """
-        self.display.build_screen('... Trial ongoing ...' + f"{f'{self.MAX_RUNS - self.runs} trials left':>55}", row_nr=18)
+        trials_left = f'{self.MAX_RUNS - self.runs} trial{"s" if self.MAX_RUNS - self.runs > 1 else ""} left'
+        self.display.build_screen('... Trial ongoing ...' + f"{trials_left:>55}", row_nr=18)
         self.display.draw()
         time.sleep(1)
+        self.flush_input()
         #while msvcrt.kbhit():
         #    msvcrt.getwch()
         self.display.clear([15])
-        
+
         # In case the player skips the skill choice, the previous skill is used
         self.skill = cadets.SKILLS[skill_nr] if skill_nr is not None \
                                              else self.skill
@@ -56,8 +58,7 @@ class Trials:
         self.c2 = cadets.names[c2]
         self.__run_trials(cadets)
         self.display.build_screen(self.trials_log, row_nr=1)
-        self.display.build_screen(
-            f"{f'{self.MAX_RUNS - self.runs} trials left':>76}", 18)
+        self.display.build_screen(f"{trials_left:>76}", 18)
 
 
     def __run_trials(self, cadets: object):
@@ -102,4 +103,15 @@ class Trials:
         else:
             self.trials_log[skill] = ["No trials for this skill"]
             return self.trials_log[skill]
+
+
+    # https://stackoverflow.com/questions/67083097/how-to-prevent-user-input-into-console-when-program-is-running-in-python    
+    def flush_input(self):
+        try:
+            import msvcrt
+            while msvcrt.kbhit():
+                msvcrt.getch()
+        except ImportError:
+            import sys, termios    #for linux/unix
+            termios.tcflush(sys.stdin, termios.TCIOFLUSH)
 
