@@ -337,7 +337,7 @@ class Menu():
                 for i in range(-2,-153,-2):
                     all_lines = []
                     for line in parsed_ship:
-                        all_lines.append(line[i:-1 if i>-76 else i+76])
+                        all_lines.append(line[i:-1 if i>=-76 else i+76])
                     display.build_screen(all_lines, 3)
                     display.draw()
                     #x = ((i*-1)**2)/100000
