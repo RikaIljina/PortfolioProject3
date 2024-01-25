@@ -1,4 +1,5 @@
 import gspread
+import math
 from google.oauth2.service_account import Credentials
 
 SCOPE = [
@@ -14,5 +15,9 @@ SHEET = GSPREAD_CLIENT.open('ad_astra')
 
 score_table = SHEET.worksheet("highscore")
 
-def print_score():
-    return score_table
+def get_score():
+    score_rows = score_table.get_all_values()
+    score_list = []
+    for row in score_rows:
+        score_list.append(f'{row[0]}{"  "}{"-"*(72-len(row[0])-len(row[1]))}{"  "}{row[1]}')
+    return score_list

@@ -7,7 +7,6 @@ from game.components.cadets import Cadets
 from game.phases.trials import Trials
 from game.phases.mission import Mission
 from game.UI.menu import Menu
-from game.UI.sheets import print_score
 
 # Establish connection to Google sheets for highscore management
 # Create Worksheet object for access to texts and highscore
@@ -22,7 +21,7 @@ def run(menu: object, player: object, display: object):
         display (object): Reference to Display class instance
     """
     menu.reset_menu()
-
+    
     # Only run player initialization if the game is running for the first time
     # or if the user chooses to enter a new name in the outer menu
     if player is None:
@@ -52,8 +51,6 @@ def run(menu: object, player: object, display: object):
     final_mission.assemble_crew(menu, trials, cadets)
     menu.loading_screen(display, 3)
     final_mission.show_results(player, trials)
-    print(print_score())
-    input()
 
     display.empty_screen()
 

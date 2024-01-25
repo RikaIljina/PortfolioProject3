@@ -2,6 +2,7 @@
 import os
 import textwrap
 import time
+from game.UI.sheets import get_score
 
 
 class Menu():
@@ -283,7 +284,10 @@ class Menu():
         self.first_time = True
 
 
-    def show_highscore(self, *args):
+    def show_highscore(self):
+        self.display.build_screen("HIGHSCORE", center=True)
+        self.display.build_screen(get_score(), 3)
+        input(self.display.build_input(prompt_enter=True))
         return
 
 

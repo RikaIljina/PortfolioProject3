@@ -90,8 +90,13 @@ class Display:
         if text:
             # String processing
             if isinstance(text, str):
-                result = (f'{self.BORDER_CHAR}{" "}{text:<76}{" "}'
-                         f'{self.BORDER_CHAR}')
+                if center:              # TODO: put into a separate function
+                    str_len = len(text)
+                    result = (f'{self.BORDER_CHAR}{" "*math.ceil((78-str_len)/2) + text:<78}'
+                              f'{self.BORDER_CHAR}')
+                else:
+                    result = (f'{self.BORDER_CHAR}{" "}{text:<76}{" "}'
+                              f'{self.BORDER_CHAR}')
                 self.rows[row_nr] = result
             # List processing
             elif isinstance(text, list):
