@@ -50,6 +50,7 @@ class Menu():
         self.run_game = run_game
         self.chosen_skill = None
         self.stay_in_trial_menu = True
+        self.trials_left = ""
         self.active_player = None
         # Is the player accessing the trial menu for the first time?
         self.first_time = True
@@ -121,6 +122,10 @@ class Menu():
                 self.display.build_menu("")
                 break
 
+            # Show amount of available trial runs
+            self.trials_left = f'{trials.MAX_RUNS - trials.runs} trial{"s" if trials.MAX_RUNS - trials.runs != 1 else ""} left'
+            self.display.build_screen(f'{self.trials_left:>76}', 18)
+            
             choice = input(self.display.build_input()).strip()
             self.display.clear(is_error=True)
 
@@ -153,6 +158,7 @@ class Menu():
 
         while True:
             self.display.build_menu(skill_choice_texts)
+            self.display.build_screen(f'{self.trials_left:>76}', 18)
             skill_nr = input(self.display.build_input()).strip()
             self.display.clear(is_error=True)
 
@@ -194,6 +200,9 @@ class Menu():
         trial_status = ['Active trial:']
         trial_status.append(f'{self.chosen_skill}:  ')
         self.display.build_screen(trial_status, row_nr=16)
+        # Show amount of available trial runs
+       # trials_left = f'{trials.MAX_RUNS - trials.runs} trial{"s" if trials.MAX_RUNS - trials.runs != 1 else ""} left'
+       # self.display.build_screen(f'{trials_left:>76}', 18)
         # Use only second part of cadet name to fit all cadets in one row
         short_names = [name.split(" ")[1] for name in cadets.names]
         cadet_choice_texts = ' '.join(
@@ -241,7 +250,7 @@ class Menu():
         trial_status[1] = trial_status[1][:-3] + f'{cadets.names[c2]}'
         self.display.build_screen(trial_status, row_nr=16)
         # Start the trial for the chosen cadet pair
-        trials.fill_trials(cadets, skill_nr, c1, c2)
+        trials.fill_trials(cadets, skill_nr, c1, c2, self.trials_left)
         self.display.clear([17])
         # Check if all allowed trial runs have been exhausted
         self.stay_in_trial_menu = trials.MAX_RUNS > trials.runs

@@ -23,7 +23,7 @@ class Trials:
         fill_trials(): Receives cadet indexes and starts the trial run
         show_log(): Outputs the trial results for each skill
     """
-    MAX_RUNS = 15
+    MAX_RUNS = 3
 
 
     def __init__(self, display: object):
@@ -35,14 +35,13 @@ class Trials:
         self.runs = 0
 
 
-    def fill_trials(self, cadets: object, skill_nr: int, c1: int, c2: int) \
+    def fill_trials(self, cadets: object, skill_nr: int, c1: int, c2: int, trials_left: str) \
                     -> bool:
         """Receives cadet indexes from the menu and starts the trial run
 
         Calls __run_trials() for each skill and cadet pair, outputs the
         results to the terminal, and keeps track of the amount of allowed runs.
         """
-        trials_left = f'{self.MAX_RUNS - self.runs} trial{"s" if self.MAX_RUNS - self.runs > 1 else ""} left'
         self.display.build_screen('... Trial ongoing ...' + f"{trials_left:>55}", row_nr=18)
         self.display.draw()
         time.sleep(1)
