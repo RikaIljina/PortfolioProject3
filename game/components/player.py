@@ -66,4 +66,4 @@ class Player:
             - mission_prognosis_penalty - skill_penalty \
             + mission_difficulty_bonus + trial_run_bonus
 
-        return result
+        return max(0, result)
