@@ -287,6 +287,7 @@ class Menu():
     def show_highscore(self):
         self.display.build_screen("HIGHSCORE", center=True)
         self.display.build_screen(get_score(), 3)
+        self.display.build_menu("")
         input(self.display.build_input(prompt_enter=True))
         return
 

@@ -19,5 +19,6 @@ def get_score():
     score_rows = score_table.get_all_values()
     score_list = []
     for row in score_rows:
+        # Pre-format names and scores for output
         score_list.append(f'{row[0]}{"  "}{"-"*(72-len(row[0])-len(row[1]))}{"  "}{row[1]}')
     return score_list
