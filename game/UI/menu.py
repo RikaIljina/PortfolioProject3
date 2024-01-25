@@ -20,7 +20,7 @@ class Menu():
     - Print an error message on the screen:
         self.display.build_menu(error_message_string, is_error=True)
     - Print a text above the menu:
-        self.display.build_screen(str|list|dict, starting_row_nr)
+        self.display.build_screen(str||list||dict, starting_row_nr)
         Valid starting_row_nr values: 1-18.
     - Clear error message:
         self.display.clear(is_error=True)
