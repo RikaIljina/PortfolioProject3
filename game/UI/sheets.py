@@ -12,6 +12,7 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('ad_astra')
 
-# captain_1 = SHEET.worksheet("C1")
-# captain_2 = SHEET.worksheet("C2")
-# lists = SHEET.worksheet("Lists")
+score_table = SHEET.worksheet("highscore")
+
+def print_score():
+    return score_table
