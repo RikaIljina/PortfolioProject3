@@ -222,6 +222,10 @@ class Menu():
         while True:
             c2 = input(self.display.build_input(
                 "Choose second cadet :: ")).strip()
+            if str(c1+1) == c2:
+                self.display.build_menu(
+                    "--- Please do not choose the same cadet twice ---", is_error=True)
+                continue
             self.display.clear(is_error=True)
 
             try:
