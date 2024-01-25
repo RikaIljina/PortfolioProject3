@@ -242,7 +242,7 @@ class Menu():
                 cadets.names[c2]
             except:
                 self.display.build_menu(
-                    f"--- Please provide a valid choice for second cadet ---", is_error=True)
+                    "--- Please provide a valid choice for second cadet ---", is_error=True)
             else:
                 self.display.clear(is_error=True)
                 break
@@ -251,7 +251,8 @@ class Menu():
         self.display.build_screen(trial_status, row_nr=16)
         # Start the trial for the chosen cadet pair
         trials.fill_trials(cadets, skill_nr, c1, c2, self.trials_left)
-        self.display.clear([17])
+        # Remove cadet pair from screen but leave active skill
+        self.display.build_screen((f'{self.chosen_skill}:  '), 17)
         # Check if all allowed trial runs have been exhausted
         self.stay_in_trial_menu = trials.MAX_RUNS > trials.runs
         # Returns to run_skill_choice() or run_trial_loop()
@@ -284,7 +285,7 @@ class Menu():
                 break
             except:
                 self.display.build_menu(
-                    f"---Please provide a valid choice for the Cadet to fill this role---", is_error=True)
+                    "---Please provide a valid choice for the Cadet to fill this role---", is_error=True)
 
         # Returns to assemble_crew()
         return choice
