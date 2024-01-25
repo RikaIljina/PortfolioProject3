@@ -1,6 +1,7 @@
 import math
 import random
 import textwrap
+from game.UI.sheets import write_score
 
 
 class Mission:
@@ -194,6 +195,8 @@ class Mission:
 
         self.display.build_screen("Calculating final player score:", 1)
         final_score = player.calculate_score(trials.runs, trials.MAX_RUNS, self)
+        # Save player score to highscore table
+        write_score(final_score, player.name)
         self.display.build_screen(f'{final_score}', 2)
         input(self.display.build_input())
 

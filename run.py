@@ -21,7 +21,7 @@ def run(menu: object, player: object, display: object):
         display (object): Reference to Display class instance
     """
     menu.reset_menu()
-    
+
     # Only run player initialization if the game is running for the first time
     # or if the user chooses to enter a new name in the outer menu
     if player is None:
