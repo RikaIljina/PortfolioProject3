@@ -100,7 +100,7 @@ class Menu():
         self.display.clear()
 
 
-    def run_trial_loop(self, trials: object, cadets: object):
+    def run_trial_loop(self, trials: object, cadets: object, mission: object):
         """Displays trial phase choices and waits for user input
         
         During the trial phase, the player can choose to select a specific
@@ -112,9 +112,10 @@ class Menu():
             cadets (object): reference to Cadets class instance
         """
         self.display.clear()
+        self.display.build_screen(f"The expected mission difficulty is: {mission.difficulty}", 1)
         if self.first_time:
             # TODO: add description
-            self.display.build_screen("First, choose a skill.", 1)
+            self.display.build_screen("First, choose a skill.", 2)
         while True:
             self.display.build_menu(self.trial_loop_texts)
             # Exit the menu loop if no more trial runs available

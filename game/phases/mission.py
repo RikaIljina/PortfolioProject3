@@ -36,6 +36,9 @@ class Mission:
         self.score = 0
         self.mission_log = {}
         self.crew = {}
+        self.mission_parameters = [random.randrange(self.DIFF_MIN, self.DIFF_MAX+1) for _ in range(5)]
+        self.difficulty = (sum(self.mission_parameters)/5)*10
+
 
 
     def assemble_crew(self, menu: object, trials: object, cadets: object):
@@ -84,12 +87,7 @@ class Mission:
         
         The mission difficulty can be adjusted by changing the MIN/MAX values.
         THe value 5 is the amount of available skills/roles.
-        """
-        # TODO: implement wait
-        
-        mission_parameters = [random.randrange(self.DIFF_MIN, self.DIFF_MAX+1) for _ in range(5)]
-        self.difficulty = (sum(mission_parameters)/5)*10
-        
+        """        
         # Output mission data before the actual mission start
         self.display.build_screen(f"Predicted crew success rate: {self.calculate_prognosis()}", 1)
         self.display.build_screen(f'The mission difficulty is '
@@ -99,7 +97,7 @@ class Mission:
 
         # Assign mission description according to each mission parameter and
         # calculate success for each cadet.
-        for param, (key, value) in zip(mission_parameters, self.crew.items()):
+        for param, (key, value) in zip(self.mission_parameters, self.crew.items()):
             cadet_performance = f'{value[0]} has {"succeeded" if value[1] >= param else "failed"}'
             self.mission_log[key] = [cadet_performance]
             #print(self.mission_log[key])

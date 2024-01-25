@@ -37,7 +37,8 @@ def run(menu: object, player: object, display: object):
     input(display.build_input(prompt_enter=True))
 
     trials = Trials(display)
-    menu.run_trial_loop(trials, cadets)
+    final_mission = Mission(cadets.SKILLS, display)
+    menu.run_trial_loop(trials, cadets, final_mission)
     display.clear([16, 17, 18])
     input(display.build_input(prompt_enter=True))
     display.clear()
@@ -47,7 +48,6 @@ def run(menu: object, player: object, display: object):
     display.clear(is_error=True)
     display.clear()
     # Final mission
-    final_mission = Mission(cadets.SKILLS, display)
     final_mission.assemble_crew(menu, trials, cadets)
     menu.loading_screen(display, 3)
     final_mission.show_results(player, trials)
