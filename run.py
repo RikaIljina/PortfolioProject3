@@ -49,7 +49,7 @@ def run(menu: object, player: object, display: object):
     display.clear()
     # Final mission
     final_mission.assemble_crew(menu, trials, cadets)
-    menu.loading_screen(display, 3)
+    menu.loading_screen(3)
     final_mission.show_results(player, trials)
 
     display.empty_screen()

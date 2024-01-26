@@ -4,6 +4,7 @@ import random
 import os
 import time
 from typing import Union
+from colorama import just_fix_windows_console
 
 # TODO: remove redundant screen drawings
 class Display:
@@ -38,6 +39,10 @@ class Display:
     ERROR_ROW_NR = 21
     MENU_ROW_NR = 20
     ENTER = 'Press ENTER to continue :: '
+    # ANSI codes for text styling
+    RED = "\033[41;1m"
+    GREEN = "\033[92;1m"
+    RESET = "\033[0m"
 
 
     def __init__(self):
@@ -45,6 +50,7 @@ class Display:
         self.empty_screen()
         self.filled = []
         self.first_time = True
+        just_fix_windows_console()
 
 
     def empty_screen(self):
@@ -87,6 +93,7 @@ class Display:
                 centered on screen. Defaults to False.
         """
         result = ''
+
         if text:
             # String processing
             if isinstance(text, str):
@@ -147,8 +154,7 @@ class Display:
                             self.draw()
                             time.sleep(0.03)
                             # Disable keyboard input while sleeping
-                            #while msvcrt.kbhit():
-                            #    msvcrt.getwch()
+                            self.flush_input()
                         return
                     else:
                         for idx, line in enumerate(text):
@@ -220,10 +226,10 @@ class Display:
                 Defaults to False.
         """
         if is_error:
-            result = f'{self.BORDER_CHAR}{" "}{text:>76}{" "}{self.BORDER_CHAR}'
+            result = f'{self.BORDER_CHAR}{self.RED}{" "}{text:>76}{" "}{self.RESET}{self.BORDER_CHAR}'
             self.rows[self.ERROR_ROW_NR] = result
         else:
-            result = f'{self.BORDER_CHAR}{" "}{text:<76}{" "}{self.BORDER_CHAR}'
+            result = f'{self.BORDER_CHAR}{self.GREEN}{" "}{text:<76}{" "}{self.RESET}{self.BORDER_CHAR}'
             self.rows[self.MENU_ROW_NR] = result
 
 
@@ -245,8 +251,8 @@ class Display:
         self.draw()
         if prompt_enter:
             prompt = self.ENTER
-            
-        return self.INPUT_PROMPT + prompt
+
+        return self.GREEN + self.INPUT_PROMPT + prompt + self.RESET
 
     def draw(self):
         """Clears the previous screen and re-draws the new terminal
@@ -261,3 +267,13 @@ class Display:
         for row in self.rows:
             print(f'{row}')
 
+
+    # https://stackoverflow.com/questions/67083097/how-to-prevent-user-input-into-console-when-program-is-running-in-python    
+    def flush_input(self):
+        try:
+            import msvcrt
+            while msvcrt.kbhit():
+                msvcrt.getch()
+        except ImportError:
+            import sys, termios    #for linux/unix
+            termios.tcflush(sys.stdin, termios.TCIOFLUSH)

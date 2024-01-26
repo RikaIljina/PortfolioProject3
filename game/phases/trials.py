@@ -45,9 +45,7 @@ class Trials:
         self.display.build_screen('... Trial ongoing ...' + f"{trials_left:>55}", row_nr=18)
         self.display.draw()
         time.sleep(1)
-        self.flush_input()
-        #while msvcrt.kbhit():
-        #    msvcrt.getwch()
+        self.display.flush_input()
         self.display.clear([15])
 
         # In case the player skips the skill choice, the previous skill is used
@@ -102,15 +100,4 @@ class Trials:
         else:
             self.trials_log[skill] = ["No trials for this skill"]
             return self.trials_log[skill]
-
-
-    # https://stackoverflow.com/questions/67083097/how-to-prevent-user-input-into-console-when-program-is-running-in-python    
-    def flush_input(self):
-        try:
-            import msvcrt
-            while msvcrt.kbhit():
-                msvcrt.getch()
-        except ImportError:
-            import sys, termios    #for linux/unix
-            termios.tcflush(sys.stdin, termios.TCIOFLUSH)
 

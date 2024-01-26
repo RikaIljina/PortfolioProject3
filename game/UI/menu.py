@@ -40,7 +40,8 @@ class Menu():
     """
     outer_loop_texts = "1. Start game     2. New player     3. Show highscore     4. Exit game"
     trial_loop_texts = "1. Choose skill              2. Choose cadets              3. Start mission"
-
+    GREEN = "\033[32m"
+    RESET = "\033[0m"
 
     def __init__(self, display: object, run_game: object):
         self.display = display
@@ -60,8 +61,8 @@ class Menu():
         """Displays the outer menu choices and waits for player input"""
         while True:
             # Before the input: Build the screen content
+            self.loading_screen(part=1) # should come from a dict from Sheet class
             self.display.build_menu(self.outer_loop_texts)
-            self.loading_screen(self.display, part=1) # should come from a dict from Sheet class
             # Draw the screen and take input
             choice = input(self.display.build_input()).strip()
             # After the input: Clear error messages and previous screen content
@@ -86,7 +87,7 @@ class Menu():
     def run_player_init(self):
         """Prompts user to enter a player name until valid name is entered"""
         self.display.clear(is_error=True)
-        self.loading_screen(self.display, part=2)
+        self.loading_screen(part=2)
         self.display.build_menu("Please enter your full name:")
         while True:
             name = input(self.display.build_input()).strip()
@@ -300,15 +301,15 @@ class Menu():
 
 
     def show_highscore(self):
-        self.display.build_screen("HIGHSCORE", center=True)
-        self.display.build_screen(get_score(), 3)
+        self.display.build_screen('HIGHSCORE', center=True)
+        self.display.build_screen(get_score(), 3)   
         self.display.build_menu("")
         input(self.display.build_input(prompt_enter=True))
         return
 
 
     # TODO: should go into Sheet class
-    def loading_screen(self, display: object, part=1):
+    def loading_screen(self, part=1):
         match part:
             case 1:
                 logo = ['         AD ASTRA',
@@ -326,8 +327,8 @@ class Menu():
                         '      -,____  ____,-',
                         '        ---´  `---',
                         'UNITED FEDERATION OF PLANETS']
-                display.clear()
-                display.build_screen(logo, 2, center_logo=True)
+                self.display.clear()
+                self.display.build_screen(logo, 2, center_logo=True)
                 return
             case 2:
                 message = ['Welcome, Assessor!', ' ']
@@ -337,11 +338,11 @@ class Menu():
                 message.extend(textwrap.wrap("As usual, you will be assessing a group of young cadets who have volunteered to go on an important mission. The mission requires a crew, and each role on the crew must be filled with one cadet. Please run a few trials where you let two cadets compete against each other, and note their performance. The sooner you finish the trials, the better, of course. Be as thorough as you need to, but don't miss the deadline!", 76))
                 message.extend(
                     ["", "Don't forget to provide your full name for the log."])
-                display.clear()
-                display.build_screen(message)
+                self.display.clear()
+                self.display.build_screen(message)
                 
             case 3:
-                display.clear()
+                self.display.clear()
                 ship = ["                                          ________.-._____",
                         "                               _____.----'--'-------------`-------._____",
                         " ,------.______________.----._'=========================================`",
@@ -358,10 +359,11 @@ class Menu():
                     all_lines = []
                     for line in parsed_ship:
                         all_lines.append(line[i:-1 if i>=-76 else i+76])
-                    display.build_screen(all_lines, 3)
-                    display.draw()
+                    self.display.build_screen(all_lines, 3)
+                    self.display.draw()
                     #x = ((i*-1)**2)/100000
                     # TODO: make speed curve
                     time.sleep(0.07)
+                    self.display.flush_input()
                 input()
 
