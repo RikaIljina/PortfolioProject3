@@ -23,7 +23,7 @@ class Trials:
         fill_trials(): Receives cadet indexes and starts the trial run
         show_log(): Outputs the trial results for each skill
     """
-    MAX_RUNS = 3
+    MAX_RUNS = 14
 
 
     def __init__(self, display: object):

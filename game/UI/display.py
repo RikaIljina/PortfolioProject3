@@ -80,7 +80,7 @@ class Display:
                 self.rows[index] = self.EMPTY_ROW
 
 
-    def build_screen(self, text: Union[str, list, dict], row_nr=1, center=False, center_logo=False) -> None:
+    def build_screen(self, text: Union[str, list, dict], row_nr=1, center=False, center_logo=False, ansi=0) -> None:
         """Prepares a text for terminal output above the menu row
         
         Receives a string, list, or dictionary, formats its contents,
@@ -98,11 +98,13 @@ class Display:
             # String processing
             if isinstance(text, str):
                 if center:              # TODO: put into a separate function
-                    str_len = len(text)
-                    result = (f'{self.BORDER_CHAR}{" "*math.ceil((78-str_len)/2) + text:<78}'
+                    width = "<" + str(78 + ansi)
+                    str_len = len(text) - ansi
+                    result = (f'{self.BORDER_CHAR}{" "*math.ceil((78-str_len)/2) + text:{width}}'
                               f'{self.BORDER_CHAR}')
                 else:
-                    result = (f'{self.BORDER_CHAR}{" "}{text:<76}{" "}'
+                    width = "<" + str(76 + ansi)
+                    result = (f'{self.BORDER_CHAR}{" "}{text:{width}}{" "}'
                               f'{self.BORDER_CHAR}')
                 self.rows[row_nr] = result
             # List processing
@@ -121,7 +123,7 @@ class Display:
                         time.sleep(0.5)
                         rows_matrix_logo = []
                         for idx, line in enumerate(text):
-                            result = (f'{self.BORDER_CHAR}{" "*26 + line:<78}'
+                            result = (f'{self.BORDER_CHAR}{" "*25 + line:<78}'
                                         f'{self.BORDER_CHAR}')
                             self.rows[row_nr + idx] = result
 

@@ -71,10 +71,13 @@ class Sheet:
 
 
     def get_text(self, key):
-        message_raw = self.msg_dict[key].split("\n")
-        message_wrapped = []
-        message = []
-        message_wrapped.extend(textwrap.wrap(el, 76) if el else " " for el in message_raw)
-        for el in message_wrapped:
-            message.extend(el)
+        if '\n' in self.msg_dict[key] or len(self.msg_dict[key]) > 76:
+            message_raw = self.msg_dict[key].split("\n")
+            message_wrapped = []
+            message = []
+            message_wrapped.extend(textwrap.wrap(el, 76) if el else " " for el in message_raw)
+            for el in message_wrapped:
+                message.extend(el)
+        else:
+            message = self.msg_dict[key]
         return message

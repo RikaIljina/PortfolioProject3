@@ -53,10 +53,9 @@ class Mission:
         """
         available_cadets = cadets.names[:]
         self.display.build_screen(trials.trials_log, 1)
-        crew_list = ['Welcome onboard']
+        crew_list = [self.sheet.get_text('scr_mission_welcome')]
         for skill in self.roles:
-            self.display.build_screen(
-                f'Please assemble the crew. For the role of {skill}: ', 18)
+            self.display.build_screen(self.sheet.get_text("scr_mission_role").format(skill=f'\033[31;1m{skill}\033[0m'), 18, ansi=11)
             index = menu.run_mission_loop(available_cadets)
             crew_list.append(
                 f'{skill} {available_cadets[index].split(" ")[1]}')
@@ -113,6 +112,7 @@ class Mission:
                     key, diff_values[param], success, fname)
             except:
                 print("Internal error: dictionary issue")
+                print(key, diff_values[param], success, fname)
                 input()
             cadet_performance = f'{value[0]} has {"succeeded" if success else "failed"}'
             self.mission_log[key] = [cadet_performance]

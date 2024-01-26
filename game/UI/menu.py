@@ -38,8 +38,6 @@ class Menu():
     display (object): Reference to Display class instance
     run_game (object): Reference to global function run()
     """
-    outer_loop_texts = "⁞1⁞ Start game ⁞  ⁞2⁞ New player ⁞  ⁞3⁞ Show highscore ⁞  ⁞4⁞ Exit game ⁞"
-    trial_loop_texts = "⁞1⁞ Choose skill ⁞        ⁞2⁞ Choose cadets ⁞         ⁞3⁞ Start mission ⁞"
     GREEN = "\033[32m"
     RESET = "\033[0m"
 
@@ -63,7 +61,7 @@ class Menu():
         while True:
             # Before the input: Build the screen content
             self.loading_screen(part=1) # should come from a dict from Sheet class
-            self.display.build_menu(self.outer_loop_texts)
+            self.display.build_menu(self.sheet.get_text('menu_outer'))
             # Draw the screen and take input
             choice = input(self.display.build_input()).strip()
             # After the input: Clear error messages and previous screen content
@@ -81,23 +79,20 @@ class Menu():
                     # Return to main() and exit game
                     return
                 case _:
-                    self.display.build_menu(
-                        "═══ Please provide a valid choice ═══", is_error=True)
+                    self.display.build_menu(self.sheet.get_text('err_outer'), is_error=True)
 
 
     def run_player_init(self):
         """Prompts user to enter a player name until valid name is entered"""
         self.display.clear(is_error=True)
         self.loading_screen(part=2)
-        self.display.build_menu("Please enter your full name:")
+        self.display.build_menu(self.sheet.get_text('prompt_name'))
         while True:
             name = input(self.display.build_input()).strip()
             if self.active_player.set_name(name):
                 break
             else:
-                self.display.build_menu(
-                    "═══ Please only enter between 1 and 30 latin letters and whitespaces ═══",
-                    is_error=True)
+                self.display.build_menu(self.sheet.get_text('err_player'), is_error=True)
         self.display.clear(is_error=True)
         self.display.clear()
 
@@ -119,7 +114,7 @@ class Menu():
             # TODO: add description
             self.display.build_screen("First, choose a skill.", 2)
         while True:
-            self.display.build_menu(self.trial_loop_texts)
+            self.display.build_menu(self.sheet.get_text('menu_trial'))
             # Exit the menu loop if no more trial runs available
             if not self.stay_in_trial_menu:
                 self.display.build_menu("")
@@ -143,8 +138,7 @@ class Menu():
             try:
                 self.trial_loop_funcs[choice]
             except:
-                self.display.build_menu(
-                    "═══ Please provide a valid choice ═══", is_error=True)
+                self.display.build_menu(self.sheet.get_text('err_trial'), is_error=True)
             else:
                 if self.first_time and choice != '2':
                     self.display.clear()
@@ -169,8 +163,7 @@ class Menu():
                 skill_nr = int(skill_nr) - 1
                 cadets.SKILLS[skill_nr]
             except:
-                self.display.build_menu(
-                    "═══ Please provide a valid skill choice ═══", is_error=True)
+                self.display.build_menu(self.sheet.get_text('err_skill'), is_error=True)
             else:
                 self.display.clear(is_error=True)
                 break
@@ -194,13 +187,12 @@ class Menu():
         """
         if self.chosen_skill is None:
             self.first_time = True
-            self.display.build_menu(
-                "═══ Please choose a skill first ═══", is_error=True)
+            self.display.build_menu(self.sheet.get_text('err_skill_first'), is_error=True)
             return
 
         # Build info messages and menu elements
         self.display.clear(is_error=True)
-        trial_status = ['Active trial:']
+        trial_status = [self.sheet.get_text('scr_trial_active')]
         trial_status.append(f'{self.chosen_skill}:  ')
         self.display.build_screen(trial_status, row_nr=16)
         # Show amount of available trial runs
@@ -213,8 +205,7 @@ class Menu():
         self.display.build_menu(cadet_choice_texts)
         # Get player input for first cadet
         while True:
-            c1 = input(self.display.build_input(
-                "Choose first cadet ⁞⁞ ")).strip()
+            c1 = input(self.display.build_input(self.sheet.get_text('prompt_cadet_1'))).strip()
             try:
                 # Enumeration starts at 1, therefore "- 1" to get index
                 c1 = int(c1) - 1
@@ -222,8 +213,7 @@ class Menu():
                 # running trials
                 cadets.names[c1]
             except:
-                self.display.build_menu(
-                    "═══ Please provide a valid choice for first cadet ═══", is_error=True)
+                self.display.build_menu(self.sheet.get_text('err_cadet_1'), is_error=True)
             else:
                 self.display.clear(is_error=True)
                 break
@@ -232,11 +222,9 @@ class Menu():
         self.display.build_screen(trial_status, row_nr=16)
         # Get player input for second cadet
         while True:
-            c2 = input(self.display.build_input(
-                "Choose second cadet ⁞⁞ ")).strip()
+            c2 = input(self.display.build_input(self.sheet.get_text('prompt_cadet_2'))).strip()
             if str(c1+1) == c2:
-                self.display.build_menu(
-                    "═══ Please do not choose the same cadet twice ═══", is_error=True)
+                self.display.build_menu(self.sheet.get_text('err_cadet_twice'), is_error=True)
                 continue
             self.display.clear(is_error=True)
 
@@ -244,8 +232,7 @@ class Menu():
                 c2 = int(c2) - 1
                 cadets.names[c2]
             except:
-                self.display.build_menu(
-                    "═══ Please provide a valid choice for second cadet ═══", is_error=True)
+                self.display.build_menu(self.sheet.get_text('err_cadet_2'), is_error=True)
             else:
                 self.display.clear(is_error=True)
                 break
@@ -287,8 +274,7 @@ class Menu():
                 available_cadets[choice]
                 break
             except:
-                self.display.build_menu(
-                    "═══ Please provide a valid choice for the Cadet to fill this role ═══", is_error=True)
+                self.display.build_menu(self.sheet.get_text('err_role'), is_error=True)
 
         # Returns to assemble_crew()
         return choice
@@ -302,7 +288,7 @@ class Menu():
 
 
     def show_highscore(self):
-        self.display.build_screen('. · ˚ ✧ ˚ · . . · ˚ ✧ ˚ · .  HIGHSCORE  . · ˚ ✧ ˚ · . . · ˚ ✧ ˚ · .', 2, center=True)
+        self.display.build_screen(f"\033[32;1m{self.sheet.get_text('hs_header')}\033[0m", 2, center=True, ansi=11)
         self.display.build_screen(self.sheet.get_score(), 4)
         self.display.build_menu("")
         input(self.display.build_input(prompt_enter=True))
