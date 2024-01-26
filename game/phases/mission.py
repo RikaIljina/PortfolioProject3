@@ -1,7 +1,7 @@
 import math
 import random
 import textwrap
-from game.UI.sheets import write_score
+# from game.UI.sheets import Sheet
 
 
 class Mission:
@@ -28,9 +28,10 @@ class Mission:
     DIFF_MIN = 2
     DIFF_MAX = 10
 
-    def __init__(self, roles: list, display: object):
+    def __init__(self, roles: list, display: object, sheet: object):
         self.roles = roles
         self.display = display
+        self.sheet = sheet
         self.prognosis = 0
         self.difficulty = 0
         self.score = 0
@@ -100,22 +101,21 @@ class Mission:
         for param, (key, value) in zip(self.mission_parameters, self.crew.items()):
             cadet_performance = f'{value[0]} has {"succeeded" if value[1] >= param else "failed"}'
             self.mission_log[key] = [cadet_performance]
-            #print(self.mission_log[key])
-            #input()
+            fname = value[0].split(" ")[1]
             # TODO: Move strings into a Google sheet or use gettext module
             match key:
                 case 'Captain':
                     if param >= 7:
-                        msg = "This was a real diplomatic crisis!"
+                        msg = self.sheet.msg_dict['ml_cap_high']
                     elif 4 < param < 7:
-                        msg = "This mission had challenging diplomatic issues."
+                        msg = self.sheet.msg_dict['ml_cap_mid']
                     else:
-                        msg = "There was only a minor diplomatic issue on this mission."
+                        msg = self.sheet.msg_dict['ml_cap_low']
                     if value[1] >= param:
                         self.score += 1
-                        msg2 = f"{value[0]} solved it masterfully."
+                        msg2 = self.sheet.msg_dict['ml_cap_suc'].format(name=fname)
                     else:
-                        msg2 = f"Unfortunately, {value[0]} was unable to deal with it."
+                        msg2 = self.sheet.msg_dict['ml_cap_fail'].format(name=fname)
                 case 'Doctor':
                     if param >= 7:
                         msg = "This was a real medical crisis! A planet-wide outbreak!"
@@ -194,7 +194,7 @@ class Mission:
         self.display.build_screen("Calculating final player score:", 1)
         final_score = player.calculate_score(trials.runs, trials.MAX_RUNS, self)
         # Save player score to highscore table
-        write_score(final_score, player.name)
+        self.sheet.write_score(final_score, player.name)
         self.display.build_screen(f'{final_score}', 2)
         input(self.display.build_input())
 

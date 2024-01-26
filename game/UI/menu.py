@@ -2,7 +2,7 @@
 import os
 import textwrap
 import time
-from game.UI.sheets import get_score
+# from game.UI.sheets import get_score
 
 
 class Menu():
@@ -43,8 +43,9 @@ class Menu():
     GREEN = "\033[32m"
     RESET = "\033[0m"
 
-    def __init__(self, display: object, run_game: object):
+    def __init__(self, display: object, sheet: object, run_game: object):
         self.display = display
+        self.sheet = sheet
         self.outer_loop_funcs = {'1': run_game, '3': self.show_highscore}
         self.trial_loop_funcs = {'1': self.run_skill_choice,
                             '2': self.run_cadet_choice}
@@ -70,7 +71,7 @@ class Menu():
             self.display.clear()
             match choice:
                 case '1':
-                    self.run_game(self, self.active_player, self.display)
+                    self.run_game(self, self.active_player, self.display, self.sheet)
                 case '2':
                     # Restart the game without re-initializing the player
                     self.run_game(self, None, self.display)
@@ -302,7 +303,7 @@ class Menu():
 
     def show_highscore(self):
         self.display.build_screen('HIGHSCORE', center=True)
-        self.display.build_screen(get_score(), 3)   
+        self.display.build_screen(self.sheet.get_score(), 3)
         self.display.build_menu("")
         input(self.display.build_input(prompt_enter=True))
         return

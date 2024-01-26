@@ -7,12 +7,13 @@ from game.components.cadets import Cadets
 from game.phases.trials import Trials
 from game.phases.mission import Mission
 from game.UI.menu import Menu
+from game.UI.sheets import Sheet
 
 # Establish connection to Google sheets for highscore management
 # Create Worksheet object for access to texts and highscore
 
 
-def run(menu: object, player: object, display: object):
+def run(menu: object, player: object, display: object, sheet: object):
     """Starts the different game phases
 
     Args:
@@ -37,7 +38,7 @@ def run(menu: object, player: object, display: object):
     input(display.build_input(prompt_enter=True))
 
     trials = Trials(display)
-    final_mission = Mission(cadets.SKILLS, display)
+    final_mission = Mission(cadets.SKILLS, display, sheet)
     menu.run_trial_loop(trials, cadets, final_mission)
     display.clear([16, 17, 18])
     input(display.build_input(prompt_enter=True))
@@ -61,8 +62,9 @@ def main():
     """Initializes Menu and Display class and starts outer menu choice loop"""
     #os.system('cls||clear')
     os.system("clear||cls")
+    sheet = Sheet()
     display = Display()
-    menu = Menu(display, run)
+    menu = Menu(display, sheet, run)
     menu.run_outer_loop()
     sys.exit()
 
