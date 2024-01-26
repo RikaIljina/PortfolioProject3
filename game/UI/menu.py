@@ -74,7 +74,7 @@ class Menu():
                     self.run_game(self, self.active_player, self.display, self.sheet)
                 case '2':
                     # Restart the game without re-initializing the player
-                    self.run_game(self, None, self.display)
+                    self.run_game(self, None, self.display, self.sheet)
                 case '3':
                     self.show_highscore()
                 case '4':
@@ -96,7 +96,7 @@ class Menu():
                 break
             else:
                 self.display.build_menu(
-                    "--- Please only enter between 1 and 50 latin letters and whitespaces ---",
+                    "--- Please only enter between 1 and 30 latin letters and whitespaces ---",
                     is_error=True)
         self.display.clear(is_error=True)
         self.display.clear()

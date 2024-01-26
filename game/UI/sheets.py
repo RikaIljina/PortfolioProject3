@@ -67,5 +67,7 @@ class Sheet:
         # write list to sheet
         
         return
-
-    #write_score(80, 'hoho')
+    
+    def get_msg(self, role, level, success, fname):
+        key = f'ml_{role[:3].lower()}_{level}_{"suc" if success else "fail"}'
+        return self.msg_dict[key].format(name=fname)

@@ -95,82 +95,25 @@ class Mission:
                                   f'{self.difficulty}', 3)
         self.display.build_menu("")
         input(self.display.build_input(prompt_enter=True))
-
+        diff_values = {1: "low", 2: "low", 3: "low", 4: "low", 5: "low", 6: "mid", 7: "mid", 8: "mid", 9: "high", 10: "high"}
         # Assign mission description according to each mission parameter and
         # calculate success for each cadet.
         for param, (key, value) in zip(self.mission_parameters, self.crew.items()):
-            cadet_performance = f'{value[0]} has {"succeeded" if value[1] >= param else "failed"}'
-            self.mission_log[key] = [cadet_performance]
             fname = value[0].split(" ")[1]
-            # TODO: Move strings into a Google sheet or use gettext module
-            match key:
-                case 'Captain':
-                    if param >= 7:
-                        msg = self.sheet.msg_dict['ml_cap_high']
-                    elif 4 < param < 7:
-                        msg = self.sheet.msg_dict['ml_cap_mid']
-                    else:
-                        msg = self.sheet.msg_dict['ml_cap_low']
-                    if value[1] >= param:
-                        self.score += 1
-                        msg2 = self.sheet.msg_dict['ml_cap_suc'].format(name=fname)
-                    else:
-                        msg2 = self.sheet.msg_dict['ml_cap_fail'].format(name=fname)
-                case 'Doctor':
-                    if param >= 7:
-                        msg = "This was a real medical crisis! A planet-wide outbreak!"
-                    elif 4 < param < 7:
-                        msg = "An alien guest had a challenging medical problem."
-                    else:
-                        msg = "A couple crew members sustained minor injuries on the Holodeck."
-                    if value[1] >= param:
-                        self.score += 1
-                        msg2 = f"{value[0]} was a real miracle worker!"
-                    else:
-                        msg2 = f"Unfortunately, {value[0]} was unable to handle the stress of the medical profession."
-                case 'Security Chief':
-                    if param >= 7:
-                        msg = "This was a real security crisis!"
-                    elif 4 < param < 7:
-                        msg = "An alien guest had a challenging security problem."
-                    else:
-                        msg = "There was a minor security issue."
-                    if value[1] >= param:
-                        self.score += 1
-                        msg2 = f"{value[0]} was a real miracle worker!"
-                    else:
-                        msg2 = f"Unfortunately, {value[0]} was unable to handle the stress of being a security chief."
-                case 'Pilot':
-                    if param >= 7:
-                        msg = "This was a real piloting crisis!"
-                    elif 4 < param < 7:
-                        msg = "An alien guest had a challenging piloting problem."
-                    else:
-                        msg = "There was a minor piloting issue."
-                    if value[1] >= param:
-                        self.score += 1
-                        msg2 = f"{value[0]} was a real miracle worker!"
-                    else:
-                        msg2 = f"Unfortunately, {value[0]} was unable to handle the stress of being a pilot."
-                case 'Engineer':
-                    if param >= 7:
-                        msg = "This was a real engineering crisis!"
-                    elif 4 < param < 7:
-                        msg = "An alien guest had a challenging engineering problem."
-                    else:
-                        msg = "There was a minor engineering issue."
-                    if value[1] >= param:
-                        self.score += 1
-                        msg2 = f"{value[0]} was a real miracle worker!"
-                    else:
-                        msg2 = f"Unfortunately, {value[0]} was unable to handle the stress of being an engineer."
-                case _:
-                    # TODO: print in error message row
-                    print("Internal error: no such role in the crew")
-                    input()
-                
+            if value[1] >= param:
+                self.score += 1
+                success = True
+            else:
+                success = False
+            try:
+                # Get the appropriate message from the Google sheet
+                msg = self.sheet.get_msg(key, diff_values[param], success, fname)
+            except:
+                print("Internal error: dictionary issue")
+                input()
+            cadet_performance = f'{value[0]} has {"succeeded" if success else "failed"}'
+            self.mission_log[key] = [cadet_performance]
             self.mission_log[key].extend(textwrap.wrap(msg, 70))
-            self.mission_log[key].extend(textwrap.wrap(msg2, 70))
 
 
     def show_results(self, player: object, trials: object):
@@ -184,7 +127,7 @@ class Mission:
         # Method prints mission info to the screen and builds mission log
         self.calculate_success()
         self.display.clear()
-
+        # Print mission log to the screen
         for key, value in self.mission_log.items():
             self.display.build_screen([f'{key}: '], 4, center=True)
             self.display.build_screen(value, 5, center=True)

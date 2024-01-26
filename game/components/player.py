@@ -31,7 +31,7 @@ class Player:
         Returns:
             bool: True if name valid, False if name invalid
         """
-        pattern = r'^[A-Za-z\s]{1,50}$'
+        pattern = r'^[A-Za-z\s]{1,30}$'
         if re.match(pattern, name) and re.search(r'[a-zA-Z]', name):
             self.name = name
             return True
