@@ -34,11 +34,11 @@ class Display:
     HEIGHT = 22
     WIDTH = 80
     BORDER_CHAR = "▓"
-    INPUT_PROMPT = '▓▓▓ :: '
+    INPUT_PROMPT = '▓▓▓ ⁞⁞ '
     EMPTY_ROW = f'{BORDER_CHAR}{" ":<78}{BORDER_CHAR}'
     ERROR_ROW_NR = 21
     MENU_ROW_NR = 20
-    ENTER = 'Press ENTER to continue :: '
+    ENTER = 'Press ENTER to continue ⁞⁞ '
     # ANSI codes for text styling
     RED = "\033[41;1m"
     GREEN = "\033[92;1m"
@@ -158,7 +158,7 @@ class Display:
                         return
                     else:
                         for idx, line in enumerate(text):
-                            result = (f'{self.BORDER_CHAR}{" "*26 + line:<78}'
+                            result = (f'{self.BORDER_CHAR}{" "*25 + line:<78}'
                                         f'{self.BORDER_CHAR}')
                             self.rows[row_nr + idx] = result
                         return
@@ -229,7 +229,7 @@ class Display:
             result = f'{self.BORDER_CHAR}{self.RED}{" "}{text:>76}{" "}{self.RESET}{self.BORDER_CHAR}'
             self.rows[self.ERROR_ROW_NR] = result
         else:
-            result = f'{self.BORDER_CHAR}{self.GREEN}{" "}{text:<76}{" "}{self.RESET}{self.BORDER_CHAR}'
+            result = f'{self.BORDER_CHAR}{self.GREEN}{"▶ "}{text:<74}{"◀ "}{self.RESET}{self.BORDER_CHAR}'
             self.rows[self.MENU_ROW_NR] = result
 
 

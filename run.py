@@ -60,7 +60,6 @@ def run(menu: object, player: object, display: object, sheet: object):
 
 def main():
     """Initializes Menu and Display class and starts outer menu choice loop"""
-    #os.system('cls||clear')
     os.system("clear||cls")
     sheet = Sheet()
     display = Display()

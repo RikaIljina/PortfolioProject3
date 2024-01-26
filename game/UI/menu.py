@@ -38,8 +38,8 @@ class Menu():
     display (object): Reference to Display class instance
     run_game (object): Reference to global function run()
     """
-    outer_loop_texts = "1. Start game     2. New player     3. Show highscore     4. Exit game"
-    trial_loop_texts = "1. Choose skill              2. Choose cadets              3. Start mission"
+    outer_loop_texts = "⁞1⁞ Start game ⁞  ⁞2⁞ New player ⁞  ⁞3⁞ Show highscore ⁞  ⁞4⁞ Exit game ⁞"
+    trial_loop_texts = "⁞1⁞ Choose skill ⁞        ⁞2⁞ Choose cadets ⁞         ⁞3⁞ Start mission ⁞"
     GREEN = "\033[32m"
     RESET = "\033[0m"
 
@@ -82,7 +82,7 @@ class Menu():
                     return
                 case _:
                     self.display.build_menu(
-                        "--- Please provide a valid choice ---", is_error=True)
+                        "═══ Please provide a valid choice ═══", is_error=True)
 
 
     def run_player_init(self):
@@ -96,7 +96,7 @@ class Menu():
                 break
             else:
                 self.display.build_menu(
-                    "--- Please only enter between 1 and 30 latin letters and whitespaces ---",
+                    "═══ Please only enter between 1 and 30 latin letters and whitespaces ═══",
                     is_error=True)
         self.display.clear(is_error=True)
         self.display.clear()
@@ -144,7 +144,7 @@ class Menu():
                 self.trial_loop_funcs[choice]
             except:
                 self.display.build_menu(
-                    "--- Please provide a valid choice ---", is_error=True)
+                    "═══ Please provide a valid choice ═══", is_error=True)
             else:
                 if self.first_time and choice != '2':
                     self.display.clear()
@@ -157,7 +157,7 @@ class Menu():
     def run_skill_choice(self, trials: object, cadets: object):
         self.display.clear(is_error=True)
         skill_choice_texts = ' '.join(
-            [f'{c[0]}. {c[1]} ' for c in enumerate(cadets.SKILLS, 1)])
+            [f'⁞{c[0]}⁞ {c[1]} ⁞' for c in enumerate(cadets.SKILLS, 1)])
 
         while True:
             self.display.build_menu(skill_choice_texts)
@@ -170,7 +170,7 @@ class Menu():
                 cadets.SKILLS[skill_nr]
             except:
                 self.display.build_menu(
-                    "--- Please provide a valid skill choice ---", is_error=True)
+                    "═══ Please provide a valid skill choice ═══", is_error=True)
             else:
                 self.display.clear(is_error=True)
                 break
@@ -195,7 +195,7 @@ class Menu():
         if self.chosen_skill is None:
             self.first_time = True
             self.display.build_menu(
-                "--- Please choose a skill first ---", is_error=True)
+                "═══ Please choose a skill first ═══", is_error=True)
             return
 
         # Build info messages and menu elements
@@ -209,12 +209,12 @@ class Menu():
         # Use only second part of cadet name to fit all cadets in one row
         short_names = [name.split(" ")[1] for name in cadets.names]
         cadet_choice_texts = ' '.join(
-            [f'{c[0]}. {c[1]} ' for c in enumerate(short_names, 1)])
+            [f'⁞{c[0]}⁞ {c[1]} ⁞' for c in enumerate(short_names, 1)])
         self.display.build_menu(cadet_choice_texts)
         # Get player input for first cadet
         while True:
             c1 = input(self.display.build_input(
-                "Choose first cadet :: ")).strip()
+                "Choose first cadet ⁞⁞ ")).strip()
             try:
                 # Enumeration starts at 1, therefore "- 1" to get index
                 c1 = int(c1) - 1
@@ -223,7 +223,7 @@ class Menu():
                 cadets.names[c1]
             except:
                 self.display.build_menu(
-                    "--- Please provide a valid choice for first cadet ---", is_error=True)
+                    "═══ Please provide a valid choice for first cadet ═══", is_error=True)
             else:
                 self.display.clear(is_error=True)
                 break
@@ -233,10 +233,10 @@ class Menu():
         # Get player input for second cadet
         while True:
             c2 = input(self.display.build_input(
-                "Choose second cadet :: ")).strip()
+                "Choose second cadet ⁞⁞ ")).strip()
             if str(c1+1) == c2:
                 self.display.build_menu(
-                    "--- Please do not choose the same cadet twice ---", is_error=True)
+                    "═══ Please do not choose the same cadet twice ═══", is_error=True)
                 continue
             self.display.clear(is_error=True)
 
@@ -245,7 +245,7 @@ class Menu():
                 cadets.names[c2]
             except:
                 self.display.build_menu(
-                    "--- Please provide a valid choice for second cadet ---", is_error=True)
+                    "═══ Please provide a valid choice for second cadet ═══", is_error=True)
             else:
                 self.display.clear(is_error=True)
                 break
@@ -275,7 +275,7 @@ class Menu():
         short_names = [name.split(" ")[1] for name in available_cadets]
         # Create menu elements out of the dynamic list
         mission_loop_texts = ' '.join([
-            f'{c[0]}. {c[1]} ' for c in enumerate(short_names, 1)])
+            f'⁞{c[0]}⁞ {c[1]} ⁞' for c in enumerate(short_names, 1)])
         self.display.build_menu(mission_loop_texts)
         while True:
             choice = input(self.display.build_input()).strip()
@@ -288,7 +288,7 @@ class Menu():
                 break
             except:
                 self.display.build_menu(
-                    "---Please provide a valid choice for the Cadet to fill this role---", is_error=True)
+                    "═══ Please provide a valid choice for the Cadet to fill this role ═══", is_error=True)
 
         # Returns to assemble_crew()
         return choice
@@ -302,8 +302,8 @@ class Menu():
 
 
     def show_highscore(self):
-        self.display.build_screen('HIGHSCORE', center=True)
-        self.display.build_screen(self.sheet.get_score(), 3)
+        self.display.build_screen('. · ˚ ✧ ˚ · . . · ˚ ✧ ˚ · .  HIGHSCORE  . · ˚ ✧ ˚ · . . · ˚ ✧ ˚ · .', 2, center=True)
+        self.display.build_screen(self.sheet.get_score(), 4)
         self.display.build_menu("")
         input(self.display.build_input(prompt_enter=True))
         return
@@ -313,48 +313,18 @@ class Menu():
     def loading_screen(self, part=1):
         match part:
             case 1:
-                logo = ['         AD ASTRA',
-                        '          ______',
-                        '       _-´ .   .`-_',
-                        "   |/ /  .. . '   .\ \|",
-                        '  |/ /            ..\ \|',
-                        '\|/ |: .   ._|_ .. . | \|/',
-                        ' \/ |   _|_ .| . .:  | \/',
-                        '\ / |.   |  .  .    .| \ /',
-                        ' \||| .  . .  _|_   .|||/',
-                        '\__| \  . :.  .|.  ./ |__/',
-                        '  __| \_  .    .. _/ |__',
-                        "   __|  `-______-'  |__",
-                        '      -,____  ____,-',
-                        '        ---´  `---',
-                        'UNITED FEDERATION OF PLANETS']
+                logo = self.sheet.get_text('logo_ad_astra')
                 self.display.clear()
                 self.display.build_screen(logo, 2, center_logo=True)
                 return
             case 2:
-                message = ['Welcome, Assessor!', ' ']
-                message.extend(textwrap.wrap(
-                    'I am Cat, short for "Cadet Assessment Terminal". Since the speech module is currently undergoing a personality adjustment, I ask you to use your keyboard today (if you can remember how).', 76))
-                message.append("")
-                message.extend(textwrap.wrap("As usual, you will be assessing a group of young cadets who have volunteered to go on an important mission. The mission requires a crew, and each role on the crew must be filled with one cadet. Please run a few trials where you let two cadets compete against each other, and note their performance. The sooner you finish the trials, the better, of course. Be as thorough as you need to, but don't miss the deadline!", 76))
-                message.extend(
-                    ["", "Don't forget to provide your full name for the log."])
+                message = self.sheet.get_text('welcome')
                 self.display.clear()
                 self.display.build_screen(message)
-                
+                return
             case 3:
                 self.display.clear()
-                ship = ["                                          ________.-._____",
-                        "                               _____.----'--'-------------`-------._____",
-                        " ,------.______________.----._'=========================================`",
-                        " ]======================<|# |_)------- `----._____________.----'",
-                        " `------.______________.----'[  ,--------/        `-'",
-                        "          `-.---.-'    _____/__/___     /",
-                        "        ____|   |-----'            `---<",
-                        "       /||__|---|________             //",
-                        "       `------------._       _______ //",
-                        "                      \        ---- //",
-                        "                       |__________.-'"]
+                ship = self.sheet.get_text('ship_anim')
                 parsed_ship = [f'{" "*80}{row:73}' for row in ship]
                 for i in range(-2,-153,-2):
                     all_lines = []
@@ -362,9 +332,6 @@ class Menu():
                         all_lines.append(line[i:-1 if i>=-76 else i+76])
                     self.display.build_screen(all_lines, 3)
                     self.display.draw()
-                    #x = ((i*-1)**2)/100000
-                    # TODO: make speed curve
                     time.sleep(0.07)
                     self.display.flush_input()
-                input()
 

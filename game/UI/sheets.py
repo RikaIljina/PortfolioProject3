@@ -1,5 +1,6 @@
 import gspread
 from google.oauth2.service_account import Credentials
+import textwrap
 
 class Sheet:
     SCOPE = [
@@ -33,7 +34,7 @@ class Sheet:
         score_list = []
         for row in score_rows:
             # Pre-format names and scores for output
-            score_list.append(f'{self.GREEN}{row[0]}{"  "}{"-"*(72-len(row[0])-len(row[1]))}{"  "}{row[1]}{self.RESET}')
+            score_list.append(f'{self.GREEN}{row[0]}{"  "}{"⋅"*(72-len(row[0])-len(row[1]))}{"  "}{row[1]}{self.RESET}')
         return score_list
 
     def get_rows(self):
@@ -64,10 +65,16 @@ class Sheet:
             # print(new_score_list)
 
 
-        # write list to sheet
-        
-        return
-    
-    def get_msg(self, role, level, success, fname):
+    def get_mission_msg(self, role, level, success, fname):
         key = f'ml_{role[:3].lower()}_{level}_{"suc" if success else "fail"}'
         return self.msg_dict[key].format(name=fname)
+
+
+    def get_text(self, key):
+        message_raw = self.msg_dict[key].split("\n")
+        message_wrapped = []
+        message = []
+        message_wrapped.extend(textwrap.wrap(el, 76) if el else " " for el in message_raw)
+        for el in message_wrapped:
+            message.extend(el)
+        return message
