@@ -33,7 +33,7 @@ class Player:
         """
         pattern = r'^[A-Za-z\s]{1,30}$'
         if re.match(pattern, name) and re.search(r'[a-zA-Z]', name):
-            self.name = name
+            self.name = ' '.join(name.split())
             return True
         else:
             return False
