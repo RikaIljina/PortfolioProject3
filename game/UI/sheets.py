@@ -1,8 +1,42 @@
+"""Contains the class Sheet which establishes a connection to Google sheet
+
+The class accesses the data in the spreadsheet, formats and returns the data
+on demand, and writes new data into the spreadsheet.
+
+"""
+import textwrap
 import gspread
 from google.oauth2.service_account import Credentials
-import textwrap
+
 
 class Sheet:
+    """Establishes connection to Google sheet and handles data input/output
+
+    Opens the worksheet 'highscore' containing the highscore table and the
+    worksheet 'texts' containing all messages that will be shown to the player.
+    On instantiation, all messages from the sheet 'texts' are loaded into a
+    dictionary. Each message has a unique ID with which it can be accessed.
+
+    Attributes:
+        SCOPE: List with scope URLs
+        CREDS: The constructed credentials
+        SCOPED_CREDS: Credentials prepared by oauth2 module
+        GSPREAD_CLIENT: Client instance for authorized Google API access
+        SHEET: Spreadsheet instance for Google sheet 'ad_astra' returned by
+            gspread module
+        score_table: Worksheet instance for 'highscore'
+        texts: Worksheet instance for 'texts'
+        MAX_ENTRIES (int): Maximum highscore entries allowed
+        GREEN (str): ANSI color code for green
+        RESET (str): ANSI code to reset previous ANSI code
+        
+    Methods:
+        get_score(): Retrieves list with formatted highscore entries
+        write_score(): Writes new name and score into highscore sheet
+        get_mission_msg(): Retrieves specific description of mission results
+            for each cadet
+        get_text(): Retrieves formatted message for specific key
+    """
     SCOPE = [
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive.file",
@@ -12,72 +46,109 @@ class Sheet:
     SCOPED_CREDS = CREDS.with_scopes(SCOPE)
     GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
     SHEET = GSPREAD_CLIENT.open('ad_astra')
-
     score_table = SHEET.worksheet("highscore")
-    texts =  SHEET.worksheet("texts")
-
-    # Max highscore entries
+    texts = SHEET.worksheet("texts")
+    # Max highscore entries allowed
     MAX_ENTRIES = 10
+    # ANSI color codes
     GREEN = "\033[32m"
     RESET = "\033[0m"
 
-
     def __init__(self):
+        # Build a dictionary with all messages in the 'texts' worksheet
         self.messages = self.texts.get_all_values()
         self.msg_dict = dict(self.messages)
-        #print(self.msg_dict)
-        #input()
-        
-        
+
     def get_score(self) -> list:
-        score_rows = self.get_rows()
+        """Reads highscore table from worksheet and returns it in list form
+
+        The returned list contains preformatted strings that can be fed into
+        the Display module.
+
+        Returns:
+            list: A list with MAX_ENTRIES entries (default: 10) 
+        """
+        score_rows = self.score_table.get_all_values()
         score_list = []
         for row in score_rows:
             # Pre-format names and scores for output
-            score_list.append(f'{self.GREEN}{row[0]}{"  "}{"⋅"*(72-len(row[0])-len(row[1]))}{"  "}{row[1]}{self.RESET}')
+            score_list.append(
+                f'{self.GREEN}{row[0]}{"  "}{"⋅"*(72-len(row[0])-len(row[1]))}'
+                f'{"  "}{row[1]}{self.RESET}')
         return score_list
 
-    def get_rows(self):
-        return self.score_table.get_all_values()
-
     def write_score(self, new_score: int, new_name: str):
-        # get score list
-        score_list = self.get_rows()
-        # count entries
+        """Writes player name and score into the highscore table
+
+        Args:
+            new_score (int): Player score to write into the highscore table
+            new_name (str): Player name to write into the highscore table
+        """
+        # Get score list from highscore worksheet
+        score_list = self.score_table.get_all_values()
         entries_num = len(score_list)
-        # compare last entry to new score
+        # Get lowest score in the table
         last_score = int(score_list[-1][1])
-        # add score to list and sort
+        # If less than max amount of entries: append new score to list
         if entries_num < self.MAX_ENTRIES:
             score_list.append([new_name, new_score])
-            #print(score_list)
-            new_score_list = sorted(score_list, key=lambda entry: int(entry[1]), reverse=True)
+            # Sort all entries by score in descending order
+            new_score_list = sorted(
+                score_list, key=lambda entry: int(entry[1]), reverse=True)
+            # Update worksheet with the new sorted list
             self.score_table.update(values=new_score_list, range_name='A1:B10')
-            #print(new_score_list)
         else:
+            # If new player score is high enough for the highscore:
             if new_score > last_score:
+                # Append, sort, and remove the last (lowest) entry
                 score_list.append([new_name, new_score])
-            # print(score_list)
-                new_score_list = sorted(score_list, key=lambda entry: int(entry[1]), reverse=True)
+                new_score_list = sorted(
+                    score_list, key=lambda entry: int(entry[1]), reverse=True)
                 new_score_list.pop(-1)
-                self.score_table.update(values=new_score_list, range_name='A1:B10')
+                self.score_table.update(
+                    values=new_score_list, range_name='A1:B10')
 
-            # print(new_score_list)
+    def get_mission_msg(self, role: str, level: str, success: bool,
+                        fname: str) -> str:
+        """Construct ID from args and retrieve the appropriate message
 
+        Args:
+            role (str): Name of the role such as Captain, Doctor etc
+            level (str): 'low', 'mid', or 'high', depending on task difficulty
+            success (bool): Whether the cadet succeeded at the task 
+            fname (str): First name of the cadet
 
-    def get_mission_msg(self, role, level, success, fname):
+        Returns:
+            str: Descriptive text for the specific role and cadet
+        """
         key = f'ml_{role[:3].lower()}_{level}_{"suc" if success else "fail"}'
         return self.msg_dict[key].format(name=fname)
 
+    def get_text(self, key: str) -> str:
+        """Returns formatted message for a specific key
+        
+        Takes the message ID as key and returns the message string or a list
+        with wrapped message strings.
 
-    def get_text(self, key):
-        if '\n' in self.msg_dict[key] or len(self.msg_dict[key]) > 76:
-            message_raw = self.msg_dict[key].split("\n")
-            message_wrapped = []
+        Args:
+            key (str): Message ID
+
+        Returns:
+            str: Preformatted message
+        """
+        message_raw = self.msg_dict[key]
+        if '\n' in message_raw or len(message_raw) > 76:
+            message_list = message_raw.split("\n")
             message = []
-            message_wrapped.extend(textwrap.wrap(el, 76) if el else " " for el in message_raw)
-            for el in message_wrapped:
-                message.extend(el)
+            message_wrapped = []
+            for el in message_list:
+                if len(el) > 76:
+                    message_wrapped = textwrap.wrap(el, 76)
+                    message.extend(message_wrapped)
+                elif len(el) == 0:
+                    message.append(" ")
+                else:
+                    message.append(el)
         else:
-            message = self.msg_dict[key]
+            message = message_raw
         return message
