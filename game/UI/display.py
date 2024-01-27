@@ -1,18 +1,19 @@
+"""
+"""
 import math
-#import msvcrt
 import random
 import os
 import time
 from typing import Union
 from colorama import just_fix_windows_console
 
-# TODO: remove redundant screen drawings
+
 class Display:
     """Processes text and renders the screen output
-    
+
     Contains viewport and output formatting data, formats and handles all
     print operations.
-    
+
     Attributes:
         HEIGHT (int): Max allowed viewport height minus input line
         WIDTH (int): Max allowed viewport width
@@ -22,7 +23,7 @@ class Display:
         ERROR_ROW_NR int): Index of the row with error output
         MENU_ROW_NR (int): Index of the row with menu elements
         rows (list): 23 strings containing all screen output
-    
+
     Methods:
         clear(): Inserts empty rows to clear terminal output
         build_screen():  Formats and builds a list of strings passed from
@@ -44,14 +45,12 @@ class Display:
     GREEN = "\033[92;1m"
     RESET = "\033[0m"
 
-
     def __init__(self):
         self.rows = []
         self.empty_screen()
         self.filled = []
         self.first_time = True
         just_fix_windows_console()
-
 
     def empty_screen(self):
         """Creates a list of rows containing border chars and empty space"""
@@ -60,10 +59,9 @@ class Display:
         self.rows.extend([self.BORDER_CHAR * self.WIDTH for _ in range(2)])
         self.rows.append(str(self.BORDER_CHAR * self.WIDTH))
 
-
     def clear(self, indexes=[_ for _ in range(1, 19)], is_error=False):
         """Clears specific rows in the terminal
-        
+
         Receives indexes to clear in the terminal and overwrites them in the 
         self.row attribute with empty rows.
 
@@ -79,10 +77,10 @@ class Display:
             for index in indexes:
                 self.rows[index] = self.EMPTY_ROW
 
-
-    def build_screen(self, text: Union[str, list, dict], row_nr=1, center=False, center_logo=False, ansi=0) -> None:
+    def build_screen(self, text: Union[str, list, dict], row_nr=1,
+                     center=False, center_logo=False, ansi=0) -> None:
         """Prepares a text for terminal output above the menu row
-        
+
         Receives a string, list, or dictionary, formats its contents,
         and overwrites the specified rows of self.rows with the contents.
 
@@ -91,63 +89,85 @@ class Display:
             row_nr (int, optional): Row index at which to start. Defaults to 1.
             center (bool, optional): States whether the message should be
                 centered on screen. Defaults to False.
+            center_logo (bool, optional): States whether the message is the
+                logo, which requires its own build logic and animation.
+            ansi (int, optional): Amount of ANSI chars to subtract from the
+                string length when building correct string with borders. 
         """
         result = ''
 
         if text:
             # String processing
             if isinstance(text, str):
-                if center:              # TODO: put into a separate function
+                # If the text will be centered, it must be prefaced with the
+                # following amount of whitespaces:
+                # max screen width (80) minus 2 border chars (->78)
+                # minus length of text, result divided by 2.
+                # If an ANSI code is present, the amount of ANSI chars must be
+                # subtracted from the text length and added to the total width
+                # to achieve the correct row length.
+                if center:
                     width = "<" + str(78 + ansi)
                     str_len = len(text) - ansi
-                    result = (f'{self.BORDER_CHAR}{" "*math.ceil((78-str_len)/2) + text:{width}}'
+                    result = (f'{self.BORDER_CHAR}'
+                              f'{" "*math.ceil((78-str_len)/2) + text:{width}}'
                               f'{self.BORDER_CHAR}')
                 else:
                     width = "<" + str(76 + ansi)
                     result = (f'{self.BORDER_CHAR}{" "}{text:{width}}{" "}'
                               f'{self.BORDER_CHAR}')
                 self.rows[row_nr] = result
+
             # List processing
             elif isinstance(text, list):
 
                 if center_logo:
-                    # Draw screen filled with border chars, list form
+                    # The logo is passed to this method as a list and must be
+                    # centered.
                     # make list out of each row of finished logo screen
                     # make list with coord tuples
                     # choose random tuple, remove from tuple list
                     # set char to logo char
-                    
-                    # TODO: just do it once at game start
+
                     if self.first_time:
+                        # This bool makes sure that the reveal animation is
+                        # only played once at game start, not every time the
+                        # player reaches the outer menu.
                         self.first_time = False
                         time.sleep(0.5)
+                        # The following code builds the formatted screen rows
+                        # with the logo inside 
                         rows_matrix_logo = []
                         for idx, line in enumerate(text):
-                            result = (f'{self.BORDER_CHAR}{" "*25 + line:<78}'
-                                        f'{self.BORDER_CHAR}')
+                            result = (f'{self.BORDER_CHAR}{" "*26 + line:<78}'
+                                      f'{self.BORDER_CHAR}')
                             self.rows[row_nr + idx] = result
+                            
+                       # print(self.rows)
+                       # input()
 
-                        # list with finished logo screen
+                        # list with finished logo screen, each element is a character
                         for row in self.rows:
                             rows_matrix_logo.append(list(row))
-                        #print(rows_matrix_logo)
-                        #input()
-
+                            
+                       # print(rows_matrix_logo)
+                       # input()
                         # list with filled screen
-                        self.rows = [str(self.BORDER_CHAR * self.WIDTH) for _ in range(self.HEIGHT)]
+                        self.rows = [str(self.BORDER_CHAR * self.WIDTH)
+                                     for _ in range(self.HEIGHT)]
                         rows_matrix_filled = []
                         for row in self.rows:
                             rows_matrix_filled.append(list(row))
-                        #input(self.build_input())
-                        
                         # list wth coord tuples
-                        coord_list = [(x, y) for x in range(self.HEIGHT) for y in range(self.WIDTH)]
+                        coord_list = [(x, y) for x in range(self.HEIGHT)
+                                      for y in range(self.WIDTH)]
                         len_coord = len(coord_list)
                         for x in range(math.floor(len_coord/60)-3):
                             for _ in range(10+x*5):
                                 if len(coord_list) > 0:
                                     idx = random.choice(range(len(coord_list)))
-                                    rows_matrix_filled[coord_list[idx][0]][coord_list[idx][1]] = rows_matrix_logo[coord_list[idx][0]][coord_list[idx][1]]
+                                    rows_matrix_filled[coord_list[idx][0]][coord_list[idx][1]
+                                                                           ] = rows_matrix_logo[coord_list[idx][0]][coord_list[idx][1]]
                                     coord_list.pop(idx)
                                 else:
                                     break
@@ -158,13 +178,13 @@ class Display:
                             # Disable keyboard input while sleeping
                             self.flush_input()
                         return
-                    else:
-                        for idx, line in enumerate(text):
-                            result = (f'{self.BORDER_CHAR}{" "*25 + line:<78}'
-                                        f'{self.BORDER_CHAR}')
-                            self.rows[row_nr + idx] = result
-                        return
                     
+                    for idx, line in enumerate(text):
+                        result = (f'{self.BORDER_CHAR}{" "*26 + line:<78}'
+                                    f'{self.BORDER_CHAR}')
+                        self.rows[row_nr + idx] = result
+                    return
+
                 # fix to have loop inside if else
                 for idx, line in enumerate(text):
                     if center:
@@ -173,7 +193,7 @@ class Display:
                                   f'{self.BORDER_CHAR}')
                     else:
                         result = (f'{self.BORDER_CHAR}{" "}{line:<76}{" "}'
-                                 f'{self.BORDER_CHAR}')
+                                  f'{self.BORDER_CHAR}')
 
                     # Fill the final list starting at specified row index
                     self.rows[row_nr + idx] = result
@@ -210,18 +230,15 @@ class Display:
                 print("Internal error: text is not str, list, or dict")
                 input()
                 return
-                
+
         else:
-            #print("Internal error: text is empty")
-            #input()
             return
-            
 
     def build_menu(self, text: str, is_error=False,):
         """Prepares the menu row for terminal output
-        
+
         Formats the string and overwrites the specified row index in self.rows.
-        
+
         Args:
             text (str): String containing the menu elements, max 76 chars
             is_error (bool, optional): States if text is an error message.
@@ -234,10 +251,9 @@ class Display:
             result = f'{self.BORDER_CHAR}{self.GREEN}{"▶ "}{text:<74}{"◀ "}{self.RESET}{self.BORDER_CHAR}'
             self.rows[self.MENU_ROW_NR] = result
 
-
     def build_input(self, prompt='', prompt_enter=False) -> str:
         """Draws the terminal and returns a user input prompt
-        
+
         Calls __draw() to draw the terminal. Thus, the screen is only re-drawn
         whenever user input is required.
 
@@ -258,24 +274,24 @@ class Display:
 
     def draw(self):
         """Clears the previous screen and re-draws the new terminal
-        
+
         This function is usually called by build_input() to draw the screen
         just before receiving user input. It should be used on its own only
         before time.sleep() in order to avoid unnecessary re-drawing of the
         screen when the user can't even see the result.
         """
         os.system('cls||clear')
-        #os.system("clear")
+        # os.system("clear")
         for row in self.rows:
             print(f'{row}')
 
-
-    # https://stackoverflow.com/questions/67083097/how-to-prevent-user-input-into-console-when-program-is-running-in-python    
+    # https://stackoverflow.com/questions/67083097/how-to-prevent-user-input-into-console-when-program-is-running-in-python
     def flush_input(self):
         try:
             import msvcrt
             while msvcrt.kbhit():
                 msvcrt.getch()
         except ImportError:
-            import sys, termios    #for linux/unix
+            import sys
+            import termios  # for linux/unix
             termios.tcflush(sys.stdin, termios.TCIOFLUSH)
