@@ -32,13 +32,13 @@ class Display:
             to prepare terminal output
         build_input(): Formats input prompt and calls _draw to draw screen
     """
-    HEIGHT = 22
+    HEIGHT = 23
     WIDTH = 80
     BORDER_CHAR = "▓"
     INPUT_PROMPT = '▓▓▓ ⁞⁞ '
     EMPTY_ROW = f'{BORDER_CHAR}{" ":<78}{BORDER_CHAR}'
-    ERROR_ROW_NR = 21
-    MENU_ROW_NR = 20
+    ERROR_ROW_NR = 22
+    MENU_ROW_NR = 21
     ENTER = 'Press ENTER to continue ⁞⁞ '
     # ANSI codes for text styling
     RED = "\033[41;1m"
@@ -56,8 +56,8 @@ class Display:
         """Creates a list of rows containing border chars and empty space"""
         self.rows = [str(self.BORDER_CHAR * self.WIDTH)]
         self.rows.extend([self.EMPTY_ROW for _ in range(self.HEIGHT - 4)])
-        self.rows.extend([self.BORDER_CHAR * self.WIDTH for _ in range(2)])
-        self.rows.append(str(self.BORDER_CHAR * self.WIDTH))
+        self.rows.extend([self.BORDER_CHAR * self.WIDTH for _ in range(4)])
+        #self.rows.append(str(self.BORDER_CHAR * self.WIDTH))
 
     def clear(self, indexes=[_ for _ in range(1, 19)], is_error=False):
         """Clears specific rows in the terminal
