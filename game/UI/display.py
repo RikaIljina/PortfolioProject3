@@ -32,13 +32,13 @@ class Display:
             to prepare terminal output
         build_input(): Formats input prompt and calls _draw to draw screen
     """
-    HEIGHT = 23
+    HEIGHT = 21
     WIDTH = 80
     BORDER_CHAR = "▓"
     INPUT_PROMPT = '▓▓▓ ⁞⁞ '
     EMPTY_ROW = f'{BORDER_CHAR}{" ":<78}{BORDER_CHAR}'
-    ERROR_ROW_NR = 22
-    MENU_ROW_NR = 21
+    ERROR_ROW_NR = 20
+    MENU_ROW_NR = 19
     ENTER = 'Press ENTER to continue ⁞⁞ '
     # ANSI codes for text styling
     RED = "\033[41;1m"
@@ -59,7 +59,7 @@ class Display:
         self.rows.extend([self.BORDER_CHAR * self.WIDTH for _ in range(4)])
         #self.rows.append(str(self.BORDER_CHAR * self.WIDTH))
 
-    def clear(self, indexes=[_ for _ in range(1, 19)], is_error=False):
+    def clear(self, indexes=list(range(1, 18)), is_error=False):
         """Clears specific rows in the terminal
 
         Receives indexes to clear in the terminal and overwrites them in the 
