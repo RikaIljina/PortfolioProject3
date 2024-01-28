@@ -116,7 +116,10 @@ class Mission:
                 input()
             cadet_performance = f'{value[0]} has {"succeeded" if success else "failed"}'
             self.mission_log[key] = [cadet_performance]
-            self.mission_log[key].extend(textwrap.wrap(msg, 70))
+            if isinstance(msg, list):
+                self.mission_log[key].extend(msg)
+            else:
+                self.mission_log[key].append(msg)
 
     def show_results(self, player: object, trials: object):
         """Collects mission calculations and results in one place, outputs them

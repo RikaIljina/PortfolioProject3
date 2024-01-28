@@ -201,7 +201,7 @@ class Menu():
         # Use only second part of cadet name to fit all cadets in one row
         short_names = [name.split(" ")[1] for name in cadets.names]
         cadet_choice_texts = ' '.join(
-            [f'⁞{c[0]}⁞ {c[1]} ⁞' for c in enumerate(short_names, 1)])
+            [f'⁞{c[0]}⁞ {c[1]}' for c in enumerate(short_names, 1)])
         self.display.build_menu(cadet_choice_texts)
         # Get player input for first cadet
         while True:
@@ -262,7 +262,7 @@ class Menu():
         short_names = [name.split(" ")[1] for name in available_cadets]
         # Create menu elements out of the dynamic list
         mission_loop_texts = ' '.join([
-            f'⁞{c[0]}⁞ {c[1]} ⁞' for c in enumerate(short_names, 1)])
+            f'⁞{c[0]}⁞ {c[1]}' for c in enumerate(short_names, 1)])
         self.display.build_menu(mission_loop_texts)
         while True:
             choice = input(self.display.build_input()).strip()

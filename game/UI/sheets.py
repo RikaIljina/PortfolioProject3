@@ -122,9 +122,10 @@ class Sheet:
             str: Descriptive text for the specific role and cadet
         """
         key = f'ml_{role[:3].lower()}_{level}_{"suc" if success else "fail"}'
-        return self.msg_dict[key].format(name=fname)
+       # return self.get_text(self.msg_dict[key].format(name=fname))
+        return self.get_text(key, fname)
 
-    def get_text(self, key: str) -> str:
+    def get_text(self, key: str, name=None) -> str:
         """Returns formatted message for a specific key
         
         Takes the message ID as key and returns the message string or a list
@@ -136,7 +137,10 @@ class Sheet:
         Returns:
             str: Preformatted message
         """
-        message_raw = self.msg_dict[key]
+        if name:
+            message_raw = self.msg_dict[key].format(name=name)
+        else:
+            message_raw = self.msg_dict[key]
         if '\n' in message_raw or len(message_raw) > 76:
             message_list = message_raw.split("\n")
             message = []
