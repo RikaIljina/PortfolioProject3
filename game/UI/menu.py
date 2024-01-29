@@ -1,4 +1,6 @@
 
+import time
+
 class Menu():
     """Builds menu elements and handles all relevant user input
     
