@@ -78,7 +78,7 @@ class Display:
         self.rows.extend([self.BORDER_CHAR * self.WIDTH for _ in range(2)])
         self.rows.append(str(self.BORDER_CHAR * self.WIDTH))
 
-    def clear(self, indexes=list(range(1, 19)), is_error=False):
+    def clear(self, indexes=None, is_error=False):
         """Clears specific rows in the terminal
 
         Receives indexes to clear in the terminal and overwrites them in the 
@@ -90,6 +90,8 @@ class Display:
             is_error (bool, optional): States whether the row to clear is
                 the error row. Defaults to False.
         """
+        if indexes == None:
+            indexes = list(range(1, 19))
         if is_error:
             self.rows[self.ERROR_ROW_NR] = self.BORDER_CHAR * self.WIDTH
         else:
