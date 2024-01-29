@@ -1,7 +1,6 @@
 import math
 import random
 import textwrap
-# from game.UI.sheets import Sheet
 
 
 class Mission:

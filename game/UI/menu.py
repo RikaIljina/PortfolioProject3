@@ -117,7 +117,7 @@ class Menu():
                 self.display.clear([16, 17, 18])
                 input(self.display.build_input(prompt_enter=True))
                 self.display.clear()
-                # TODO: fix laoding screen
+                # TODO: fix loading screen
                 self.display.build_screen(
                 ["No more time for trials! On to the real mission!"], 10, center=True)
                 input(self.display.build_input(prompt_enter=True))
@@ -133,6 +133,7 @@ class Menu():
             self.display.clear(is_error=True)
 
             match choice:
+                # TODO: Restructure choice selection
                # case '1':
                  #   self.run_skill_choice(trials, cadets)
                 #case '2':

@@ -14,6 +14,25 @@ class Display:
     Contains viewport and output formatting data, formats and handles all
     print operations.
 
+    The Display class is used to print on screen:
+    - Print menu choices on the screen:
+        self.display.build_menu(menu_text_string)
+    - Print an error message on the screen:
+        self.display.build_menu(error_message_string, is_error=True)
+    - Print a text above the menu:
+        self.display.build_screen(str||list||dict, starting_row_nr)
+        Valid starting_row_nr values: 1-18.
+    - Clear error message:
+        self.display.clear(is_error=True)
+    - Clear all text above the menu:
+        self.display.clear()
+    - Clear specific rows:
+        self.display.clear([1,2,...])
+    - Take user input with correct placement and formatting of the prompt:
+        input(self.display.build_input()).strip()
+
+    The output is finally rendered on screen only when input() is called.
+
     Attributes:
         HEIGHT (int): Max allowed viewport height minus input line
         WIDTH (int): Max allowed viewport width
@@ -78,7 +97,7 @@ class Display:
                 self.rows[index] = self.EMPTY_ROW
 
     def build_screen(self, text: Union[str, list, dict], row_nr=1,
-                     center=False, center_logo=False, ansi=0) -> None:
+                     center=False, center_logo=False, ansi=0):
         """Prepares a text for terminal output above the menu row
 
         Receives a string, list, or dictionary, formats its contents,
@@ -142,11 +161,11 @@ class Display:
                             result = (f'{self.BORDER_CHAR}{" "*24 + line:<78}'
                                       f'{self.BORDER_CHAR}')
                             self.rows[row_nr + idx] = result
-                            
+
                         # list with finished logo screen, each element is a character
                         for row in self.rows:
                             rows_matrix_logo.append(list(row))
-                            
+
                         # list with filled screen
                         self.rows = [str(self.BORDER_CHAR * self.WIDTH)
                                      for _ in range(self.HEIGHT)]
@@ -173,10 +192,10 @@ class Display:
                             # Disable keyboard input while sleeping
                             self.flush_input()
                         return
-                    
+
                     for idx, line in enumerate(text):
                         result = (f'{self.BORDER_CHAR}{" "*24 + line:<78}'
-                                    f'{self.BORDER_CHAR}')
+                                  f'{self.BORDER_CHAR}')
                         self.rows[row_nr + idx] = result
                     return
 
