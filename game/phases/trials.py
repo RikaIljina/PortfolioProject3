@@ -1,4 +1,3 @@
-# import msvcrt
 import time
 
 

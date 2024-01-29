@@ -1,10 +1,4 @@
 
-import os
-import textwrap
-import time
-# from game.UI.sheets import get_score
-
-
 class Menu():
     """Builds menu elements and handles all relevant user input
     
@@ -118,6 +112,15 @@ class Menu():
             # Exit the menu loop if no more trial runs available
             if not self.stay_in_trial_menu:
                 self.display.build_menu("")
+                self.display.clear([16, 17, 18])
+                input(self.display.build_input(prompt_enter=True))
+                self.display.clear()
+                # TODO: fix laoding screen
+                self.display.build_screen(
+                ["No more time for trials! On to the real mission!"], 10, center=True)
+                input(self.display.build_input(prompt_enter=True))
+                self.display.clear(is_error=True)
+                self.display.clear()
                 break
 
             # Show amount of available trial runs
@@ -132,6 +135,7 @@ class Menu():
                  #   self.run_skill_choice(trials, cadets)
                 #case '2':
                 case '3':
+                    # TODO: add loading screen
                     self.display.clear(is_error=True)
                     self.display.clear()
                     break
@@ -294,8 +298,6 @@ class Menu():
         input(self.display.build_input(prompt_enter=True))
         return
 
-
-    # TODO: should go into Sheet class
     def loading_screen(self, part=1):
         match part:
             case 1:
@@ -318,6 +320,6 @@ class Menu():
                         all_lines.append(line[i:-1 if i>=-76 else i+76])
                     self.display.build_screen(all_lines, 3)
                     self.display.draw()
-                    time.sleep(0.07)
+                    time.sleep(0.03)
                     self.display.flush_input()
 

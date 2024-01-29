@@ -114,7 +114,8 @@ class Mission:
                 print("Internal error: dictionary issue")
                 print(key, diff_values[param], success, fname)
                 input()
-            cadet_performance = f'{value[0]} has {"succeeded" if success else "failed"}'
+            cadet_performance = f'\033[92;1m{value[0]} has succeeded\033[0m' \
+                if success else f'\033[91;1m{value[0]} has failed\033[0m'
             self.mission_log[key] = [cadet_performance]
             if isinstance(msg, list):
                 self.mission_log[key].extend(msg)
@@ -134,9 +135,10 @@ class Mission:
         self.display.clear()
         # Print mission log to the screen
         for key, value in self.mission_log.items():
-            self.display.build_screen([f'{key}: '], 4, center=True)
-            self.display.build_screen(value, 5, center=True)
-            input(self.display.build_input())
+            self.display.build_screen(f'\033[96;1m{key}: \033[0m', 4, center=True, ansi=11)
+            self.display.build_screen(value[0], 5, center=True, ansi=11)
+            self.display.build_screen(value[1:], 6, center=True)
+            input(self.display.build_input(prompt_enter=True))
             self.display.clear()
 
         self.display.build_screen("Calculating final player score:", 1)
@@ -145,4 +147,4 @@ class Mission:
         # Save player score to highscore table
         self.sheet.write_score(final_score, player.name)
         self.display.build_screen(f'{final_score}', 2)
-        input(self.display.build_input())
+        input(self.display.build_input('Press ENTER to show highscore ⁞⁞ '))

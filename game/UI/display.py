@@ -32,13 +32,13 @@ class Display:
             to prepare terminal output
         build_input(): Formats input prompt and calls _draw to draw screen
     """
-    HEIGHT = 21
+    HEIGHT = 22
     WIDTH = 80
     BORDER_CHAR = "▓"
     INPUT_PROMPT = '▓▓▓ ⁞⁞ '
     EMPTY_ROW = f'{BORDER_CHAR}{" ":<78}{BORDER_CHAR}'
-    ERROR_ROW_NR = 20
-    MENU_ROW_NR = 19
+    ERROR_ROW_NR = 21
+    MENU_ROW_NR = 20
     ENTER = 'Press ENTER to continue ⁞⁞ '
     # ANSI codes for text styling
     RED = "\033[41;1m"
@@ -56,10 +56,10 @@ class Display:
         """Creates a list of rows containing border chars and empty space"""
         self.rows = [str(self.BORDER_CHAR * self.WIDTH)]
         self.rows.extend([self.EMPTY_ROW for _ in range(self.HEIGHT - 4)])
-        self.rows.extend([self.BORDER_CHAR * self.WIDTH for _ in range(4)])
-        #self.rows.append(str(self.BORDER_CHAR * self.WIDTH))
+        self.rows.extend([self.BORDER_CHAR * self.WIDTH for _ in range(2)])
+        self.rows.append(str(self.BORDER_CHAR * self.WIDTH))
 
-    def clear(self, indexes=list(range(1, 18)), is_error=False):
+    def clear(self, indexes=list(range(1, 19)), is_error=False):
         """Clears specific rows in the terminal
 
         Receives indexes to clear in the terminal and overwrites them in the 
@@ -136,22 +136,17 @@ class Display:
                         self.first_time = False
                         time.sleep(0.5)
                         # The following code builds the formatted screen rows
-                        # with the logo inside 
+                        # with the logo inside
                         rows_matrix_logo = []
                         for idx, line in enumerate(text):
-                            result = (f'{self.BORDER_CHAR}{" "*26 + line:<78}'
+                            result = (f'{self.BORDER_CHAR}{" "*24 + line:<78}'
                                       f'{self.BORDER_CHAR}')
                             self.rows[row_nr + idx] = result
                             
-                       # print(self.rows)
-                       # input()
-
                         # list with finished logo screen, each element is a character
                         for row in self.rows:
                             rows_matrix_logo.append(list(row))
                             
-                       # print(rows_matrix_logo)
-                       # input()
                         # list with filled screen
                         self.rows = [str(self.BORDER_CHAR * self.WIDTH)
                                      for _ in range(self.HEIGHT)]
@@ -180,7 +175,7 @@ class Display:
                         return
                     
                     for idx, line in enumerate(text):
-                        result = (f'{self.BORDER_CHAR}{" "*26 + line:<78}'
+                        result = (f'{self.BORDER_CHAR}{" "*24 + line:<78}'
                                     f'{self.BORDER_CHAR}')
                         self.rows[row_nr + idx] = result
                     return
@@ -280,7 +275,10 @@ class Display:
         before time.sleep() in order to avoid unnecessary re-drawing of the
         screen when the user can't even see the result.
         """
-        os.system('cls||clear')
+        if os.name == 'nt':
+            os.system("cls")
+        else:
+            os.system("clear")
         # os.system("clear")
         for row in self.rows:
             print(f'{row}')

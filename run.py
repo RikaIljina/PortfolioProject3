@@ -40,18 +40,13 @@ def run(menu: object, player: object, display: object, sheet: object):
     trials = Trials(display)
     final_mission = Mission(cadets.SKILLS, display, sheet)
     menu.run_trial_loop(trials, cadets, final_mission)
-    display.clear([16, 17, 18])
-    input(display.build_input(prompt_enter=True))
-    display.clear()
-    display.build_screen(
-    ["No more time for trials! On to the real mission!"], 10, center=True)
-    input(display.build_input(prompt_enter=True))
-    display.clear(is_error=True)
-    display.clear()
+   
     # Final mission
     final_mission.assemble_crew(menu, trials, cadets)
     menu.loading_screen(3)
     final_mission.show_results(player, trials)
+    display.clear()
+    menu.show_highscore()
 
     display.empty_screen()
 
@@ -60,7 +55,10 @@ def run(menu: object, player: object, display: object, sheet: object):
 
 def main():
     """Initializes Menu and Display class and starts outer menu choice loop"""
-    os.system("clear||cls")
+    if os.name == 'nt':
+        os.system("cls")
+    else:
+        os.system("clear")
     sheet = Sheet()
     display = Display()
     menu = Menu(display, sheet, run)
