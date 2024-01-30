@@ -52,8 +52,9 @@ class Cadets:
         # [f'Welcome to Cat, {self.player_name}!', '',
         #            ('The following cadets have volunteered for the upcoming '
         #             'mission:'), '']
-        message.extend(textwrap.wrap(f'{", ".join(self.names)}',
-                                     self.display.WIDTH - 4))
+        # message.extend(textwrap.wrap(f'{", ".join(self.names)}',
+        #                              self.display.WIDTH - 4))
+        message.extend(self.names)
         self.display.build_screen(message, row_nr=2)
 
 

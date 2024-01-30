@@ -70,8 +70,9 @@ class Mission:
                                 cadets.cadets[available_cadets[index]][skill]]
             available_cadets.pop(index)
         # Clear menu and wait for player to read the output and press ENTER
-        #self.display.clear([18])
-        self.display.build_screen(self.BRIGHT_CYAN + self.sheet.get_text('scr_mission_embark') + self.RESET, 18, center=True, ansi=11)
+        # self.display.clear([18])
+        self.display.build_screen(self.BRIGHT_CYAN + self.sheet.get_text(
+            'scr_mission_embark') + self.RESET, 18, center=True, ansi=11)
         self.display.build_menu("")
         input(self.display.build_input(prompt_enter=True))
 
@@ -87,7 +88,6 @@ class Mission:
         self.prognosis = math.floor(result/len(self.crew.values()))
         self.calculate_disparity()
 
-        #return self.prognosis
     def calculate_disparity(self):
         disparity = self.prognosis - self.difficulty
         if disparity > 10:
@@ -96,7 +96,6 @@ class Mission:
             self.suffix = 'neg'
         else:
             self.suffix = 'zero'
-        
 
     def calculate_success(self) -> int:
         """Calculates the success of the chosen crew
@@ -128,13 +127,13 @@ class Mission:
                 input()
             cadet_performance = \
                 f'{self.GREEN}{value[0]} has succeeded{self.RESET}' if success\
-                    else f'{self.BRIGHT_RED}{value[0]} has failed{self.RESET}'
+                else f'{self.BRIGHT_RED}{value[0]} has failed{self.RESET}'
             self.mission_log[key] = [cadet_performance]
             if isinstance(msg, list):
                 self.mission_log[key].extend(msg)
             else:
                 self.mission_log[key].append(msg)
-        
+
         return self.score
 
     def show_results(self, player: object, trials: object):
@@ -146,14 +145,14 @@ class Mission:
         """
         self.display.clear()
         # Method prints mission info to the screen and builds mission log
-        #self.calculate_success()
-        #self.display.clear()
+        # self.calculate_success()
+        # self.display.clear()
         # Print mission log to the screen
         for key, value in self.mission_log.items():
             self.display.build_screen(f'{self.BRIGHT_CYAN}{key}:{self.RESET}',
-                                      4, center=True, ansi=11)
-            self.display.build_screen(value[0], 5, center=True, ansi=11)
-            self.display.build_screen(value[1:], 6, center=True)
+                                      4, ansi=11)
+            self.display.build_screen(value[0], 5, ansi=11)
+            self.display.build_screen(value[1:], 6)
             input(self.display.build_input(prompt_enter=True))
             self.display.clear()
 

@@ -142,10 +142,8 @@ class Menu():
                 self.display.clear([16, 17, 18])
                 input(self.display.build_input(prompt_enter=True))
                 self.display.clear()
-                # TODO: fix loading screen
-                self.display.build_screen(
-                    ["No more time for trials! On to the real mission!"], 10,
-                    center=True)
+                self.display.build_screen(self.sheet.get_text(
+                    'no_more_trials'), 10, center=True)
                 input(self.display.build_input(prompt_enter=True))
                 self.display.clear(is_error=True)
                 self.display.clear()
@@ -154,7 +152,7 @@ class Menu():
             # Show amount of available trial runs
             trials_left = trials.MAX_RUNS - trials.runs
             self.trials_left = (
-                f'{trials_left} trial{"s" if trials_left != 1 else ""} left')
+                f'{trials_left} hour{"s" if trials_left != 1 else ""} left')
             self.display.build_screen(f'{self.trials_left:>76}', 18)
 
             choice = input(self.display.build_input()).strip()
@@ -377,8 +375,8 @@ class Menu():
                                 'red_alert_y', self.active_player.name)
                             self.display.build_screen(message_1, 4)
                             message_2 = self.sheet.get_text(
-                                f"prediction_{mission.suffix}",\
-                                    mission.prognosis)
+                                f"prediction_{mission.suffix}",
+                                mission.prognosis)
                             self.display.build_screen(message_2, 10)
 
                             self.display.build_menu('')
@@ -411,12 +409,12 @@ class Menu():
             case 5:
                 # value is mission difficulty here
                 message = self.sheet.get_text('trials_desc', value)
-                self.display.build_screen(message, 1)
+                self.display.build_screen(message, 2)
                 return
             case 6:
                 # value is final mission score here
                 self.display.build_menu("")
                 message = self.sheet.get_text(f'mission_score_{value}')
-                self.display.build_screen(message, 4, center=True)
+                self.display.build_screen(message, 4)
                 input(self.display.build_input(prompt_enter=True))
                 return
