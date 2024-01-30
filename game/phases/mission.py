@@ -26,6 +26,11 @@ class Mission:
     """
     DIFF_MIN = 2
     DIFF_MAX = 10
+    RED = '\033[31;1m'
+    GREEN = '\033[92;1m'
+    BRIGHT_RED = '\033[91;1m'
+    BRIGHT_CYAN = '\033[96;1m'
+    RESET = '\033[0m'
 
     def __init__(self, roles: list, display: object, sheet: object):
         self.roles = roles
@@ -54,7 +59,9 @@ class Mission:
         self.display.build_screen(trials.trials_log, 1)
         crew_list = [self.sheet.get_text('scr_mission_welcome')]
         for skill in self.roles:
-            self.display.build_screen(self.sheet.get_text("scr_mission_role").format(skill=f'\033[31;1m{skill}\033[0m'), 18, ansi=11)
+            self.display.build_screen(
+                self.sheet.get_text("scr_mission_role").format(
+                    skill=f'{self.RED}{skill}{self.RESET}'), 18, ansi=11)
             index = menu.run_mission_loop(available_cadets)
             crew_list.append(
                 f'{skill} {available_cadets[index].split(" ")[1]}')
@@ -95,10 +102,12 @@ class Mission:
         self.display.build_menu("")
         input(self.display.build_input(prompt_enter=True))
         diff_values = {1: "low", 2: "low", 3: "low", 4: "low",
-                       5: "low", 6: "mid", 7: "mid", 8: "mid", 9: "high", 10: "high"}
+                       5: "low", 6: "mid", 7: "mid", 8: "mid",
+                       9: "high", 10: "high"}
         # Assign mission description according to each mission parameter and
         # calculate success for each cadet.
-        for param, (key, value) in zip(self.mission_parameters, self.crew.items()):
+        for param, (key, value) in zip(self.mission_parameters,
+                                       self.crew.items()):
             fname = value[0].split(" ")[1]
             if value[1] >= param:
                 self.score += 1
@@ -109,12 +118,13 @@ class Mission:
                 # Get the appropriate message from the Google sheet
                 msg = self.sheet.get_mission_msg(
                     key, diff_values[param], success, fname)
-            except:
-                print("Internal error: dictionary issue")
-                print(key, diff_values[param], success, fname)
+            except KeyError as e:
+                print("Internal error: dictionary issue, no such key")
+                print(e, key, diff_values[param], success, fname)
                 input()
-            cadet_performance = f'\033[92;1m{value[0]} has succeeded\033[0m' \
-                if success else f'\033[91;1m{value[0]} has failed\033[0m'
+            cadet_performance = \
+                f'{self.GREEN}{value[0]} has succeeded{self.RESET}' if success\
+                    else f'{self.BRIGHT_RED}{value[0]} has failed{self.RESET}'
             self.mission_log[key] = [cadet_performance]
             if isinstance(msg, list):
                 self.mission_log[key].extend(msg)
@@ -134,7 +144,8 @@ class Mission:
         self.display.clear()
         # Print mission log to the screen
         for key, value in self.mission_log.items():
-            self.display.build_screen(f'\033[96;1m{key}: \033[0m', 4, center=True, ansi=11)
+            self.display.build_screen(f'{self.BRIGHT_CYAN}{key}:{self.RESET}',
+                                      4, center=True, ansi=11)
             self.display.build_screen(value[0], 5, center=True, ansi=11)
             self.display.build_screen(value[1:], 6, center=True)
             input(self.display.build_input(prompt_enter=True))
