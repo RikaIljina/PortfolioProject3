@@ -37,13 +37,13 @@ class Mission:
         self.display = display
         self.sheet = sheet
         self.prognosis = 0
-        self.difficulty = 0
         self.score = 0
         self.mission_log = {}
         self.crew = {}
         self.mission_parameters = [random.randrange(
             self.DIFF_MIN, self.DIFF_MAX+1) for _ in range(5)]
         self.difficulty = (sum(self.mission_parameters)/5)*10
+        self.suffix = ''
 
     def assemble_crew(self, menu: object, trials: object, cadets: object):
         """Lets player assign cadets to the roles via the menu
@@ -60,8 +60,7 @@ class Mission:
         crew_list = [self.sheet.get_text('scr_mission_welcome')]
         for skill in self.roles:
             self.display.build_screen(
-                self.sheet.get_text("scr_mission_role").format(
-                    skill=f'{self.RED}{skill}{self.RESET}'), 18, ansi=11)
+                self.sheet.get_text("scr_mission_role", f'{self.RED}{skill}{self.RESET}'), 18, ansi=11)
             index = menu.run_mission_loop(available_cadets)
             crew_list.append(
                 f'{skill} {available_cadets[index].split(" ")[1]}')
@@ -85,8 +84,18 @@ class Mission:
         """
         result = sum([value[1]*10 for value in self.crew.values()])
         self.prognosis = math.floor(result/len(self.crew.values()))
+        self.calculate_disparity()
 
-        return self.prognosis
+        #return self.prognosis
+    def calculate_disparity(self):
+        disparity = self.prognosis - self.difficulty
+        if disparity > 10:
+            self.suffix = 'pos'
+        elif disparity < -10:
+            self.suffix = 'neg'
+        else:
+            self.suffix = 'zero'
+        
 
     def calculate_success(self) -> int:
         """Calculates the success of the chosen crew
@@ -94,6 +103,7 @@ class Mission:
         The mission difficulty can be adjusted by changing the MIN/MAX values.
         THe value 5 is the amount of available skills/roles.
         """
+        self.calculate_prognosis()
         input(self.display.build_input(prompt_enter=True))
         diff_values = {1: "low", 2: "low", 3: "low", 4: "low",
                        5: "low", 6: "mid", 7: "mid", 8: "mid",

@@ -125,7 +125,7 @@ class Sheet:
        # return self.get_text(self.msg_dict[key].format(name=fname))
         return self.get_text(key, fname)
 
-    def get_text(self, key: str, name=None) -> str:
+    def get_text(self, key: str, value=None) -> str:
         """Returns formatted message for a specific key
         
         Takes the message ID as key and returns the message string or a list
@@ -137,8 +137,8 @@ class Sheet:
         Returns:
             str: Preformatted message
         """
-        if name:
-            message_raw = self.msg_dict[key].format(name=name)
+        if value:
+            message_raw = self.msg_dict[key].format(value=value)
         else:
             message_raw = self.msg_dict[key]
         if '\n' in message_raw or len(message_raw) > 76:

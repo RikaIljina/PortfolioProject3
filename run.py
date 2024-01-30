@@ -44,9 +44,9 @@ def run(menu: object, player: object, display: object, sheet: object):
 
     # Final mission
     final_mission.assemble_crew(menu, trials, cadets)
-    menu.loading_screen(4, final_mission)
-    menu.loading_screen(3)
     mission_score = final_mission.calculate_success()
+    menu.loading_screen(3, final_mission)
+    menu.loading_screen(4)
     menu.loading_screen(6, mission_score)
     final_mission.show_results(player, trials)
     display.clear()

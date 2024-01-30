@@ -350,20 +350,9 @@ class Menu():
                 self.display.clear()
                 self.display.build_screen(message)
                 return
+
             case 3:
-                self.display.clear()
-                ship = self.sheet.get_text('ship_anim')
-                parsed_ship = [f'{" "*80}{row:73}' for row in ship]
-                for i in range(-2, -153, -2):
-                    all_lines = []
-                    for line in parsed_ship:
-                        all_lines.append(line[i:-1 if i >= -76 else i+76])
-                    self.display.build_screen(all_lines, 3)
-                    self.display.draw()
-                    time.sleep(0.03)
-                    self.display.flush_input()
-                return
-            case 4:
+                # value is Mission class object here
                 mission = value
                 # Red alert screen
                 time.sleep(0.5)
@@ -384,13 +373,13 @@ class Menu():
                     match choice:
                         case '1':
                             self.display.clear(list(range(3, 19)))
-                            message = self.sheet.get_text(
+                            message_1 = self.sheet.get_text(
                                 'red_alert_y', self.active_player.name)
-                            self.display.build_screen(message, 4)
-                            self.display.build_screen(
-                                f"Predicted crew success rate: {mission.calculate_prognosis()}", 1)
-                            self.display.build_screen(f'The mission difficulty is '
-                                  f'{mission.difficulty}', 3)
+                            self.display.build_screen(message_1, 4)
+                            message_2 = self.sheet.get_text(
+                                f"prediction_{mission.suffix}", mission.prognosis)
+                            self.display.build_screen(message_2, 10)
+
                             self.display.build_menu('')
                             input(self.display.build_input(prompt_enter=True))
                             return
@@ -405,6 +394,19 @@ class Menu():
                         case _:
                             error = self.sheet.get_text('err_red_alert')
                             self.display.build_menu(error, is_error=True)
+            case 4:
+                self.display.clear()
+                ship = self.sheet.get_text('ship_anim')
+                parsed_ship = [f'{" "*80}{row:73}' for row in ship]
+                for i in range(-2, -153, -2):
+                    all_lines = []
+                    for line in parsed_ship:
+                        all_lines.append(line[i:-1 if i >= -76 else i+76])
+                    self.display.build_screen(all_lines, 3)
+                    self.display.draw()
+                    time.sleep(0.03)
+                    self.display.flush_input()
+                return
             case 5:
                 # value is mission difficulty here
                 message = self.sheet.get_text('trials_desc', value)
@@ -417,4 +419,3 @@ class Menu():
                 self.display.build_screen(message, 4, center=True)
                 input(self.display.build_input(prompt_enter=True))
                 return
-                
