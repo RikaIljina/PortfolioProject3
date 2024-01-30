@@ -128,12 +128,12 @@ class Menu():
             cadets (object): reference to Cadets class instance
         """
         self.display.clear()
-        #self.display.build_screen(f"The expected mission difficulty is: "
+        # self.display.build_screen(f"The expected mission difficulty is: "
         #                          f"{mission.difficulty}", 1)
         if self.trial_first_time:
             # TODO: add description
-            self.loading_screen(5, mission)
-            #self.display.build_screen("First, choose a skill.", 2)
+            self.loading_screen(5, mission.difficulty)
+            # self.display.build_screen("First, choose a skill.", 2)
         while True:
             self.display.build_menu(self.sheet.get_text('menu_trial'))
             # Exit the menu loop if no more trial runs available
@@ -337,7 +337,7 @@ class Menu():
         input(self.display.build_input(prompt_enter=True))
         return
 
-    def loading_screen(self, part=1, mission=None):
+    def loading_screen(self, part=1, value=None):
         match part:
             case 1:
                 logo = ['   🟇 🟍 ✵  AD ASTRA ✵ 🟍 🟇']
@@ -364,6 +364,7 @@ class Menu():
                     self.display.flush_input()
                 return
             case 4:
+                mission = value
                 # Red alert screen
                 time.sleep(0.5)
                 self.display.flush_input()
@@ -386,6 +387,10 @@ class Menu():
                             message = self.sheet.get_text(
                                 'red_alert_y', self.active_player.name)
                             self.display.build_screen(message, 4)
+                            self.display.build_screen(
+                                f"Predicted crew success rate: {mission.calculate_prognosis()}", 1)
+                            self.display.build_screen(f'The mission difficulty is '
+                                  f'{mission.difficulty}', 3)
                             self.display.build_menu('')
                             input(self.display.build_input(prompt_enter=True))
                             return
@@ -401,6 +406,15 @@ class Menu():
                             error = self.sheet.get_text('err_red_alert')
                             self.display.build_menu(error, is_error=True)
             case 5:
-                message = self.sheet.get_text('trials_desc', mission.difficulty)
+                # value is mission difficulty here
+                message = self.sheet.get_text('trials_desc', value)
                 self.display.build_screen(message, 1)
                 return
+            case 6:
+                # value is final mission score here
+                self.display.build_menu("")
+                message = self.sheet.get_text(f'mission_score_{value}')
+                self.display.build_screen(message, 4, center=True)
+                input(self.display.build_input(prompt_enter=True))
+                return
+                

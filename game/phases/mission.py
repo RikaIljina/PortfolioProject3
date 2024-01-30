@@ -88,18 +88,12 @@ class Mission:
 
         return self.prognosis
 
-    def calculate_success(self):
+    def calculate_success(self) -> int:
         """Calculates the success of the chosen crew
 
         The mission difficulty can be adjusted by changing the MIN/MAX values.
         THe value 5 is the amount of available skills/roles.
         """
-        # Output mission data before the actual mission start
-        self.display.build_screen(
-            f"Predicted crew success rate: {self.calculate_prognosis()}", 1)
-        self.display.build_screen(f'The mission difficulty is '
-                                  f'{self.difficulty}', 3)
-        self.display.build_menu("")
         input(self.display.build_input(prompt_enter=True))
         diff_values = {1: "low", 2: "low", 3: "low", 4: "low",
                        5: "low", 6: "mid", 7: "mid", 8: "mid",
@@ -130,6 +124,8 @@ class Mission:
                 self.mission_log[key].extend(msg)
             else:
                 self.mission_log[key].append(msg)
+        
+        return self.score
 
     def show_results(self, player: object, trials: object):
         """Collects mission calculations and results in one place, outputs them
@@ -140,8 +136,8 @@ class Mission:
         """
         self.display.clear()
         # Method prints mission info to the screen and builds mission log
-        self.calculate_success()
-        self.display.clear()
+        #self.calculate_success()
+        #self.display.clear()
         # Print mission log to the screen
         for key, value in self.mission_log.items():
             self.display.build_screen(f'{self.BRIGHT_CYAN}{key}:{self.RESET}',
