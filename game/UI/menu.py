@@ -377,7 +377,8 @@ class Menu():
                                 'red_alert_y', self.active_player.name)
                             self.display.build_screen(message_1, 4)
                             message_2 = self.sheet.get_text(
-                                f"prediction_{mission.suffix}", mission.prognosis)
+                                f"prediction_{mission.suffix}",\
+                                    mission.prognosis)
                             self.display.build_screen(message_2, 10)
 
                             self.display.build_menu('')

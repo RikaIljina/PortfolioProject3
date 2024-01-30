@@ -70,7 +70,8 @@ class Mission:
                                 cadets.cadets[available_cadets[index]][skill]]
             available_cadets.pop(index)
         # Clear menu and wait for player to read the output and press ENTER
-        self.display.clear([18])
+        #self.display.clear([18])
+        self.display.build_screen(self.BRIGHT_CYAN + self.sheet.get_text('scr_mission_embark') + self.RESET, 18, center=True, ansi=11)
         self.display.build_menu("")
         input(self.display.build_input(prompt_enter=True))
 
@@ -104,7 +105,6 @@ class Mission:
         THe value 5 is the amount of available skills/roles.
         """
         self.calculate_prognosis()
-        input(self.display.build_input(prompt_enter=True))
         diff_values = {1: "low", 2: "low", 3: "low", 4: "low",
                        5: "low", 6: "mid", 7: "mid", 8: "mid",
                        9: "high", 10: "high"}
