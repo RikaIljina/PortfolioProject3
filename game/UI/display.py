@@ -90,7 +90,7 @@ class Display:
             is_error (bool, optional): States whether the row to clear is
                 the error row. Defaults to False.
         """
-        if indexes == None:
+        if indexes is None:
             indexes = list(range(1, 19))
         if is_error:
             self.rows[self.ERROR_ROW_NR] = self.BORDER_CHAR * self.WIDTH
@@ -174,7 +174,7 @@ class Display:
                         rows_matrix_filled = []
                         for row in self.rows:
                             rows_matrix_filled.append(list(row))
-                        # list wth coord tuples
+                        # List with coord tuples
                         coord_list = [(x, y) for x in range(self.HEIGHT)
                                       for y in range(self.WIDTH)]
                         len_coord = len(coord_list)
@@ -182,8 +182,10 @@ class Display:
                             for _ in range(10+x*5):
                                 if len(coord_list) > 0:
                                     idx = random.choice(range(len(coord_list)))
-                                    rows_matrix_filled[coord_list[idx][0]][coord_list[idx][1]
-                                                                           ] = rows_matrix_logo[coord_list[idx][0]][coord_list[idx][1]]
+                                    row = coord_list[idx][0]
+                                    col = coord_list[idx][1]
+                                    rows_matrix_filled[row][col] = \
+                                        rows_matrix_logo[row][col]
                                     coord_list.pop(idx)
                                 else:
                                     break
@@ -201,18 +203,21 @@ class Display:
                         self.rows[row_nr + idx] = result
                     return
 
-                # fix to have loop inside if else
-                for idx, line in enumerate(text):
-                    if center:
+                if center:
+                    for idx, line in enumerate(text):
                         str_len = len(line)
-                        result = (f'{self.BORDER_CHAR}{" "*math.ceil((78-str_len)/2) + line:<78}'
-                                  f'{self.BORDER_CHAR}')
-                    else:
+                        result = (f'{self.BORDER_CHAR}'
+                                f'{" "*math.ceil((78-str_len)/2) + line:<78}'
+                                f'{self.BORDER_CHAR}')
+                        # Fill the final list starting at specified row index
+                        self.rows[row_nr + idx] = result
+                else:
+                    for idx, line in enumerate(text):
                         result = (f'{self.BORDER_CHAR}{" "}{line:<76}{" "}'
-                                  f'{self.BORDER_CHAR}')
+                                 f'{self.BORDER_CHAR}')
+                        # Fill the final list starting at specified row index
+                        self.rows[row_nr + idx] = result
 
-                    # Fill the final list starting at specified row index
-                    self.rows[row_nr + idx] = result
             # Dictionary processing:
             # The received dictionaries have the following format:
             # {key : ['', ..., '']}
@@ -222,12 +227,12 @@ class Display:
                 for key, value in text.items():
                     temp_list = [f'{key}: ']
                     # Make one list containing the key and all values
-                    try:
-                        for val in value:
-                            temp_list.append(val)
-                    except:
+                    if not isinstance(value, list):
                         print("Internal error: Dictionary value is not a list")
                         input()
+                    for val in value:
+                        temp_list.append(val)
+
                     # Make sure key string is aligned to the left while all
                     # value strings start at column 17
                     for i in range(1, len(temp_list)):
@@ -246,7 +251,7 @@ class Display:
                 print("Internal error: text is not str, list, or dict")
                 input()
                 return
-
+        # If text is empty
         else:
             return
 
@@ -261,10 +266,12 @@ class Display:
                 Defaults to False.
         """
         if is_error:
-            result = f'{self.BORDER_CHAR}{self.RED}{" "}{text:>76}{" "}{self.RESET}{self.BORDER_CHAR}'
+            result = (f'{self.BORDER_CHAR}{self.RED}{" "}{text:>76}{" "}'
+                     f'{self.RESET}{self.BORDER_CHAR}')
             self.rows[self.ERROR_ROW_NR] = result
         else:
-            result = f'{self.BORDER_CHAR}{self.GREEN}{"▶ "}{text:<74}{"◀ "}{self.RESET}{self.BORDER_CHAR}'
+            result = (f'{self.BORDER_CHAR}{self.GREEN}{"▶ "}{text:<74}{"◀ "}'
+                      f'{self.RESET}{self.BORDER_CHAR}')
             self.rows[self.MENU_ROW_NR] = result
 
     def build_input(self, prompt='', prompt_enter=False) -> str:
