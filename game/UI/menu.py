@@ -1,16 +1,17 @@
 
 import time
 
+
 class Menu():
     """Builds menu elements and handles all relevant user input
-    
+
     The purpose of the Menu class is:
     - to create and render static and dynamic menu elements
     - to take player choices and react to them by
         * displaying an error message
         * calling a function
         * returning the chosen value
-        
+
     The Display class object is used to print on screen:
     - Print menu choices on the screen:
         self.display.build_menu(menu_text_string)
@@ -27,14 +28,32 @@ class Menu():
         self.display.clear([1,2,...])
     - Take user input with correct placement and formatting of the prompt:
         input(self.display.build_input()).strip()
-        
+
     The output is finally rendered on screen only when input() is called.
-    
+
     Args:
     display (object): Reference to Display class instance
-    run_game (object): Reference to global function run()
+    sheet (object): REference to Sheet class object
+    run_game (object): Reference to global function run() in run.py
+
+    Attributes:
+    GREEN: ANSI color code
+    RESET: ANSI style reset
+
+    Methods:
+    run_outer_loop(): Displays the outer menu choices and waits for player
+        input
+    run_player_init():
+    run_trial_loop():
+    run_skill_choice():
+    run_cadet_choice():
+    run_mission_loop():
+    reset_menu():
+    show_highscore():
+    loading_screen():
     """
-    GREEN = "\033[32m"
+    GREEN = "\033[32;1m"
+    RED = "\033[91;1m"
     RESET = "\033[0m"
 
     def __init__(self, display: object, sheet: object, run_game: object):
@@ -42,21 +61,24 @@ class Menu():
         self.sheet = sheet
         self.outer_loop_funcs = {'1': run_game, '3': self.show_highscore}
         self.trial_loop_funcs = {'1': self.run_skill_choice,
-                            '2': self.run_cadet_choice}
+                                 '2': self.run_cadet_choice}
         self.run_game = run_game
         self.chosen_skill = None
         self.stay_in_trial_menu = True
         self.trials_left = ""
         self.active_player = None
         # Is the player accessing the trial menu for the first time?
-        self.first_time = True
-
+        self.trial_first_time = True
 
     def run_outer_loop(self):
-        """Displays the outer menu choices and waits for player input"""
+        """Displays the outer menu choices and waits for player input
+
+        All other functions except for main() trace back to this function
+        in the end, which returns to main() on game exit.
+        """
         while True:
             # Before the input: Build the screen content
-            self.loading_screen(part=1) # should come from a dict from Sheet class
+            self.loading_screen(part=1)
             self.display.build_menu(self.sheet.get_text('menu_outer'))
             # Draw the screen and take input
             choice = input(self.display.build_input()).strip()
@@ -65,7 +87,8 @@ class Menu():
             self.display.clear()
             match choice:
                 case '1':
-                    self.run_game(self, self.active_player, self.display, self.sheet)
+                    self.run_game(self, self.active_player, self.display,
+                                  self.sheet)
                 case '2':
                     # Restart the game without re-initializing the player
                     self.run_game(self, None, self.display, self.sheet)
@@ -75,8 +98,8 @@ class Menu():
                     # Return to main() and exit game
                     return
                 case _:
-                    self.display.build_menu(self.sheet.get_text('err_outer'), is_error=True)
-
+                    self.display.build_menu(self.sheet.get_text('err_outer'),
+                                            is_error=True)
 
     def run_player_init(self):
         """Prompts user to enter a player name until valid name is entered"""
@@ -88,14 +111,14 @@ class Menu():
             if self.active_player.set_name(name):
                 break
             else:
-                self.display.build_menu(self.sheet.get_text('err_player'), is_error=True)
+                self.display.build_menu(self.sheet.get_text('err_player'),
+                                        is_error=True)
         self.display.clear(is_error=True)
         self.display.clear()
 
-
     def run_trial_loop(self, trials: object, cadets: object, mission: object):
         """Displays trial phase choices and waits for user input
-        
+
         During the trial phase, the player can choose to select a specific
         as well as two cadets to test, or to end the trial phase and start
         the mission.
@@ -105,8 +128,9 @@ class Menu():
             cadets (object): reference to Cadets class instance
         """
         self.display.clear()
-        self.display.build_screen(f"The expected mission difficulty is: {mission.difficulty}", 1)
-        if self.first_time:
+        self.display.build_screen(f"The expected mission difficulty is: "
+                                  f"{mission.difficulty}", 1)
+        if self.trial_first_time:
             # TODO: add description
             self.display.build_screen("First, choose a skill.", 2)
         while True:
@@ -119,24 +143,27 @@ class Menu():
                 self.display.clear()
                 # TODO: fix loading screen
                 self.display.build_screen(
-                ["No more time for trials! On to the real mission!"], 10, center=True)
+                    ["No more time for trials! On to the real mission!"], 10,
+                    center=True)
                 input(self.display.build_input(prompt_enter=True))
                 self.display.clear(is_error=True)
                 self.display.clear()
                 break
 
             # Show amount of available trial runs
-            self.trials_left = f'{trials.MAX_RUNS - trials.runs} trial{"s" if trials.MAX_RUNS - trials.runs != 1 else ""} left'
+            trials_left = trials.MAX_RUNS - trials.runs
+            self.trials_left = (
+                f'{trials_left} trial{"s" if trials_left != 1 else ""} left')
             self.display.build_screen(f'{self.trials_left:>76}', 18)
-            
+
             choice = input(self.display.build_input()).strip()
             self.display.clear(is_error=True)
 
             match choice:
                 # TODO: Restructure choice selection
                # case '1':
-                 #   self.run_skill_choice(trials, cadets)
-                #case '2':
+                #   self.run_skill_choice(trials, cadets)
+                # case '2':
                 case '3':
                     # TODO: add loading screen
                     self.display.clear(is_error=True)
@@ -145,15 +172,15 @@ class Menu():
             try:
                 self.trial_loop_funcs[choice]
             except:
-                self.display.build_menu(self.sheet.get_text('err_trial'), is_error=True)
+                self.display.build_menu(
+                    self.sheet.get_text('err_trial'), is_error=True)
             else:
-                if self.first_time and choice != '2':
+                if self.trial_first_time and choice != '2':
                     self.display.clear()
-                    self.first_time = False
+                    self.trial_first_time = False
                 self.trial_loop_funcs[choice](trials, cadets)
 
         # Returns to run() to start mission phase
-
 
     def run_skill_choice(self, trials: object, cadets: object):
         self.display.clear(is_error=True)
@@ -170,7 +197,8 @@ class Menu():
                 skill_nr = int(skill_nr) - 1
                 cadets.SKILLS[skill_nr]
             except:
-                self.display.build_menu(self.sheet.get_text('err_skill'), is_error=True)
+                self.display.build_menu(
+                    self.sheet.get_text('err_skill'), is_error=True)
             else:
                 self.display.clear(is_error=True)
                 break
@@ -179,7 +207,6 @@ class Menu():
         self.run_cadet_choice(trials, cadets, skill_nr)
 
         # Returns to run_trial_loop()
-
 
     def run_cadet_choice(self, trials: object, cadets: object, skill_nr=None):
         """Lets player choose two cadets to compete against each other
@@ -193,8 +220,9 @@ class Menu():
                 chosen skill for the trials. Defaults to None.
         """
         if self.chosen_skill is None:
-            self.first_time = True
-            self.display.build_menu(self.sheet.get_text('err_skill_first'), is_error=True)
+            self.trial_first_time = True
+            self.display.build_menu(self.sheet.get_text(
+                'err_skill_first'), is_error=True)
             return
 
         # Build info messages and menu elements
@@ -212,7 +240,8 @@ class Menu():
         self.display.build_menu(cadet_choice_texts)
         # Get player input for first cadet
         while True:
-            c1 = input(self.display.build_input(self.sheet.get_text('prompt_cadet_1'))).strip()
+            c1 = input(self.display.build_input(
+                self.sheet.get_text('prompt_cadet_1'))).strip()
             try:
                 # Enumeration starts at 1, therefore "- 1" to get index
                 c1 = int(c1) - 1
@@ -220,7 +249,8 @@ class Menu():
                 # running trials
                 cadets.names[c1]
             except:
-                self.display.build_menu(self.sheet.get_text('err_cadet_1'), is_error=True)
+                self.display.build_menu(
+                    self.sheet.get_text('err_cadet_1'), is_error=True)
             else:
                 self.display.clear(is_error=True)
                 break
@@ -229,9 +259,11 @@ class Menu():
         self.display.build_screen(trial_status, row_nr=16)
         # Get player input for second cadet
         while True:
-            c2 = input(self.display.build_input(self.sheet.get_text('prompt_cadet_2'))).strip()
+            c2 = input(self.display.build_input(
+                self.sheet.get_text('prompt_cadet_2'))).strip()
             if str(c1+1) == c2:
-                self.display.build_menu(self.sheet.get_text('err_cadet_twice'), is_error=True)
+                self.display.build_menu(self.sheet.get_text(
+                    'err_cadet_twice'), is_error=True)
                 continue
             self.display.clear(is_error=True)
 
@@ -239,7 +271,8 @@ class Menu():
                 c2 = int(c2) - 1
                 cadets.names[c2]
             except:
-                self.display.build_menu(self.sheet.get_text('err_cadet_2'), is_error=True)
+                self.display.build_menu(
+                    self.sheet.get_text('err_cadet_2'), is_error=True)
             else:
                 self.display.clear(is_error=True)
                 break
@@ -253,7 +286,6 @@ class Menu():
         # Check if all allowed trial runs have been exhausted
         self.stay_in_trial_menu = trials.MAX_RUNS > trials.runs
         # Returns to run_skill_choice() or run_trial_loop()
-
 
     def run_mission_loop(self, available_cadets: list) -> int:
         """Lets player choose one cadet for a crew role in the Mission phase
@@ -281,21 +313,22 @@ class Menu():
                 available_cadets[choice]
                 break
             except:
-                self.display.build_menu(self.sheet.get_text('err_role'), is_error=True)
+                self.display.build_menu(
+                    self.sheet.get_text('err_role'), is_error=True)
 
         # Returns to assemble_crew()
         return choice
-
 
     def reset_menu(self):
         """Resets menu values on repeated playthrough"""
         self.chosen_skill = None
         self.stay_in_trial_menu = True
-        self.first_time = True
-
+        self.trial_first_time = True
 
     def show_highscore(self):
-        self.display.build_screen(f"\033[32;1m{self.sheet.get_text('hs_header')}\033[0m", 2, center=True, ansi=11)
+        self.display.build_screen(f"{self.GREEN}"
+                                  f"{self.sheet.get_text('hs_header')}"
+                                  f"{self.RESET}", 2, center=True, ansi=11)
         self.display.build_screen(self.sheet.get_score(), 4)
         self.display.build_menu("")
         input(self.display.build_input(prompt_enter=True))
@@ -304,7 +337,8 @@ class Menu():
     def loading_screen(self, part=1):
         match part:
             case 1:
-                logo = self.sheet.get_text('logo_ad_astra')
+                logo = ['   🟇 🟍 ✵  AD ASTRA ✵ 🟍 🟇']
+                logo.extend(self.sheet.get_text('logo_ad_astra'))
                 self.display.clear()
                 self.display.build_screen(logo, 2, center_logo=True)
                 return
@@ -317,12 +351,48 @@ class Menu():
                 self.display.clear()
                 ship = self.sheet.get_text('ship_anim')
                 parsed_ship = [f'{" "*80}{row:73}' for row in ship]
-                for i in range(-2,-153,-2):
+                for i in range(-2, -153, -2):
                     all_lines = []
                     for line in parsed_ship:
-                        all_lines.append(line[i:-1 if i>=-76 else i+76])
+                        all_lines.append(line[i:-1 if i >= -76 else i+76])
                     self.display.build_screen(all_lines, 3)
                     self.display.draw()
                     time.sleep(0.03)
                     self.display.flush_input()
-
+            case 4:
+                # Red alert screen
+                time.sleep(0.5)
+                self.display.flush_input()
+                self.display.clear()
+                alert_header = (f'{self.RED}{"▓"*33}'
+                                f'{self.sheet.get_text("red_alert_header")}'
+                                f'{"▓"*32}{self.RESET}')
+                alert = self.sheet.get_text('red_alert_msg')
+                choices = self.sheet.get_text('red_alert_choices')
+                self.display.build_screen(alert_header,
+                                          2, center=True, ansi=11)
+                self.display.build_screen(alert, 4)
+                self.display.build_menu(choices)
+                while True:
+                    choice = input(self.display.build_input())
+                    self.display.clear(is_error=True)
+                    match choice:
+                        case '1':
+                            self.display.clear(list(range(3, 19)))
+                            message = self.sheet.get_text(
+                                'red_alert_y', self.active_player.name)
+                            self.display.build_screen(message, 4)
+                            self.display.build_menu('')
+                            input(self.display.build_input(prompt_enter=True))
+                            return
+                        case '2':
+                            self.display.clear(list(range(3, 19)))
+                            message = self.sheet.get_text(
+                                'red_alert_n', self.active_player.name)
+                            self.display.build_screen(message, 4)
+                            self.display.build_menu('')
+                            input(self.display.build_input(prompt_enter=True))
+                            return
+                        case _:
+                            error = self.sheet.get_text('err_red_alert')
+                            self.display.build_menu(error, is_error=True)

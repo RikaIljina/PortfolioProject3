@@ -51,7 +51,7 @@ class Sheet:
     # Max highscore entries allowed
     MAX_ENTRIES = 10
     # ANSI color codes
-    GREEN = "\033[32m"
+    GREEN = "\033[32;1m"
     RESET = "\033[0m"
 
     def __init__(self):

@@ -1,3 +1,4 @@
+# coding=utf-8
 # Write your code to expect a terminal of 80 characters wide and 24 rows high
 import os
 import sys
@@ -40,9 +41,11 @@ def run(menu: object, player: object, display: object, sheet: object):
     trials = Trials(display)
     final_mission = Mission(cadets.SKILLS, display, sheet)
     menu.run_trial_loop(trials, cadets, final_mission)
-   
+
     # Final mission
     final_mission.assemble_crew(menu, trials, cadets)
+    menu.loading_screen(4)
+    #input()
     menu.loading_screen(3)
     final_mission.show_results(player, trials)
     display.clear()
