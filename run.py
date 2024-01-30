@@ -31,7 +31,7 @@ def run(menu: object, player: object, display: object, sheet: object):
         menu.active_player = player
         menu.run_player_init()
 
-    cadets = Cadets(display, player.name)
+    cadets = Cadets(display, player.name, sheet)
     cadets.recruit()
 
     # Wait for the user to read screen and press ENTER before starting trials
@@ -45,7 +45,6 @@ def run(menu: object, player: object, display: object, sheet: object):
     # Final mission
     final_mission.assemble_crew(menu, trials, cadets)
     menu.loading_screen(4)
-    #input()
     menu.loading_screen(3)
     final_mission.show_results(player, trials)
     display.clear()

@@ -128,11 +128,12 @@ class Menu():
             cadets (object): reference to Cadets class instance
         """
         self.display.clear()
-        self.display.build_screen(f"The expected mission difficulty is: "
-                                  f"{mission.difficulty}", 1)
+        #self.display.build_screen(f"The expected mission difficulty is: "
+        #                          f"{mission.difficulty}", 1)
         if self.trial_first_time:
             # TODO: add description
-            self.display.build_screen("First, choose a skill.", 2)
+            self.loading_screen(5, mission)
+            #self.display.build_screen("First, choose a skill.", 2)
         while True:
             self.display.build_menu(self.sheet.get_text('menu_trial'))
             # Exit the menu loop if no more trial runs available
@@ -184,11 +185,13 @@ class Menu():
 
     def run_skill_choice(self, trials: object, cadets: object):
         self.display.clear(is_error=True)
+        trial_status = self.sheet.get_text('scr_trial_active')
         skill_choice_texts = ' '.join(
             [f'⁞{c[0]}⁞ {c[1]} ⁞' for c in enumerate(cadets.SKILLS, 1)])
 
         while True:
             self.display.build_menu(skill_choice_texts)
+            self.display.build_screen(trial_status, 16)
             self.display.build_screen(f'{self.trials_left:>76}', 18)
             skill_nr = input(self.display.build_input()).strip()
             self.display.clear(is_error=True)
@@ -334,7 +337,7 @@ class Menu():
         input(self.display.build_input(prompt_enter=True))
         return
 
-    def loading_screen(self, part=1):
+    def loading_screen(self, part=1, mission=None):
         match part:
             case 1:
                 logo = ['   🟇 🟍 ✵  AD ASTRA ✵ 🟍 🟇']
@@ -359,6 +362,7 @@ class Menu():
                     self.display.draw()
                     time.sleep(0.03)
                     self.display.flush_input()
+                return
             case 4:
                 # Red alert screen
                 time.sleep(0.5)
@@ -396,3 +400,7 @@ class Menu():
                         case _:
                             error = self.sheet.get_text('err_red_alert')
                             self.display.build_menu(error, is_error=True)
+            case 5:
+                message = self.sheet.get_text('trials_desc', mission.difficulty)
+                self.display.build_screen(message, 1)
+                return

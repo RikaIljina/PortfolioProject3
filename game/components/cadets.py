@@ -31,9 +31,10 @@ class Cadets:
     HIGHEST_SKILL = 10
 
 
-    def __init__(self, display: object, player_name: object):
+    def __init__(self, display: object, player_name: object, sheet: object):
         self.display = display
         self.player_name = player_name
+        self.sheet = sheet
         self.names = random.sample(self.ALL_NAMES, 6)
         self.cadets = {}
 
@@ -47,9 +48,10 @@ class Cadets:
         self.cadets = {key: dict(zip(
                                  self.SKILLS, self.__cadet_skill_generator()))
                                  for key in self.names}
-        message = [f'Welcome to Cat, {self.player_name}!', '',
-                   ('The following cadets have volunteered for the upcoming '
-                    'mission:'), '']
+        message = self.sheet.get_text('recruit_msg', self.player_name)
+        # [f'Welcome to Cat, {self.player_name}!', '',
+        #            ('The following cadets have volunteered for the upcoming '
+        #             'mission:'), '']
         message.extend(textwrap.wrap(f'{", ".join(self.names)}',
                                      self.display.WIDTH - 4))
         self.display.build_screen(message, row_nr=2)
