@@ -24,7 +24,7 @@ class Mission:
         calculate_success(): Calculates the success of the chosen crew
         show_results():
     """
-    DIFF_MIN = 2
+    DIFF_MIN = 8
     DIFF_MAX = 10
     RED = '\033[31;1m'
     GREEN = '\033[92;1m'
@@ -60,7 +60,7 @@ class Mission:
         crew_list = [self.sheet.get_text('scr_mission_welcome')]
         for role in self.roles:
             self.display.build_screen(
-                self.sheet.get_text("scr_mission_role", f'{self.RED}{role}{self.RESET}'), 18, ansi=11)
+                self.sheet.get_text("scr_mission_role", f'{self.BRIGHT_CYAN}{role}{self.RESET}'), 18, ansi=11)
             index = menu.run_mission_loop(available_cadets)
             # Construct string from role and cadet last name 
             crew_list.append(

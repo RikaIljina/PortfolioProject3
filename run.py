@@ -50,11 +50,11 @@ def run(menu: object, player: object, display: object, sheet: object):
     menu.loading_screen(6, mission_score)
     # rename
     mission.show_mission_logs(player, trials)
-    player.build_detailed_score(trials.runs, trials.MAX_RUNS, mission, display, sheet)
+    player.build_detailed_score(
+        trials.runs, trials.MAX_RUNS, mission, display, sheet)
     # Save player score to highscore table
-    sheet.write_score(player.score, player.name)
     menu.loading_screen(7, mission)
-    
+    sheet.write_score(player.score, player.name)
     display.clear()
     menu.show_highscore()
 

@@ -13,7 +13,7 @@ class Player:
         calculate_score(): Calculates player score at the end of the game
 
     """
-    STARTING_SCORE = 1000
+    STARTING_SCORE = 1500
     
     def __init__(self):
         self.name = ""
@@ -53,7 +53,7 @@ class Player:
         """
         # Reset score in case same player starts a new game
         self.score = 0
-        mission_failed_penalty = 0 if mission.score >= 3 else 500
+        mission_failed_penalty = 0 if mission.score >= 3 else 700
         mission_score_penalty = (5 - mission.score) * 100
         mission_prognosis_penalty = 100 - mission.prognosis
         skill_penalty = 500 - sum([value[1]
@@ -62,8 +62,8 @@ class Player:
         trial_run_bonus = 0 if mission_failed_penalty != 0 else (
             trial_max_runs - trial_runs) * 10
         mission_difficulty_bonus = 0 if mission_failed_penalty != 0 else \
-            mission.difficulty - mission.prognosis
-        result = 1000 - mission_failed_penalty - mission_score_penalty \
+            int(mission.difficulty - mission.prognosis)
+        result = self.STARTING_SCORE - mission_failed_penalty - mission_score_penalty \
             - mission_prognosis_penalty - skill_penalty \
             + mission_difficulty_bonus + trial_run_bonus
 

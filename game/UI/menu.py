@@ -54,6 +54,7 @@ class Menu():
     """
     GREEN = "\033[32;1m"
     RED = "\033[91;1m"
+    BRIGHT_CYAN = '\033[96;1m'
     RESET = "\033[0m"
 
     def __init__(self, display: object, sheet: object, run_game: object):
@@ -378,15 +379,18 @@ class Menu():
                                 f"prediction_{mission.suffix}",
                                 mission.prognosis)
                             self.display.build_screen(message_2, 10)
-
                             self.display.build_menu('')
                             input(self.display.build_input(prompt_enter=True))
                             return
                         case '2':
                             self.display.clear(list(range(3, 19)))
-                            message = self.sheet.get_text(
+                            message_1 = self.sheet.get_text(
                                 'red_alert_n', self.active_player.name)
-                            self.display.build_screen(message, 4)
+                            self.display.build_screen(message_1, 4)
+                            message_2 = self.sheet.get_text(
+                                f"prediction_{mission.suffix}",
+                                mission.prognosis)
+                            self.display.build_screen(message_2, 10)
                             self.display.build_menu('')
                             input(self.display.build_input(prompt_enter=True))
                             return
@@ -408,14 +412,16 @@ class Menu():
                 return
             case 5:
                 # value is mission difficulty here
-                message = self.sheet.get_text('trials_desc', value)
+                message = self.sheet.get_text('trials_desc', str(int(value)))
                 self.display.build_screen(message, 2)
                 return
             case 6:
                 # value is final mission score here
                 self.display.build_menu("")
                 message = self.sheet.get_text(f'mission_score_{value}')
-                self.display.build_screen(message, 4)
+                self.display.build_screen(
+                    self.BRIGHT_CYAN + message[0] + self.RESET, 3, ansi=11)
+                self.display.build_screen(message[1:], 5)
                 input(self.display.build_input(prompt_enter=True))
                 return
             case 7:
