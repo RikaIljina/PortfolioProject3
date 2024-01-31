@@ -141,10 +141,10 @@ class Menu():
             if not self.stay_in_trial_menu:
                 self.display.build_menu("")
                 self.display.clear([16, 17, 18])
-                input(self.display.build_input(prompt_enter=True))
-                self.display.clear()
+                #input(self.display.build_input(prompt_enter=True))
+                #self.display.clear()
                 self.display.build_screen(self.sheet.get_text(
-                    'no_more_trials'), 10, center=True)
+                    'no_more_trials'), 16)
                 input(self.display.build_input(prompt_enter=True))
                 self.display.clear(is_error=True)
                 self.display.clear()
@@ -427,7 +427,7 @@ class Menu():
             case 7:
                 # Displays the detailed player score
                 self.display.build_screen(
-                    self.sheet.get_text('scores_header'), 1)
+                    self.sheet.get_text('scores_header'), 2)
                 input(self.display.build_input(
                     self.sheet.get_text('prompt_highscore')))
                 return

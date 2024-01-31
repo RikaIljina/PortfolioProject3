@@ -84,8 +84,8 @@ class Player:
         #         mission_difficulty_bonus = scores
         for idx, score in enumerate(scores, 0):
             if idx == 0:
-                display.build_screen(sheet.get_text(f'scores_{idx}', str(score)), 12)
+                display.build_screen(sheet.get_text(f'scores_{idx}', str(score)), 13)
             else:
-                display.build_screen(sheet.get_text(f'scores_{idx}', str(score)), idx+3)
-        display.build_screen(sheet.get_text('scores_default', str(self.STARTING_SCORE)), 3)
+                display.build_screen(sheet.get_text(f'scores_{idx}', str(score)), idx+4)
+        display.build_screen(sheet.get_text('scores_default', str(self.STARTING_SCORE)), 4)
         return

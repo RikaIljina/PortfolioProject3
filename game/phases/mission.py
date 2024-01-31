@@ -24,7 +24,7 @@ class Mission:
         calculate_success(): Calculates the success of the chosen crew
         show_results():
     """
-    DIFF_MIN = 8
+    DIFF_MIN = 3
     DIFF_MAX = 10
     RED = '\033[31;1m'
     GREEN = '\033[92;1m'
@@ -62,13 +62,13 @@ class Mission:
             self.display.build_screen(
                 self.sheet.get_text("scr_mission_role", f'{self.BRIGHT_CYAN}{role}{self.RESET}'), 18, ansi=11)
             index = menu.run_mission_loop(available_cadets)
-            # Construct string from role and cadet last name 
+            # Construct string from role and cadet last name
             crew_list.append(
                 f'{role} {available_cadets[index].split(" ")[1]}')
             self.display.build_screen(textwrap.wrap(
                 ', '.join(crew_list)+'!', 76), 16)
             self.crew[role] = [available_cadets[index],
-                                cadets.cadets[available_cadets[index]][role]]
+                               cadets.cadets[available_cadets[index]][role]]
             available_cadets.pop(index)
         # Clear menu and wait for player to read the output and press ENTER
         # self.display.clear([18])
@@ -90,6 +90,17 @@ class Mission:
         self.calculate_disparity()
 
     def calculate_disparity(self):
+        """Calculates disparity between the mission prognosis and difficulty
+
+        This function computes the difference between the mission prognosis
+        value and difficulty to determine the disparity level and set an
+        appropriate suffix. This suffix is used as a key to get info text from
+        the message dictionary.
+
+        Attributes:
+            self.prognosis (int): The prognosis level of the mission.
+            self.difficulty (int): The difficulty level of the mission.
+        """
         disparity = self.prognosis - self.difficulty
         if disparity > 10:
             self.suffix = 'pos'
@@ -157,7 +168,6 @@ class Mission:
             input(self.display.build_input(prompt_enter=True))
             self.display.clear()
 
-        
        # final_score = player.calculate_score(
         #    trials.runs, trials.MAX_RUNS, self)[0]
         # Save player score to highscore table
