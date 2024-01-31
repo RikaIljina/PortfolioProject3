@@ -418,3 +418,10 @@ class Menu():
                 self.display.build_screen(message, 4)
                 input(self.display.build_input(prompt_enter=True))
                 return
+            case 7:
+                # Displays the detailed player score
+                self.display.build_screen(
+                    self.sheet.get_text('scores_header'), 1)
+                input(self.display.build_input(
+                    self.sheet.get_text('prompt_highscore')))
+                return

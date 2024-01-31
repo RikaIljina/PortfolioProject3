@@ -3,24 +3,25 @@ import re
 
 class Player:
     """Contains player data and performs player-related operations
-    
+
     Attributes:
         name (str): Player name as entered by user, set by a method in 
             the Menu object
         score (int): Player score as calculated by class method
-        
+
     Methods:
         calculate_score(): Calculates player score at the end of the game
-    
+
     """
+    STARTING_SCORE = 1000
+    
     def __init__(self):
         self.name = ""
         self.score = 0
 
-
     def set_name(self, name):
         """Validates player name entry
-        
+
         Checks if the name contains only latin letters and whitespaces
         and makes sure that the name contains at least one letter.
         Saves player name in self.name attribute.
@@ -38,9 +39,8 @@ class Player:
         else:
             return False
 
-
-    def calculate_score(self, trial_runs: int, trial_max_runs: int, \
-                        mission_data: object) -> int:
+    def calculate_score(self, trial_runs: int, trial_max_runs: int,
+                        mission: object) -> int:
         """Calculates player score at the end of the game
 
         Args:
@@ -53,17 +53,39 @@ class Player:
         """
         # Reset score in case same player starts a new game
         self.score = 0
-        mission_failed_penalty = 0 if mission_data.score >= 3 else 500
-        mission_score_penalty = (5 - mission_data.score) * 100
-        mission_prognosis_penalty = 100 - mission_data.prognosis
+        mission_failed_penalty = 0 if mission.score >= 3 else 500
+        mission_score_penalty = (5 - mission.score) * 100
+        mission_prognosis_penalty = 100 - mission.prognosis
         skill_penalty = 500 - sum([value[1]
-                                 for value in mission_data.crew.values()]) * 10
+                                   for value in mission.crew.values()]) \
+            * 10
         trial_run_bonus = 0 if mission_failed_penalty != 0 else (
-                trial_max_runs - trial_runs) * 10
+            trial_max_runs - trial_runs) * 10
         mission_difficulty_bonus = 0 if mission_failed_penalty != 0 else \
-                mission_data.difficulty - mission_data.prognosis
+            mission.difficulty - mission.prognosis
         result = 1000 - mission_failed_penalty - mission_score_penalty \
             - mission_prognosis_penalty - skill_penalty \
             + mission_difficulty_bonus + trial_run_bonus
 
-        return max(0, result)
+        return (max(0, result),
+                mission_failed_penalty,
+                mission_score_penalty,
+                mission_prognosis_penalty,
+                skill_penalty,
+                trial_run_bonus,
+                mission_difficulty_bonus)
+
+    def build_detailed_score(self, trial_runs: int, trial_max_runs: int,
+                        mission: object, display: object, sheet: object):
+        scores = self.calculate_score(trial_runs, trial_max_runs, mission)
+        self.score = scores[0]
+        # score, mission_failed_penalty, mission_score_penalty,\
+        #     mission_prognosis_penalty, skill_penalty, trial_run_bonus,\
+        #         mission_difficulty_bonus = scores
+        for idx, score in enumerate(scores, 0):
+            if idx == 0:
+                display.build_screen(sheet.get_text(f'scores_{idx}', str(score)), 12)
+            else:
+                display.build_screen(sheet.get_text(f'scores_{idx}', str(score)), idx+3)
+        display.build_screen(sheet.get_text('scores_default', str(self.STARTING_SCORE)), 3)
+        return

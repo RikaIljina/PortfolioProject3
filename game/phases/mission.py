@@ -7,7 +7,7 @@ class Mission:
     """Calculates and stores the results of the mission phase
 
     Args:
-        roles (list): List with cadet skills
+        roles (list): List with cadet roles
         display (object): Reference to Display class instance
 
     Attributes:
@@ -48,7 +48,7 @@ class Mission:
     def assemble_crew(self, menu: object, trials: object, cadets: object):
         """Lets player assign cadets to the roles via the menu
 
-        Outputs the trial log entries for each skill.
+        Outputs the trial log entries for each role.
 
         Args:
             menu (object): Reference to Menu class instance
@@ -58,16 +58,17 @@ class Mission:
         available_cadets = cadets.names[:]
         self.display.build_screen(trials.trials_log, 1)
         crew_list = [self.sheet.get_text('scr_mission_welcome')]
-        for skill in self.roles:
+        for role in self.roles:
             self.display.build_screen(
-                self.sheet.get_text("scr_mission_role", f'{self.RED}{skill}{self.RESET}'), 18, ansi=11)
+                self.sheet.get_text("scr_mission_role", f'{self.RED}{role}{self.RESET}'), 18, ansi=11)
             index = menu.run_mission_loop(available_cadets)
+            # Construct string from role and cadet last name 
             crew_list.append(
-                f'{skill} {available_cadets[index].split(" ")[1]}')
+                f'{role} {available_cadets[index].split(" ")[1]}')
             self.display.build_screen(textwrap.wrap(
                 ', '.join(crew_list)+'!', 76), 16)
-            self.crew[skill] = [available_cadets[index],
-                                cadets.cadets[available_cadets[index]][skill]]
+            self.crew[role] = [available_cadets[index],
+                                cadets.cadets[available_cadets[index]][role]]
             available_cadets.pop(index)
         # Clear menu and wait for player to read the output and press ENTER
         # self.display.clear([18])
@@ -101,7 +102,7 @@ class Mission:
         """Calculates the success of the chosen crew
 
         The mission difficulty can be adjusted by changing the MIN/MAX values.
-        THe value 5 is the amount of available skills/roles.
+        The value 5 is the amount of available skills/roles.
         """
         self.calculate_prognosis()
         diff_values = {1: "low", 2: "low", 3: "low", 4: "low",
@@ -136,7 +137,7 @@ class Mission:
 
         return self.score
 
-    def show_results(self, player: object, trials: object):
+    def show_mission_logs(self, player: object, trials: object):
         """Collects mission calculations and results in one place, outputs them
 
         Args:
@@ -156,10 +157,8 @@ class Mission:
             input(self.display.build_input(prompt_enter=True))
             self.display.clear()
 
-        self.display.build_screen("Calculating final player score:", 1)
-        final_score = player.calculate_score(
-            trials.runs, trials.MAX_RUNS, self)
+        
+       # final_score = player.calculate_score(
+        #    trials.runs, trials.MAX_RUNS, self)[0]
         # Save player score to highscore table
-        self.sheet.write_score(final_score, player.name)
-        self.display.build_screen(f'{final_score}', 2)
-        input(self.display.build_input('Press ENTER to show highscore ⁞⁞ '))
+       # self.sheet.write_score(final_score, player.name)

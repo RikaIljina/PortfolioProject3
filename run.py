@@ -39,16 +39,22 @@ def run(menu: object, player: object, display: object, sheet: object):
     input(display.build_input(prompt_enter=True))
 
     trials = Trials(display)
-    final_mission = Mission(cadets.SKILLS, display, sheet)
-    menu.run_trial_loop(trials, cadets, final_mission)
+    mission = Mission(cadets.SKILLS, display, sheet)
+    menu.run_trial_loop(trials, cadets, mission)
 
     # Final mission
-    final_mission.assemble_crew(menu, trials, cadets)
-    mission_score = final_mission.calculate_success()
-    menu.loading_screen(3, final_mission)
+    mission.assemble_crew(menu, trials, cadets)
+    mission_score = mission.calculate_success()
+    menu.loading_screen(3, mission)
     menu.loading_screen(4)
     menu.loading_screen(6, mission_score)
-    final_mission.show_results(player, trials)
+    # rename
+    mission.show_mission_logs(player, trials)
+    player.build_detailed_score(trials.runs, trials.MAX_RUNS, mission, display, sheet)
+    # Save player score to highscore table
+    sheet.write_score(player.score, player.name)
+    menu.loading_screen(7, mission)
+    
     display.clear()
     menu.show_highscore()
 
