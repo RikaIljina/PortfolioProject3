@@ -13,12 +13,19 @@ class Mission:
         sheet (object): Reference to Sheet class instance
 
     Attributes:
+        DIFF_MIN (int): Lower threshold for the random mission parameters
+        DIFF_MAX (int): Upper threshold for the random mission parameters
+        RED, GREEN, BRIGHT_RED, BRIGHT_CYAN, RESET (str): ASCII color codes
+        prognosis (int): Average skill value of the crew times 10
+        score (int): Indicates how many cadets succeeded in their roles
+        mission_log (dict): Collection of all mission result texts
         crew (dict): Dict with all roles as keys and a cadet and their 
             skill value for each role
-        prognosis (int): Probability value for crew success
-        score (int): Indicates how many cadets succeeded in their roles 
+        mission_parameters (list): 5 random values that decide the difficulty
+            of the mission and to which the cadet skills will be compared.
+            The value range is [DIFF_MIN, DIFF_MAX]
         difficulty (int): Average of the 5 randomly chosen mission parameters
-        mission_log (dict): Collection of all mission result texts
+        suffix (str):
 
     Methods:
         assemble_crew(): Lets player assign cadets to the roles via the menu
@@ -75,7 +82,6 @@ class Mission:
                                cadets.cadets[available_cadets[index]][role]]
             available_cadets.pop(index)
         # Clear menu and wait for player to read the output and press ENTER
-        # self.display.clear([18])
         self.display.build_screen(self.BRIGHT_CYAN + self.sheet.get_text(
             'scr_mission_embark') + self.RESET, 18, center=True, ansi=11)
         self.display.build_menu("")
