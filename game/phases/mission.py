@@ -1,3 +1,4 @@
+"""Contains the Mission class which handles all mission operations and data"""
 import math
 import random
 import textwrap
@@ -9,6 +10,7 @@ class Mission:
     Args:
         roles (list): List with cadet roles
         display (object): Reference to Display class instance
+        sheet (object): Reference to Sheet class instance
 
     Attributes:
         crew (dict): Dict with all roles as keys and a cadet and their 

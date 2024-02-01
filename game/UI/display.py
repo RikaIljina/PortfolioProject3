@@ -206,15 +206,17 @@ class Display:
 
                 if center:
                     for idx, line in enumerate(text):
-                        str_len = len(line)
+                        width = "<" + str(78 + ansi)
+                        str_len = len(line) - ansi
                         result = (f'{self.BORDER_CHAR}'
-                                f'{" "*math.ceil((78-str_len)/2) + line:<78}'
+                                f'{" "*math.ceil((78-str_len)/2) + line:{width}}'
                                 f'{self.BORDER_CHAR}')
                         # Fill the final list starting at specified row index
                         self.rows[row_nr + idx] = result
                 else:
                     for idx, line in enumerate(text):
-                        result = (f'{self.BORDER_CHAR}{" "}{line:<76}{" "}'
+                        width = "<" + str(76 + ansi)
+                        result = (f'{self.BORDER_CHAR}{" "}{line:{width}}{" "}'
                                  f'{self.BORDER_CHAR}')
                         # Fill the final list starting at specified row index
                         self.rows[row_nr + idx] = result

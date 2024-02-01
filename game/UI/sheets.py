@@ -70,10 +70,11 @@ class Sheet:
         """
         score_rows = self.score_table.get_all_values()
         score_list = []
-        for row in score_rows:
+        for i, row in enumerate(score_rows, 1):
             # Pre-format names and scores for output
             score_list.append(
-                f'{self.GREEN}{row[0]}{"  "}{"⋅"*(72-len(row[0])-len(row[1]))}'
+                f'{self.GREEN}{i}{". "}{row[0]}{"  "}'
+                f'{"⋅"*(60-len(str(i))-len(row[0])-len(row[1]))}'
                 f'{"  "}{row[1]}{self.RESET}')
         return score_list
 
@@ -125,7 +126,7 @@ class Sheet:
         return self.get_text(key, fname)
 
     def get_text(self, key: str, value=None) -> str:
-        """Returns formatted message for a specific key
+        """Retrieves and formats message from the dictionary for specified key
         
         Takes the message ID as key and returns the message string or a list
         with wrapped message strings.
@@ -155,3 +156,20 @@ class Sheet:
         else:
             message = message_raw
         return message
+
+    def get_list(self, key:str) -> list:
+        """Retrieves items from the message dictionary based on specified key
+
+        Takes a key as input and retrieves the corresponding value from the
+        message dictionary. The value must be a string containing items
+        separated by commas (', '). The function splits the string and returns
+        a list of items.
+
+        Args:
+            key (str): Message ID to access the list in the message dictionary
+
+        Returns:
+            list: A list of items retrieved from the message dictionary
+        """
+        list_raw = self.msg_dict[key]
+        return list_raw.split(', ')

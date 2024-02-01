@@ -1,3 +1,4 @@
+"""Contains the Player class which handles all player-related operations"""
 import re
 
 
@@ -10,8 +11,8 @@ class Player:
         score (int): Player score as calculated by class method
 
     Methods:
-        calculate_score(): Calculates player score at the end of the game
-
+        set_name(): Validates player name entry during player initialization
+        build_detailed_score(): Calculates player score at the end of the game
     """
     STARTING_SCORE = 1500
 
@@ -25,6 +26,9 @@ class Player:
         Checks if the name contains only latin letters and whitespaces
         and makes sure that the name contains at least one letter.
         Saves player name in self.name attribute.
+        Returns a bool to menu loop run_player_init():
+        - True if name has been set,
+        - False if name was invalid.
 
         Args:
             name (str): User input for the player name
@@ -34,22 +38,22 @@ class Player:
         """
         pattern = r'^[A-Za-z\s]{1,30}$'
         if re.match(pattern, name) and re.search(r'[a-zA-Z]', name):
+            # Remove redundant whitespaces from user name
             self.name = ' '.join(name.split())
             return True
-        else:
-            return False
+        return False
 
-    def calculate_score(self, trial_runs: int, trial_max_runs: int,
-                        mission: object) -> int:
+    def __calculate_score(self, trial_runs: int, trial_max_runs: int,
+                        mission: object) -> tuple:
         """Calculates player score at the end of the game
 
         Args:
-            trial_runs: Played trial runs as stored in Trial class instance
-            trial_max_runs: Max trial runs as stored in Trial class instance
-            mission_data: Reference to Mission class instance
+            trial_runs: Used-up trial runs from Trial class instance
+            trial_max_runs: Max trial runs from Trial class instance
+            mission: Reference to Mission class instance
 
         Returns:
-            int: Resulting player score
+            tuple: Resulting player score and detailed score elements
         """
         # Reset score in case same player starts a new game
         self.score = 0
@@ -60,11 +64,11 @@ class Player:
                                    for value in mission.crew.values()]) * 10
         trial_run_bonus = 0 if mission_failed_penalty != 0 else (
             trial_max_runs - trial_runs) * 10
-        mission_difficulty_bonus = 0 if mission_failed_penalty != 0 else \
-            int(mission.difficulty - mission.prognosis)
-        result = self.STARTING_SCORE - mission_failed_penalty \
-            - mission_score_penalty - mission_prognosis_penalty \
-            - skill_penalty + mission_difficulty_bonus + trial_run_bonus
+        mission_difficulty_bonus = 0 if mission_failed_penalty != 0 else int(
+            mission.difficulty - mission.prognosis)
+        result = int(self.STARTING_SCORE - mission_failed_penalty
+            - mission_score_penalty - mission_prognosis_penalty
+            - skill_penalty + mission_difficulty_bonus + trial_run_bonus)
 
         return (max(0, result),
                 mission_failed_penalty,
@@ -76,7 +80,19 @@ class Player:
 
     def build_detailed_score(self, trial_runs: int, trial_max_runs: int,
                              mission: object, display: object, sheet: object):
-        scores = self.calculate_score(trial_runs, trial_max_runs, mission)
+        """Builds detailed score overview and updates Display
+        
+        Calls __calculate_score() and constructs a screen view out of all
+        received score elements.
+
+        Args:
+            trial_runs (int): Used-up trial runs from Trial class instance
+            trial_max_runs (int): Max trial runs from Trial class instance
+            mission (object): Reference to Mission class instance
+            display (object): Reference to Display class instance
+            sheet (object): Reference to Sheet class instance
+        """
+        scores = self.__calculate_score(trial_runs, trial_max_runs, mission)
         self.score = scores[0]
         for idx, score in enumerate(scores, 0):
             if idx == 0:
@@ -87,4 +103,3 @@ class Player:
                     f'scores_{idx}', str(score)), idx+4)
         display.build_screen(sheet.get_text(
             'scores_default', str(self.STARTING_SCORE)), 4)
-        return

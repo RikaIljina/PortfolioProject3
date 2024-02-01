@@ -31,32 +31,31 @@ def run(menu: object, player: object, display: object, sheet: object):
         menu.active_player = player
         menu.run_player_init()
 
-    cadets = Cadets(display, player.name, sheet)
+    cadets = Cadets(sheet)
     cadets.recruit()
-
-    # Wait for the user to read screen and press ENTER before starting trials
-    display.build_menu('')
-    input(display.build_input(prompt_enter=True))
+    menu.info_screen('3_recruit', cadets.names)
 
     trials = Trials(display, sheet)
-    mission = Mission(cadets.SKILLS, display, sheet)
+    mission = Mission(cadets.skills, display, sheet)
     menu.run_trial_loop(trials, cadets, mission)
 
     # Final mission
     mission.assemble_crew(menu, trials, cadets)
     mission_score = mission.calculate_success()
-    menu.loading_screen(3, mission)
-    menu.loading_screen(4)
-    menu.loading_screen(6, mission_score)
+    menu.info_screen('5_red_alert', mission)
+    menu.info_screen('6_ship_anim')
+    menu.info_screen('7_mission_score', mission_score)
     # rename
     mission.show_mission_logs()
     player.build_detailed_score(
         trials.runs, trials.MAX_RUNS, mission, display, sheet)
     # Save player score to highscore table
-    menu.loading_screen(7, mission)
+    menu.info_screen('8_player_score', mission)
+    display.build_menu(sheet.get_text('please_wait'))
+    display.draw()
     sheet.write_score(player.score, player.name)
     display.clear()
-    menu.show_highscore()
+    menu.info_screen('9_highscore')
 
     display.empty_screen()
 

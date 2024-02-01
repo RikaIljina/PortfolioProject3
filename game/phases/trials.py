@@ -1,3 +1,4 @@
+"""Contains the Trials class which handles the Trials phase logic and data"""
 import time
 
 
@@ -9,19 +10,21 @@ class Trials:
 
     Args:
         display (object): Reference to Display class instance
+        sheet (object): Reference to Sheet class instance
 
     Attributes:
         skill (str): Name of the skill to test the cadets for
         c1 (str): Name of the first cadet to test
         c2 (str): Name of the second cadet to test
-        trials_log (dict): Contains all results, format {skill: [result]}
+        trials_log (dict): Contains all results in text form,
+            format {skill: [result_string]}
         runs (int): Current count of trial runs
         MAX_RUNS (int): Maximum allowed amount of trial runs
 
     Methods:
         fill_trials(): Receives cadet indexes and starts the trial run
     """
-    MAX_RUNS = 14
+    MAX_RUNS = 3
 
     def __init__(self, display: object, sheet: object):
         self.display = display
@@ -30,33 +33,54 @@ class Trials:
         self.c1 = ""
         self.c2 = ""
         self.trials_log = {}
-        self.runs = 0
+        self.runs = 1
 
-    def fill_trials(self, cadets: object, skill_nr: int, c1: int, c2: int,
-                    trials_left: str) -> bool:
-        """Receives cadet indexes from the menu and starts the trial run
+    def fill_trials(self, cadets: object, skill_nr: int, c1: int, c2: int):
+        """Receives skill and cadet indexes from the menu, starts the trial run
 
         Calls __run_trials() for each skill and cadet pair, outputs the
         results to the terminal, and keeps track of the amount of allowed runs.
+        
+        Args:
+            cadets (object): Reference to Cadets class instance
+            skill_nr (int): Index of the chosen skill to compare
+            c1 (int): Index of the first cadet
+            c2 (int): Index of the second cadet
         """
-        self.display.build_screen(
-            '... Trial ongoing ...' + f"{trials_left:>55}", row_nr=18)
+        trials_left = self.MAX_RUNS - self.runs
+        # Preferably, the following string should be imported from the
+        # worksheet and thus made localizable. A solution for how to correctly
+        # achieve the parsing of an imported f-string while accounting for
+        # singular/plural in different languages is yet to be found.
+        trials_left_str = (
+            f'{trials_left + 1}'
+            f' hour{"s" if trials_left + 1 != 1 else ""} left')
+        self.display.build_screen(self.sheet.get_text('trial_ongoing')
+                                  + f'{trials_left_str:>55}', row_nr=18)
         self.display.draw()
+        # Artificial waiting period for ongoing trial phase
         time.sleep(1)
         self.display.flush_input()
-        self.display.clear([15])
-
-        # In case the player skips the skill choice, the previous skill is used
-        self.skill = cadets.SKILLS[skill_nr] if skill_nr is not None \
+        # If the player has skipped the skill choice, the previous skill is
+        # used. The previous function makes sure that self.skill is set before
+        # allowing the player to skip the skill choice.
+        self.skill = cadets.skills[skill_nr] if skill_nr is not None \
             else self.skill
         self.c1 = cadets.names[c1]
         self.c2 = cadets.names[c2]
         self.__run_trials(cadets)
         self.display.build_screen(self.trials_log, row_nr=1)
-        self.display.build_screen(f"{trials_left:>76}", 18)
+        # Updated countdown after running the trial
+        trials_left_str = (
+            f'{trials_left}'
+            f' hour{"s" if trials_left != 1 else ""} left')
+        self.display.build_screen(f"{trials_left_str:>76}", 18)
 
     def __run_trials(self, cadets: object):
-        """Compares skill values for a cadet pair and logs result
+        """Compares skill values for a cadet pair and logs the result
+
+        The result string depends on the difference in skill points for the
+        tested cadets.
 
         Args:
             cadets (object): Reference to Cadet class instance
