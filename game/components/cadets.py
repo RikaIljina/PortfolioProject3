@@ -132,7 +132,5 @@ class Cadets:
                                           self.HIGHEST_SKILL + 1)
 
             skill_points.append(points)
-        print(skill_points)
-        input()
 
         return skill_points
