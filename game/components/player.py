@@ -14,7 +14,7 @@ class Player:
 
     """
     STARTING_SCORE = 1500
-    
+
     def __init__(self):
         self.name = ""
         self.score = 0
@@ -57,15 +57,14 @@ class Player:
         mission_score_penalty = (5 - mission.score) * 100
         mission_prognosis_penalty = 100 - mission.prognosis
         skill_penalty = 500 - sum([value[1]
-                                   for value in mission.crew.values()]) \
-            * 10
+                                   for value in mission.crew.values()]) * 10
         trial_run_bonus = 0 if mission_failed_penalty != 0 else (
             trial_max_runs - trial_runs) * 10
         mission_difficulty_bonus = 0 if mission_failed_penalty != 0 else \
             int(mission.difficulty - mission.prognosis)
-        result = self.STARTING_SCORE - mission_failed_penalty - mission_score_penalty \
-            - mission_prognosis_penalty - skill_penalty \
-            + mission_difficulty_bonus + trial_run_bonus
+        result = self.STARTING_SCORE - mission_failed_penalty \
+            - mission_score_penalty - mission_prognosis_penalty \
+            - skill_penalty + mission_difficulty_bonus + trial_run_bonus
 
         return (max(0, result),
                 mission_failed_penalty,
@@ -76,16 +75,16 @@ class Player:
                 mission_difficulty_bonus)
 
     def build_detailed_score(self, trial_runs: int, trial_max_runs: int,
-                        mission: object, display: object, sheet: object):
+                             mission: object, display: object, sheet: object):
         scores = self.calculate_score(trial_runs, trial_max_runs, mission)
         self.score = scores[0]
-        # score, mission_failed_penalty, mission_score_penalty,\
-        #     mission_prognosis_penalty, skill_penalty, trial_run_bonus,\
-        #         mission_difficulty_bonus = scores
         for idx, score in enumerate(scores, 0):
             if idx == 0:
-                display.build_screen(sheet.get_text(f'scores_{idx}', str(score)), 13)
+                display.build_screen(sheet.get_text(
+                    f'scores_{idx}', str(score)), 13)
             else:
-                display.build_screen(sheet.get_text(f'scores_{idx}', str(score)), idx+4)
-        display.build_screen(sheet.get_text('scores_default', str(self.STARTING_SCORE)), 4)
+                display.build_screen(sheet.get_text(
+                    f'scores_{idx}', str(score)), idx+4)
+        display.build_screen(sheet.get_text(
+            'scores_default', str(self.STARTING_SCORE)), 4)
         return

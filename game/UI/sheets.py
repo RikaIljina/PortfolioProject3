@@ -122,7 +122,6 @@ class Sheet:
             str: Descriptive text for the specific role and cadet
         """
         key = f'ml_{role[:3].lower()}_{level}_{"suc" if success else "fail"}'
-       # return self.get_text(self.msg_dict[key].format(name=fname))
         return self.get_text(key, fname)
 
     def get_text(self, key: str, value=None) -> str:

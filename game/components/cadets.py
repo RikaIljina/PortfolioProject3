@@ -25,11 +25,13 @@ class Cadets:
     SKILLS = ["Captain", "Security Chief", "Engineer", "Doctor", "Pilot"]
     ALL_NAMES = ["Cadet Janeway", "Cadet Picard", "Cadet Kirk", "Cadet Kim",
                  "Cadet Paris", "Cadet Whorf", "Cadet Crusher", "Cadet Torres",
-                 "Cadet Spock", "Cadet Yar", "Cadet Troi", "Cadet Sisko"]
+                 "Cadet Spock", "Cadet Yar", "Cadet Troi", "Cadet Sisko",
+                 "Cadet Ro", "Cadet Rom", "Cadet Nog", "Cadet Dax",
+                 "Cadet Kira", "Cadet Hansen", "Cadet LaForge", "Cadet McCoy",
+                 "Cadet Scott", "Cadet Uhura", "Cadet Chekov", "Cadet Sulu"]
     MAX_POINTS = 25
     LOWEST_SKILL = 1
     HIGHEST_SKILL = 10
-
 
     def __init__(self, display: object, player_name: object, sheet: object):
         self.display = display
@@ -37,7 +39,6 @@ class Cadets:
         self.sheet = sheet
         self.names = random.sample(self.ALL_NAMES, 6)
         self.cadets = {}
-
 
     def recruit(self):
         """Initializes cadet dictionary
@@ -49,14 +50,8 @@ class Cadets:
                                  self.SKILLS, self.__cadet_skill_generator()))
                                  for key in self.names}
         message = self.sheet.get_text('recruit_msg', self.player_name)
-        # [f'Welcome to Cat, {self.player_name}!', '',
-        #            ('The following cadets have volunteered for the upcoming '
-        #             'mission:'), '']
-        # message.extend(textwrap.wrap(f'{", ".join(self.names)}',
-        #                              self.display.WIDTH - 4))
         message.extend(self.names)
         self.display.build_screen(message, row_nr=2)
-
 
     def __cadet_skill_generator(self) -> list:
         """Generates a list with 5 random skill values
@@ -76,8 +71,8 @@ class Cadets:
         skill_amount = len(self.SKILLS)
 
         for i in range(1, skill_amount + 1):
-            # The 5th skill to be calculated always takes the remaining 
-            # difference between the maximum possible points and the sum of 
+            # The 5th skill to be calculated always takes the remaining
+            # difference between the maximum possible points and the sum of
             # used-up points
             if i == 5:
                 points = self.MAX_POINTS - sum(skill_points)
@@ -85,7 +80,7 @@ class Cadets:
             # The 4th skill to be calculated needs an upper range and a lower
             # range for the randomizer:
             # - upper range is the remaining points minus the minimum necessary
-            # points for the last skill OR HIGHEST_SKILL, depending on which 
+            # points for the last skill OR HIGHEST_SKILL, depending on which
             # is lower
             # - lower range is the remainder of the remaining points divided by
             # (HIGHEST_SKILL*2)
@@ -99,37 +94,45 @@ class Cadets:
             # remain to be distributed, which is lower than (HIGHEST_SKILL*2)
             # but higher than HIGHEST_SKILL. As a result, lower_range is set to
             # the maximum of 1 or (13%(10*1)), which is 3. This makes sure that
-            # the skill on i=4 receives at least 3 points, leaving max 10 
+            # the skill on i=4 receives at least 3 points, leaving max 10
             # for i=5.
             elif i == 4:
-                upper_range = min(self.MAX_POINTS - sum(skill_points[0:i-1])
-                                  - (skill_amount-i) + 1, self.HIGHEST_SKILL + 1)
-                if (self.MAX_POINTS - sum(skill_points[0:i-1])) < self.HIGHEST_SKILL:
+                skills_sum = sum(skill_points[0:i-1])
+                upper_range = min(self.MAX_POINTS - skills_sum
+                                  - (skill_amount-i) + 1,
+                                  self.HIGHEST_SKILL + 1)
+                if (self.MAX_POINTS - skills_sum) < self.HIGHEST_SKILL:
                     lower_range = self.LOWEST_SKILL
-                elif ((self.MAX_POINTS - sum(skill_points[0:i-1])) 
+                elif ((self.MAX_POINTS - skills_sum)
                       == self.HIGHEST_SKILL * 2):
                     lower_range = self.HIGHEST_SKILL
                 else:
-                    lower_range = max((self.MAX_POINTS - sum(skill_points[0:i-1]))
-                                     % (self.HIGHEST_SKILL * (skill_amount-i)), 1)
+                    lower_range = max((self.MAX_POINTS - skills_sum)
+                                     % (self.HIGHEST_SKILL * (skill_amount-i)),
+                                     1)
                 points = random.randrange(lower_range, upper_range)
 
             elif i == 3:
             # Analogous to 4th skill calculations
-                upper_range = min(self.MAX_POINTS - sum(skill_points[0:i-1])
-                                  - (skill_amount-i) + 1, self.HIGHEST_SKILL + 1)
-                if (self.MAX_POINTS - sum(skill_points[0:i-1])) < self.HIGHEST_SKILL*2:
+                skills_sum = sum(skill_points[0:i-1])
+                upper_range = min(self.MAX_POINTS - skills_sum
+                                  - (skill_amount-i) + 1,
+                                  self.HIGHEST_SKILL + 1)
+                if (self.MAX_POINTS - skills_sum) < self.HIGHEST_SKILL*2:
                     lower_range = self.LOWEST_SKILL
                 else:
                     lower_range = max(
-                        (self.MAX_POINTS - sum(skill_points[0:i-1]))
+                        (self.MAX_POINTS - skills_sum)
                         % (self.HIGHEST_SKILL * (skill_amount-i)), 1)
                 points = random.randrange(lower_range, upper_range)
 
             else:
             # The first two values can be chosen randomly
-                points = random.randrange(self.LOWEST_SKILL, self.HIGHEST_SKILL + 1)
+                points = random.randrange(self.LOWEST_SKILL,
+                                          self.HIGHEST_SKILL + 1)
 
             skill_points.append(points)
+        print(skill_points)
+        input()
 
         return skill_points

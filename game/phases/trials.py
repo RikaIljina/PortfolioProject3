@@ -23,16 +23,17 @@ class Trials:
     """
     MAX_RUNS = 14
 
-    def __init__(self, display: object):
+    def __init__(self, display: object, sheet: object):
         self.display = display
+        self.sheet = sheet
         self.skill = ""
         self.c1 = ""
         self.c2 = ""
         self.trials_log = {}
         self.runs = 0
 
-    def fill_trials(self, cadets: object, skill_nr: int, c1: int, c2: int, trials_left: str) \
-            -> bool:
+    def fill_trials(self, cadets: object, skill_nr: int, c1: int, c2: int,
+                    trials_left: str) -> bool:
         """Receives cadet indexes from the menu and starts the trial run
 
         Calls __run_trials() for each skill and cadet pair, outputs the
@@ -63,15 +64,21 @@ class Trials:
         skill_c1 = cadets.cadets[self.c1][self.skill]
         skill_c2 = cadets.cadets[self.c2][self.skill]
         if skill_c1 - skill_c2 <= -4:
-            result_string = (f'{self.c1} performed much worse than {self.c2}')
+            performance = self.sheet.get_text('trials_performance_mw')
+            result_string = f'{self.c1}{performance}{self.c2}'
         elif skill_c1 - skill_c2 < 0:
-            result_string = (f'{self.c1} performed worse than {self.c2}')
+            performance = self.sheet.get_text('trials_performance_w')
+            result_string = f'{self.c1}{performance}{self.c2}'
         elif skill_c1 - skill_c2 >= 4:
-            result_string = (f'{self.c1} performed much better than {self.c2}')
+            performance = self.sheet.get_text('trials_performance_mb')
+            result_string = f'{self.c1}{performance}{self.c2}'
         elif skill_c1 - skill_c2 > 0:
-            result_string = (f'{self.c1} performed better than {self.c2}')
+            performance = self.sheet.get_text('trials_performance_b')
+            result_string = f'{self.c1}{performance}{self.c2}'
         else:
-            result_string = (f'{self.c1} and {self.c2} performed equally well')
+            performance = self.sheet.get_text('trials_performance_eq')
+            and_string = self.sheet.get_text('trials_performance_and')
+            result_string = f'{self.c1}{and_string}{self.c2}{performance}'
 
         if self.trials_log.get(self.skill):
             self.trials_log[self.skill].append(result_string)

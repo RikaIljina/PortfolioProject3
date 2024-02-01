@@ -60,7 +60,9 @@ class Mission:
         crew_list = [self.sheet.get_text('scr_mission_welcome')]
         for role in self.roles:
             self.display.build_screen(
-                self.sheet.get_text("scr_mission_role", f'{self.BRIGHT_CYAN}{role}{self.RESET}'), 18, ansi=11)
+                self.sheet.get_text(
+                    "scr_mission_role",
+                    f'{self.BRIGHT_CYAN}{role}{self.RESET}'), 18, ansi=11)
             index = menu.run_mission_loop(available_cadets)
             # Construct string from role and cadet last name
             crew_list.append(
@@ -113,7 +115,6 @@ class Mission:
         """Calculates the success of the chosen crew
 
         The mission difficulty can be adjusted by changing the MIN/MAX values.
-        The value 5 is the amount of available skills/roles.
         """
         self.calculate_prognosis()
         diff_values = {1: "low", 2: "low", 3: "low", 4: "low",
@@ -137,9 +138,12 @@ class Mission:
                 print("Internal error: dictionary issue, no such key")
                 print(e, key, diff_values[param], success, fname)
                 input()
+            has_succeeded = self.sheet.get_text('ml_succeeded')
+            has_failed = self.sheet.get_text('ml_failed')
             cadet_performance = \
-                f'{self.GREEN}{value[0]} has succeeded{self.RESET}' if success\
-                else f'{self.BRIGHT_RED}{value[0]} has failed{self.RESET}'
+                f'{self.GREEN}{value[0]}{has_succeeded}{self.RESET}' \
+                    if success else \
+                    f'{self.BRIGHT_RED}{value[0]}{has_failed}{self.RESET}'
             self.mission_log[key] = [cadet_performance]
             if isinstance(msg, list):
                 self.mission_log[key].extend(msg)
@@ -148,7 +152,7 @@ class Mission:
 
         return self.score
 
-    def show_mission_logs(self, player: object, trials: object):
+    def show_mission_logs(self):
         """Collects mission calculations and results in one place, outputs them
 
         Args:
@@ -156,9 +160,6 @@ class Mission:
             trials (object): Reference to Trials class instance
         """
         self.display.clear()
-        # Method prints mission info to the screen and builds mission log
-        # self.calculate_success()
-        # self.display.clear()
         # Print mission log to the screen
         for key, value in self.mission_log.items():
             self.display.build_screen(f'{self.BRIGHT_CYAN}{key}:{self.RESET}',
@@ -167,8 +168,3 @@ class Mission:
             self.display.build_screen(value[1:], 6)
             input(self.display.build_input(prompt_enter=True))
             self.display.clear()
-
-       # final_score = player.calculate_score(
-        #    trials.runs, trials.MAX_RUNS, self)[0]
-        # Save player score to highscore table
-       # self.sheet.write_score(final_score, player.name)

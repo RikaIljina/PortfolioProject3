@@ -38,7 +38,7 @@ def run(menu: object, player: object, display: object, sheet: object):
     display.build_menu('')
     input(display.build_input(prompt_enter=True))
 
-    trials = Trials(display)
+    trials = Trials(display, sheet)
     mission = Mission(cadets.SKILLS, display, sheet)
     menu.run_trial_loop(trials, cadets, mission)
 
@@ -49,7 +49,7 @@ def run(menu: object, player: object, display: object, sheet: object):
     menu.loading_screen(4)
     menu.loading_screen(6, mission_score)
     # rename
-    mission.show_mission_logs(player, trials)
+    mission.show_mission_logs()
     player.build_detailed_score(
         trials.runs, trials.MAX_RUNS, mission, display, sheet)
     # Save player score to highscore table
@@ -70,7 +70,7 @@ def main():
     else:
         os.system("clear")
     sheet = Sheet()
-    display = Display()
+    display = Display(sheet)
     menu = Menu(display, sheet, run)
     menu.run_outer_loop()
     sys.exit()

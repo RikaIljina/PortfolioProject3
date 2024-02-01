@@ -141,8 +141,8 @@ class Menu():
             if not self.stay_in_trial_menu:
                 self.display.build_menu("")
                 self.display.clear([16, 17, 18])
-                #input(self.display.build_input(prompt_enter=True))
-                #self.display.clear()
+                # input(self.display.build_input(prompt_enter=True))
+                # self.display.clear()
                 self.display.build_screen(self.sheet.get_text(
                     'no_more_trials'), 16)
                 input(self.display.build_input(prompt_enter=True))
@@ -152,6 +152,8 @@ class Menu():
 
             # Show amount of available trial runs
             trials_left = trials.MAX_RUNS - trials.runs
+            # A solution for how to correctly import and construct the
+            # following string from the worksheet is yet to be found.
             self.trials_left = (
                 f'{trials_left} hour{"s" if trials_left != 1 else ""} left')
             self.display.build_screen(f'{self.trials_left:>76}', 18)
@@ -257,7 +259,8 @@ class Menu():
                 self.display.clear(is_error=True)
                 break
         # Build info message
-        trial_status[1] += f'{cadets.names[c1]} vs ...'
+        vs = self.sheet.get_text('menu_trials_vs')
+        trial_status[1] += f'{cadets.names[c1]}{vs}'
         self.display.build_screen(trial_status, row_nr=16)
         # Get player input for second cadet
         while True:

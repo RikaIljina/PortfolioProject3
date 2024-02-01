@@ -58,17 +58,18 @@ class Display:
     EMPTY_ROW = f'{BORDER_CHAR}{" ":<78}{BORDER_CHAR}'
     ERROR_ROW_NR = 21
     MENU_ROW_NR = 20
-    ENTER = 'Press ENTER to continue ⁞⁞ '
     # ANSI codes for text styling
     RED = "\033[41;1m"
     GREEN = "\033[92;1m"
     RESET = "\033[0m"
 
-    def __init__(self):
+    def __init__(self, sheet):
         self.rows = []
         self.empty_screen()
         self.filled = []
         self.first_time = True
+        self.sheet = sheet
+        self.ENTER = self.sheet.get_text('prompt_continue')
         just_fix_windows_console()
 
     def empty_screen(self):
