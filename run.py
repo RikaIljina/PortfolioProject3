@@ -62,6 +62,24 @@ def run(menu: object, player: object, display: object, sheet: object):
     # returns to menu lvl1
 
 
+def say_goodbye(display):
+    fill_sym = "⸾"
+    scr = []
+    display.clear()
+    display.clear(is_error=True)
+    display.build_menu('')
+    scr = [f'{fill_sym*76}']*7
+    scr.append(f'{fill_sym*25}{" "*27}{fill_sym*24}')
+    scr.append(f'{fill_sym*25}   LIVE LONG AND PROSPER   {fill_sym*24}')
+    scr.append(f'{fill_sym*25}{" "*27}{fill_sym*24}')
+    scr.extend([f'{fill_sym*76}']*5)
+    scr.append(f'{fill_sym*17}  "AD ASTRA" by Vasilika Schnitzer 2024  {fill_sym*18}')
+    scr.append(f'{fill_sym*22}  vasilika.schnitzer@gmail.com  {fill_sym*22}')
+    scr.append(f'{fill_sym*76}')
+    display.build_screen(scr, 1, center=True)
+    display.draw()
+
+
 def main():
     """Initializes Menu and Display class and starts outer menu choice loop"""
     if os.name == 'nt':
@@ -72,6 +90,7 @@ def main():
     display = Display(sheet)
     menu = Menu(display, sheet, run)
     menu.run_outer_loop()
+    say_goodbye(display)
     sys.exit()
 
 
