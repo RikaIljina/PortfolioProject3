@@ -24,7 +24,7 @@ class Trials:
     Methods:
         fill_trials(): Receives cadet indexes and starts the trial run
     """
-    MAX_RUNS = 3
+    MAX_RUNS = 14
 
     def __init__(self, display: object, sheet: object):
         self.display = display
