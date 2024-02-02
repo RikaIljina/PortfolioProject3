@@ -41,10 +41,10 @@ def run(menu: object, player: object, display: object, sheet: object):
 
     # Final mission
     mission.assemble_crew(menu, trials, cadets)
-    mission_score = mission.calculate_success()
+    mission.calculate_success()
     menu.info_screen('5_red_alert', mission)
     menu.info_screen('6_ship_anim')
-    menu.info_screen('7_mission_score', mission_score)
+    menu.info_screen('7_mission_score', mission.score)
     # rename
     mission.show_mission_logs()
     player.build_detailed_score(

@@ -145,19 +145,19 @@ class Sheet:
             message_list = message_raw.split("\n")
             message = []
             message_wrapped = []
-            for el in message_list:
-                if len(el) > 76:
-                    message_wrapped = textwrap.wrap(el, 76)
+            for row in message_list:
+                if len(row) > 76:
+                    message_wrapped = textwrap.wrap(row, 76)
                     message.extend(message_wrapped)
-                elif len(el) == 0:
+                elif len(row) == 0:
                     message.append(" ")
                 else:
-                    message.append(el)
+                    message.append(row)
         else:
             message = message_raw
         return message
 
-    def get_list(self, key:str) -> list:
+    def get_list(self, key: str) -> list:
         """Retrieves items from the message dictionary based on specified key
 
         Takes a key as input and retrieves the corresponding value from the

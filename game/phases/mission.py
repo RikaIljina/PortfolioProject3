@@ -6,6 +6,9 @@ import textwrap
 
 class Mission:
     """Calculates and stores the results of the mission phase
+    
+    The mission difficulty can be adjusted by changing the MIN/MAX values.
+    
 
     Args:
         roles (list): List with cadet roles
@@ -25,13 +28,14 @@ class Mission:
             of the mission and to which the cadet skills will be compared.
             The value range is [DIFF_MIN, DIFF_MAX]
         difficulty (int): Average of the 5 randomly chosen mission parameters
-        suffix (str):
+        suffix (str): String needed to construct a message ID
 
     Methods:
         assemble_crew(): Lets player assign cadets to the roles via the menu
         calculate_prognosis(): Calculates the probability for crew success
         calculate_success(): Calculates the success of the chosen crew
         show_results():
+        show_mission_logs():
     """
     DIFF_MIN = 3
     DIFF_MAX = 10
@@ -57,7 +61,10 @@ class Mission:
     def assemble_crew(self, menu: object, trials: object, cadets: object):
         """Lets player assign cadets to the roles via the menu
 
-        Outputs the trial log entries for each role.
+        This method outputs the trial log entries to help player choose the
+        crew along with other info text. It also calls a menu method so that
+        the player can choose cadets for each role.
+        The menu method makes sure that the index is valid.
 
         Args:
             menu (object): Reference to Menu class instance
@@ -72,12 +79,15 @@ class Mission:
                 self.sheet.get_text(
                     "scr_mission_role",
                     f'{self.BRIGHT_CYAN}{role}{self.RESET}'), 18, ansi=11)
+            # Get the next cadet index via user input in the menu
             index = menu.run_mission_loop(available_cadets)
             # Construct string from role and cadet last name
             crew_list.append(
                 f'{role} {available_cadets[index].split(" ")[1]}')
             self.display.build_screen(textwrap.wrap(
                 ', '.join(crew_list)+'!', 76), 16)
+            # Construct the crew dictionary from role, cadet name and
+            # cadet skill
             self.crew[role] = [available_cadets[index],
                                cadets.cadets[available_cadets[index]][role]]
             available_cadets.pop(index)
@@ -87,13 +97,13 @@ class Mission:
         self.display.build_menu("")
         input(self.display.build_input(prompt_enter=True))
 
-    def calculate_prognosis(self) -> int:
-        """Calculates the probability value for crew success
+    def calculate_prognosis(self):
+        """Calculates the average skill level of the crew
 
-        The calculation is based on cadet skill values.
+        The calculation is based on the individual cadet skill values.
 
         Returns:
-            int: Probability value for crew success
+            int: Average skill level of the crew
         """
         result = sum([value[1]*10 for value in self.crew.values()])
         self.prognosis = math.floor(result/len(self.crew.values()))
@@ -102,10 +112,11 @@ class Mission:
     def calculate_disparity(self):
         """Calculates disparity between the mission prognosis and difficulty
 
-        This function computes the difference between the mission prognosis
+        This method calculates the difference between the mission prognosis
         value and difficulty to determine the disparity level and set an
-        appropriate suffix. This suffix is used as a key to get info text from
-        the message dictionary.
+        appropriate suffix. This suffix is used by
+        menu.info_screen('5_red_alert') as a key to get info text from the
+        message dictionary.
 
         Attributes:
             self.prognosis (int): The prognosis level of the mission.
@@ -119,10 +130,20 @@ class Mission:
         else:
             self.suffix = 'zero'
 
-    def calculate_success(self) -> int:
-        """Calculates the success of the chosen crew
+    def calculate_success(self):
+        """Calculates the success of the chosen crew, writes the mission log
 
-        The mission difficulty can be adjusted by changing the MIN/MAX values.
+        The success is calculated by comparing the cadet skill to the
+        respective mission parameter.
+        The messages for the mission log are constructed as follows:
+        sheet.get_mission_msg() assembles the message ID from the following
+        parts:
+        - Name of the role (found as keys in self.crew dict)
+        - Difficulty indicator (found in diff_values dict; key is the randomly
+          chosen mission parameter)
+        - Bool for mission success (has_succeeded)
+        sheet.get_mission_msg() also needs the cadet name to insert it into the
+        mission description.
         """
         self.calculate_prognosis()
         diff_values = {1: "low", 2: "low", 3: "low", 4: "low",
@@ -132,40 +153,38 @@ class Mission:
         # calculate success for each cadet.
         for param, (key, value) in zip(self.mission_parameters,
                                        self.crew.items()):
-            fname = value[0].split(" ")[1]
             if value[1] >= param:
                 self.score += 1
-                success = True
+                has_succeeded = True
             else:
-                success = False
+                has_succeeded = False
+            fname = value[0].split(" ")[1]
             try:
                 # Get the appropriate message from the Google sheet
                 msg = self.sheet.get_mission_msg(
-                    key, diff_values[param], success, fname)
+                    key, diff_values[param], has_succeeded, fname)
             except KeyError as e:
                 print("Internal error: dictionary issue, no such key")
-                print(e, key, diff_values[param], success, fname)
+                print(e, key, diff_values[param], has_succeeded, fname)
                 input()
-            has_succeeded = self.sheet.get_text('ml_succeeded')
-            has_failed = self.sheet.get_text('ml_failed')
+            success_text = self.sheet.get_text('ml_succeeded')
+            fail_text = self.sheet.get_text('ml_failed')
             cadet_performance = \
-                f'{self.GREEN}{value[0]}{has_succeeded}{self.RESET}' \
-                    if success else \
-                    f'{self.BRIGHT_RED}{value[0]}{has_failed}{self.RESET}'
+                f'{self.GREEN}{value[0]}{success_text}{self.RESET}' \
+                    if has_succeeded else \
+                    f'{self.BRIGHT_RED}{value[0]}{fail_text}{self.RESET}'
+            # Build the mission log
             self.mission_log[key] = [cadet_performance]
             if isinstance(msg, list):
                 self.mission_log[key].extend(msg)
             else:
                 self.mission_log[key].append(msg)
 
-        return self.score
-
     def show_mission_logs(self):
-        """Collects mission calculations and results in one place, outputs them
-
-        Args:
-            player (object): Reference to Player class instance
-            trials (object): Reference to Trials class instance
+        """Prepares mission logs for output, sends them to Display
+        
+        Adds ANSI styles to certain lines and positions them correctly on
+        the screen.
         """
         self.display.clear()
         # Print mission log to the screen

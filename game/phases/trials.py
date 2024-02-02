@@ -87,16 +87,17 @@ class Trials:
         """
         skill_c1 = cadets.cadets[self.c1][self.skill]
         skill_c2 = cadets.cadets[self.c2][self.skill]
-        if skill_c1 - skill_c2 <= -4:
+        skill_diff = skill_c1 - skill_c2
+        if skill_diff <= -4:
             performance = self.sheet.get_text('trials_performance_mw')
             result_string = f'{self.c1}{performance}{self.c2}'
-        elif skill_c1 - skill_c2 < 0:
+        elif skill_diff < 0:
             performance = self.sheet.get_text('trials_performance_w')
             result_string = f'{self.c1}{performance}{self.c2}'
-        elif skill_c1 - skill_c2 >= 4:
+        elif skill_diff >= 4:
             performance = self.sheet.get_text('trials_performance_mb')
             result_string = f'{self.c1}{performance}{self.c2}'
-        elif skill_c1 - skill_c2 > 0:
+        elif skill_diff > 0:
             performance = self.sheet.get_text('trials_performance_b')
             result_string = f'{self.c1}{performance}{self.c2}'
         else:
