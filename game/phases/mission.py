@@ -55,7 +55,7 @@ class Mission:
         self.crew = {}
         self.mission_parameters = [random.randrange(
             self.DIFF_MIN, self.DIFF_MAX+1) for _ in range(5)]
-        self.difficulty = (sum(self.mission_parameters)/5)*10
+        self.difficulty = int((sum(self.mission_parameters)/5)*10)
         self.suffix = ''
 
     def assemble_crew(self, menu: object, trials: object, cadets: object):
@@ -180,6 +180,7 @@ class Mission:
             else:
                 self.mission_log[key].append(msg)
 
+    # TODO: move to menu info screens
     def show_mission_logs(self):
         """Prepares mission logs for output, sends them to Display
         
@@ -190,8 +191,8 @@ class Mission:
         # Print mission log to the screen
         for key, value in self.mission_log.items():
             self.display.build_screen(f'{self.BRIGHT_CYAN}{key}:{self.RESET}',
-                                      4, ansi=11)
+                                      3, ansi=11)
             self.display.build_screen(value[0], 5, ansi=11)
-            self.display.build_screen(value[1:], 6)
+            self.display.build_screen(value[1:], 7)
             input(self.display.build_input(prompt_enter=True))
             self.display.clear()

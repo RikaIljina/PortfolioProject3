@@ -1,4 +1,9 @@
+"""Contains Menu class which builds menu elements and handles user input
 
+The Menu class was supposed to handle menu choice logic and call appropriate
+functions where needed. However, it has grown into an overarching class that
+handles all relevant user input and shows informational screens in-between.
+"""
 import time
 
 
@@ -11,6 +16,7 @@ class Menu():
         * displaying an error message
         * calling a function
         * returning the chosen value
+    - to render info screens
 
     The Display class object is used to print on screen:
     - Print menu choices on the screen:
@@ -46,13 +52,16 @@ class Menu():
     Methods:
     run_outer_loop(): Displays the outer menu choices and waits for player
         input
-    run_player_init():
-    run_trial_loop():
-    run_skill_choice():
-    run_cadet_choice():
-    run_mission_loop():
-    reset_menu():
-    info_screen():
+    run_player_init(): Prompts user to enter a player name until valid name is
+        entered
+    run_trial_loop(): Displays trial phase choices and waits for user input
+    run_skill_choice(): Displays skill choices and waits for valid user input
+    run_cadet_choice(): Displays cadet names as menu choices and waits for
+        valid user input
+    run_mission_loop(): Displays cadet names as menu choices and waits for
+        valid user input
+    reset_menu(): Resets menu values on repeated playthrough
+    info_screen(): Prepares and displays all info screens
     """
     GREEN = "\033[32;1m"
     RED = "\033[91;1m"
@@ -118,12 +127,12 @@ class Menu():
         self.display.clear()
 
     def run_trial_loop(self, trials: object, cadets: object, mission: object):
-        """Displays trial phase choices and waits for user input
+        """Displays trial phase choices and waits for valid user input
 
         During the trial phase, the player can choose to select a specific
-        career track as well as two cadets to test, or to end the trial phase
-        and start the mission. This method handles the choice of track and
-        cadets 
+        career track (skill) as well as two cadets to test, or to end the
+        trial phase and start the mission. This method handles the choice of
+        track and cadets ... 
 
         Args:
             trials (object): Reference to Trials class instance
@@ -159,6 +168,8 @@ class Menu():
                     self.run_skill_choice(trials, cadets)
                     continue
                 case '2':
+                    # Make sure that a career track has been chosen before
+                    # allowing the player to choose cadets
                     if not self.chosen_skill:
                         self.display.build_menu(self.sheet.get_text(
                             'err_skill_first'), is_error=True)
@@ -176,6 +187,16 @@ class Menu():
         # Returns to run() to start mission phase
 
     def run_skill_choice(self, trials: object, cadets: object):
+        """Displays skill choices and waits for valid user input
+
+        This method creates an enumerated menu string from the cadet skills
+        and waits for the user to choose a valid index. Once an index has been
+        received, the method calls run_cadet_choice().
+
+        Args:
+            trials (object): Reference to Trials class instance
+            cadets (object): Reference to Cadets class instance
+        """
         self.display.clear(is_error=True)
         trial_status = self.sheet.get_text('scr_trial_active')
         skill_choice_texts = ' '.join(
@@ -201,13 +222,19 @@ class Menu():
                 break
         self.chosen_skill = cadets.skills[skill_nr]
         self.run_cadet_choice(trials, cadets, skill_nr)
-
         # Returns to run_trial_loop()
 
     def run_cadet_choice(self, trials: object, cadets: object, skill_nr=None):
-        """Lets player choose two cadets to compete against each other
+        """Displays cadet names as menu choices and waits for valid user input
 
-        Calls the Trials method fill_trials() after validating all choices.
+        This method creates an enumerated menu string from the cadet names
+        and waits for the user to choose a valid index. Once two indexes have
+        been received, the method calls trials.fill_trials() and passes on
+        the chosen skill index and the cadet indexes.
+
+        This method also keeps track of how many trial runs the player has left
+        by comparing the variables 'MAX_RUNS' and 'runs' from the trials
+        object.
 
         Args:
             trials (object): Reference to Trials class instance
@@ -279,10 +306,15 @@ class Menu():
         self.display.build_screen((f'{self.chosen_skill}:  '), 17)
         # Check if all allowed trial runs have been exhausted
         self.stay_in_trial_menu = trials.MAX_RUNS >= trials.runs
-        # Return to run_skill_choice() or run_trial_loop()
+        # Return to run_trial_loop()
 
     def run_mission_loop(self, available_cadets: list) -> int:
-        """Lets player choose one cadet for a crew role in the Mission phase
+        """Displays cadet names as menu choices and waits for valid user input
+
+        This method creates a menu choice string from the available_cadets list
+        and waits for the user to choose a valid index. The list is created by
+        the Mission class method assemble_crew() and is shrinking with each
+        chosen index. The chosen index is returned to assemble_crew().
 
         Args:
             available_cadets (list): Shrinking list of available cadets as set
@@ -320,6 +352,13 @@ class Menu():
         self.trial_first_time = True
 
     def info_screen(self, part, value=None):
+        """Prepares and displays all info screens
+
+        Args:
+            part (string): ID of the info screen to show
+            value (optional): This argument can contain one value of any type
+                needed for the specific info screen. Defaults to None.
+        """
         match part:
             case '1_logo':
                 logo = ['   🟇 🟍 ✵  AD ASTRA ✵ 🟍 🟇']
@@ -333,7 +372,8 @@ class Menu():
                 self.display.build_screen(message)
                 return
             case '3_recruit':
-                cadet_names = value[:]
+                # Value is a list with cadet names
+                cadet_names = value
                 message = self.sheet.get_text(
                     'recruit_msg', self.active_player.name)
                 message.extend(cadet_names)
@@ -343,12 +383,12 @@ class Menu():
                 input(self.display.build_input(prompt_enter=True))
                 return
             case '4_trials_desc':
-                # value is mission difficulty here
-                message = self.sheet.get_text('trials_desc', str(int(value)))
+                # Value is an int with mission difficulty
+                message = self.sheet.get_text('trials_desc', str(value))
                 self.display.build_screen(message, 2)
                 return
             case '5_red_alert':
-                # value is Mission class object here
+                # Value is the Mission class object
                 mission = value
                 # Red alert screen
                 self.display.clear()
@@ -366,36 +406,31 @@ class Menu():
                 self.display.build_screen(alert, 4)
                 self.display.build_menu(choices)
                 while True:
+                    # The following choice is only needed for storytelling;
+                    # it doesn't impact the game
                     choice = input(self.display.build_input())
                     self.display.clear(is_error=True)
+                    self.display.clear(list(range(3, 19)))
                     match choice:
                         case '1':
-                            self.display.clear(list(range(3, 19)))
                             message_1 = self.sheet.get_text(
                                 'red_alert_y', self.active_player.name)
-                            self.display.build_screen(message_1, 4)
-                            message_2 = self.sheet.get_text(
-                                f"prediction_{mission.suffix}",
-                                mission.prognosis)
-                            self.display.build_screen(message_2, 10)
-                            self.display.build_menu('')
-                            input(self.display.build_input(prompt_enter=True))
-                            return
                         case '2':
-                            self.display.clear(list(range(3, 19)))
                             message_1 = self.sheet.get_text(
                                 'red_alert_n', self.active_player.name)
-                            self.display.build_screen(message_1, 4)
-                            message_2 = self.sheet.get_text(
-                                f"prediction_{mission.suffix}",
-                                mission.prognosis)
-                            self.display.build_screen(message_2, 10)
-                            self.display.build_menu('')
-                            input(self.display.build_input(prompt_enter=True))
-                            return
                         case _:
                             error = self.sheet.get_text('err_red_alert')
                             self.display.build_menu(error, is_error=True)
+                    self.display.build_screen(message_1, 4)
+                    # The content of this message depends on the
+                    # proportionality of mission difficulty and average
+                    # cadet skill level
+                    message_2 = self.sheet.get_text(
+                        f"prediction_{mission.suffix}", mission.prognosis)
+                    self.display.build_screen(message_2, 10)
+                    self.display.build_menu('')
+                    input(self.display.build_input(prompt_enter=True))
+                    return
             case '6_ship_anim':
                 self.display.clear()
                 ship = self.sheet.get_text('ship_anim')
@@ -406,8 +441,8 @@ class Menu():
                         all_lines.append(line[i:-1 if i >= -76 else i+76])
                     self.display.build_screen(all_lines, 3)
                     self.display.draw()
-                    time.sleep(0.03)
-                    self.display.flush_input()
+                    time.sleep(0.05)
+                self.display.flush_input()
                 return
             case '7_mission_score':
                 # value is final mission score here
@@ -415,7 +450,13 @@ class Menu():
                 message = self.sheet.get_text(f'mission_score_{value}')
                 self.display.build_screen(
                     self.BRIGHT_CYAN + message[0] + self.RESET, 3, ansi=11)
-                self.display.build_screen(message[1:], 5)
+                if value in [0, 1, 2]:
+                    self.display.build_screen(
+                        self.RED + message[1] + self.RESET, 5, ansi=11)
+                else:
+                    self.display.build_screen(
+                        self.GREEN + message[1] + self.RESET, 5, ansi=11)
+                self.display.build_screen(message[2:], 6)
                 input(self.display.build_input(prompt_enter=True))
                 return
             case '8_player_score':
@@ -437,3 +478,24 @@ class Menu():
                 self.display.build_menu("")
                 input(self.display.build_input(prompt_enter=True))
                 return
+            case '10_say_goodbye':
+                # Constructs and shows the exit screen with the credits
+                fill_sym = "⸾"
+                scr = []
+                self.display.clear()
+                self.display.clear(is_error=True)
+                self.display.build_menu('')
+                scr = [f'{fill_sym*76}']*7
+                scr.append(f'{fill_sym*25}{" "*27}{fill_sym*24}')
+                scr.append(f'{fill_sym*25}'
+                           f'{self.sheet.get_text("exit_live_long")}'
+                           f'{fill_sym*24}')
+                scr.append(f'{fill_sym*25}{" "*27}{fill_sym*24}')
+                scr.extend([f'{fill_sym*76}']*5)
+                scr.append(f'{fill_sym*17}{self.sheet.get_text("exit_by")}'
+                           f'{fill_sym*17}')
+                scr.append(f'{fill_sym*22}{self.sheet.get_text("exit_mail")}'
+                           f'{fill_sym*22}')
+                scr.append(f'{fill_sym*76}')
+                self.display.build_screen(scr, 1, center=True)
+                self.display.draw()

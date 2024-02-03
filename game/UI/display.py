@@ -10,7 +10,7 @@ from colorama import just_fix_windows_console
 class Display:
     """Processes text and renders the screen output
 
-    Contains viewport and output formatting data, formats and handles all
+    Contains screen and output formatting data, formats and handles all
     print operations.
     All Display methods expect strings or list elements with <76 characters.
 
@@ -38,7 +38,7 @@ class Display:
 
     The output is finally rendered on screen only when input() is called.
     To render output in-between (for example when using time.sleep), call
-    display.draw()
+    display.draw().
 
     Attributes:
         HEIGHT (int): Max allowed viewport height minus input line
@@ -155,9 +155,10 @@ class Display:
             return
 
     def build_menu(self, text: str, is_error=False,):
-        """Prepares the menu row for terminal output
+        """Prepares the menu and error rows for terminal output
 
-        Formats the string and overwrites the specified row index in self.rows.
+        Formats the string and overwrites the row index of menu row or error
+        row in in self.rows dictionary.
 
         Args:
             text (str): String containing the menu elements, max 76 chars
@@ -271,7 +272,6 @@ class Display:
                 result = (f'{self.BORDER_CHAR}{" "*24 + line:<78}'
                           f'{self.BORDER_CHAR}')
                 self.rows[row_nr + idx] = result
-
             # Turn the logo screen into a list with 23 rows where each row
             # contains a list of single characters
             rows_matrix_logo = []
@@ -356,7 +356,8 @@ class Display:
                 # Fill the final list starting at specified row index
                 self.rows[row_nr + idx] = result
             return
-            
+
+        # Build left-aligned list
         for idx, line in enumerate(text):
             width = "<" + str(76 + ansi)
             result = (f'{self.BORDER_CHAR}{" "}{line:{width}}{" "}'

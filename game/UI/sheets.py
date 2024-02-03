@@ -2,7 +2,6 @@
 
 The class accesses the data in the spreadsheet, formats and returns the data
 on demand, and writes new data into the spreadsheet.
-
 """
 import textwrap
 import gspread
@@ -27,8 +26,7 @@ class Sheet:
         score_table: Worksheet instance for 'highscore'
         texts: Worksheet instance for 'texts'
         MAX_ENTRIES (int): Maximum highscore entries allowed
-        GREEN (str): ANSI color code for green
-        RESET (str): ANSI code to reset previous ANSI code
+        GREEN, RESET (str): ANSI style codes
         
     Methods:
         get_score(): Retrieves list with formatted highscore entries

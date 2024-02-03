@@ -1,5 +1,5 @@
+"""Main game file that must be run in order to start the game"""
 # coding=utf-8
-# Write your code to expect a terminal of 80 characters wide and 24 rows high
 import os
 import sys
 from game.components.player import Player
@@ -15,37 +15,42 @@ from game.UI.sheets import Sheet
 
 
 def run(menu: object, player: object, display: object, sheet: object):
-    """Starts the different game phases
+    """Game manager function; starts the different game phases
+
+    This function initializes the game component and phases classes, calls the
+    different game phases in the correct order and shows info screens.
 
     Args:
         menu (object): Reference to Menu class instance
         player (object): Reference to Player class instance
         display (object): Reference to Display class instance
     """
+    # Some menu variables must be reset when the game is played in several
+    # playthroughs in one session
     menu.reset_menu()
-
     # Only run player initialization if the game is running for the first time
-    # or if the user chooses to enter a new name in the outer menu
+    # or if the user chooses to enter a new name in the outer menu. If a player
+    # has already been initialized, it is passed from the menu to run().
     if player is None:
         player = Player()
         menu.active_player = player
         menu.run_player_init()
-
+    # Initialize cadets and show their names
     cadets = Cadets(sheet)
     cadets.recruit()
     menu.info_screen('3_recruit', cadets.names)
-
+    # Initialize trials;
+    # initialize mission to show the mission difficulty to the player
     trials = Trials(display, sheet)
     mission = Mission(cadets.skills, display, sheet)
+    # Start trials phase via the menu
     menu.run_trial_loop(trials, cadets, mission)
-
-    # Final mission
+    # Start mission phase
     mission.assemble_crew(menu, trials, cadets)
     mission.calculate_success()
     menu.info_screen('5_red_alert', mission)
     menu.info_screen('6_ship_anim')
     menu.info_screen('7_mission_score', mission.score)
-    # rename
     mission.show_mission_logs()
     player.build_detailed_score(
         trials.runs, trials.MAX_RUNS, mission, display, sheet)
@@ -56,32 +61,17 @@ def run(menu: object, player: object, display: object, sheet: object):
     sheet.write_score(player.score, player.name)
     display.clear()
     menu.info_screen('9_highscore')
-
-    display.empty_screen()
-
-    # returns to menu lvl1
-
-
-def say_goodbye(display):
-    fill_sym = "⸾"
-    scr = []
-    display.clear()
-    display.clear(is_error=True)
-    display.build_menu('')
-    scr = [f'{fill_sym*76}']*7
-    scr.append(f'{fill_sym*25}{" "*27}{fill_sym*24}')
-    scr.append(f'{fill_sym*25}   LIVE LONG AND PROSPER   {fill_sym*24}')
-    scr.append(f'{fill_sym*25}{" "*27}{fill_sym*24}')
-    scr.extend([f'{fill_sym*76}']*5)
-    scr.append(f'{fill_sym*17}  "AD ASTRA" by Vasilika Schnitzer 2024  {fill_sym*18}')
-    scr.append(f'{fill_sym*22}  vasilika.schnitzer@gmail.com  {fill_sym*22}')
-    scr.append(f'{fill_sym*76}')
-    display.build_screen(scr, 1, center=True)
-    display.draw()
+    # Return to menu lvl1
 
 
 def main():
-    """Initializes Menu and Display class and starts outer menu choice loop"""
+    """Initializes UI classes and starts the outer menu choice loop
+
+    This function starts the game by clearing the screen, initializing the UI
+    classes Sheet, Display and Menu, and running the outer menu choice loop.
+    On game exit, the function calls say_goodbye() to show the credits and exit
+    the program.
+    """
     if os.name == 'nt':
         os.system("cls")
     else:
@@ -90,7 +80,7 @@ def main():
     display = Display(sheet)
     menu = Menu(display, sheet, run)
     menu.run_outer_loop()
-    say_goodbye(display)
+    menu.info_screen('10_say_goodbye')
     sys.exit()
 
 
