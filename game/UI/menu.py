@@ -410,7 +410,6 @@ class Menu():
                     # it doesn't impact the game
                     choice = input(self.display.build_input())
                     self.display.clear(is_error=True)
-                    self.display.clear(list(range(3, 19)))
                     match choice:
                         case '1':
                             message_1 = self.sheet.get_text(
@@ -421,6 +420,8 @@ class Menu():
                         case _:
                             error = self.sheet.get_text('err_red_alert')
                             self.display.build_menu(error, is_error=True)
+                            continue
+                    self.display.clear(list(range(3, 19)))
                     self.display.build_screen(message_1, 4)
                     # The content of this message depends on the
                     # proportionality of mission difficulty and average
