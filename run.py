@@ -2,13 +2,13 @@
 # coding=utf-8
 import os
 import sys
-from game.components.player import Player
+from game.UI.sheets import Sheet
 from game.UI.display import Display
+from game.UI.menu import Menu
+from game.components.player import Player
 from game.components.cadets import Cadets
 from game.phases.trials import Trials
 from game.phases.mission import Mission
-from game.UI.menu import Menu
-from game.UI.sheets import Sheet
 
 # Establish connection to Google sheets for highscore management
 # Create Worksheet object for access to texts and highscore
@@ -30,7 +30,8 @@ def run(menu: object, player: object, display: object, sheet: object):
     menu.reset_menu()
     # Only run player initialization if the game is running for the first time
     # or if the user chooses to enter a new name in the outer menu. If a player
-    # has already been initialized, it is passed from the menu to run().
+    # has already been initialized, the player object is passed from the menu
+    # to run().
     if player is None:
         player = Player()
         menu.active_player = player

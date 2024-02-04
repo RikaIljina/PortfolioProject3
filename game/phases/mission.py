@@ -163,10 +163,11 @@ class Mission:
                 # Get the appropriate message from the Google sheet
                 msg = self.sheet.get_mission_msg(
                     key, diff_values[param], has_succeeded, fname)
-            except KeyError as e:
-                print("Internal error: dictionary issue, no such key")
-                print(e, key, diff_values[param], has_succeeded, fname)
+            except (TypeError, KeyError) as e:
+                print("Internal error: dictionary issue, no such key:")
+                print(key, diff_values[param], has_succeeded, fname, e)
                 input()
+                raise e
             success_text = self.sheet.get_text('ml_succeeded')
             fail_text = self.sheet.get_text('ml_failed')
             cadet_performance = \

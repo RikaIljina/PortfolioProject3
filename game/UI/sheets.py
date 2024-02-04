@@ -3,6 +3,7 @@
 The class accesses the data in the spreadsheet, formats and returns the data
 on demand, and writes new data into the spreadsheet.
 """
+import sys
 import textwrap
 import gspread
 from google.oauth2.service_account import Credentials
@@ -40,12 +41,33 @@ class Sheet:
         "https://www.googleapis.com/auth/drive.file",
         "https://www.googleapis.com/auth/drive"
     ]
-    CREDS = Credentials.from_service_account_file('creds.json')
-    SCOPED_CREDS = CREDS.with_scopes(SCOPE)
-    GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
-    SHEET = GSPREAD_CLIENT.open('ad_astra')
-    score_table = SHEET.worksheet("highscore")
-    texts = SHEET.worksheet("texts")
+    # Information about gspread module exception handling found here:
+    # https://snyk.io/advisor/python/gspread/functions/
+    # gspread.exceptions.WorksheetNotFound
+    try:
+        CREDS = Credentials.from_service_account_file('creds.json')
+        SCOPED_CREDS = CREDS.with_scopes(SCOPE)
+        GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
+        SHEET = GSPREAD_CLIENT.open('ad_astra')
+        score_table = SHEET.worksheet("highscore")
+        texts = SHEET.worksheet("texts")
+    except gspread.exceptions.SpreadsheetNotFound as e:
+        print(
+            "Trying to open non-existent or inaccessible spreadsheet "
+            f"document: {e}\nPlease restart the game or contact the dev: "
+            "vasilika.schnitzer@gmail.com")
+        sys.exit()
+    except gspread.exceptions.WorksheetNotFound as e:
+        print("Trying to open non-existent worksheet. Verify that the sheet "
+              f"name exists: {e}\nPlease restart the game or contact the dev: "
+              "vasilika.schnitzer@gmail.com")
+        sys.exit()
+    except Exception as e:
+        print("The Google API returned an error: There is an issue with the "
+              "Google Drive API credentials or the sheet hasn't been shared "
+              "with the application.\nPlease restart the game or contact the "
+              " dev: vasilika.schnitzer@gmail.com")
+        sys.exit()
     # Max highscore entries allowed
     MAX_ENTRIES = 10
     # ANSI color codes

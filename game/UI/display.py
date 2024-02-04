@@ -39,6 +39,9 @@ class Display:
     The output is finally rendered on screen only when input() is called.
     To render output in-between (for example when using time.sleep), call
     display.draw().
+    
+    Args:
+        sheet (object): Reference to Sheet class instance
 
     Attributes:
         HEIGHT (int): Max allowed viewport height minus input line
@@ -150,9 +153,9 @@ class Display:
         elif isinstance(text, dict):
             self.__build_from_dict(text, row_nr)
         else:
-            print("Internal error: text is not str, list, or dict")
-            input()
-            return
+            raise TypeError("Internal error: text is not str, list, or dict")
+            #input()
+            #return
 
     def build_menu(self, text: str, is_error=False,):
         """Prepares the menu and error rows for terminal output
@@ -389,9 +392,10 @@ class Display:
             temp_list = [f'{key}: ']
             # This function expects the value to be a list
             if not isinstance(value, list):
-                print("Internal error: Dictionary value is not a list")
-                input()
-                return
+                raise TypeError(
+                    "Internal error: Dictionary value is not a list")
+                #input()
+                #return
             for val in value:
                 temp_list.append(val)
 
