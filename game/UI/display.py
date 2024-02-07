@@ -154,8 +154,6 @@ class Display:
             self.__build_from_dict(text, row_nr)
         else:
             raise TypeError("Internal error: text is not str, list, or dict")
-            #input()
-            #return
 
     def build_menu(self, text: str, is_error=False,):
         """Prepares the menu and error rows for terminal output

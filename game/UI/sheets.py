@@ -63,10 +63,12 @@ class Sheet:
               "vasilika.schnitzer@gmail.com")
         sys.exit()
     except Exception as e:
-        print("The Google API returned an error: There is an issue with the "
+        print("There is no connection to Google Sheets. Possible reason: No "
+              "internet connection. There might also be an issue with the "
               "Google Drive API credentials or the sheet hasn't been shared "
-              "with the application.\nPlease restart the game or contact the "
-              " dev: vasilika.schnitzer@gmail.com")
+              "with the application.\nPlease check your internet connection, "
+              "restart the game or contact the dev: "
+              "vasilika.schnitzer@gmail.com")
         sys.exit()
     # Max highscore entries allowed
     MAX_ENTRIES = 10

@@ -94,7 +94,7 @@ class Mission:
         # Clear menu and wait for player to read the output and press ENTER
         self.display.build_screen(self.BRIGHT_CYAN + self.sheet.get_text(
             'scr_mission_embark') + self.RESET, 18, center=True, ansi=11)
-        self.display.build_menu("")
+        self.display.build_menu('')
         input(self.display.build_input(prompt_enter=True))
 
     def calculate_prognosis(self):
