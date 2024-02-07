@@ -63,7 +63,7 @@ class Player:
         skill_penalty = 500 - sum([value[1]
                                    for value in mission.crew.values()]) * 10
         trial_run_bonus = 0 if mission_failed_penalty != 0 else (
-            trial_max_runs - trial_runs) * 10
+            trial_max_runs - trial_runs + 1) * 10
         mission_difficulty_bonus = 0 if mission_failed_penalty != 0 else int(
             mission.difficulty - mission.prognosis)
         result = int(self.STARTING_SCORE - mission_failed_penalty
