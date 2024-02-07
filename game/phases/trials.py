@@ -14,6 +14,7 @@ class Trials:
 
     Attributes:
         skill (str): Name of the skill to test the cadets for
+        last_skill (str): Name of the previously chosen skill
         c1 (str): Name of the first cadet to test
         c2 (str): Name of the second cadet to test
         trials_log (dict): Contains all results in text form,
@@ -25,11 +26,14 @@ class Trials:
         fill_trials(): Receives cadet indexes and starts the trial run
     """
     MAX_RUNS = 14
+    BRIGHT_CYAN = '\033[96;1m'
+    RESET = '\033[0m'
 
     def __init__(self, display: object, sheet: object):
         self.display = display
         self.sheet = sheet
         self.skill = ""
+        self.last_skill = ""
         self.c1 = ""
         self.c2 = ""
         self.trials_log = {}
@@ -40,7 +44,7 @@ class Trials:
 
         Calls __run_trials() for each skill and cadet pair, outputs the
         results to the terminal, and keeps track of the amount of allowed runs.
-        
+
         Args:
             cadets (object): Reference to Cadets class instance
             skill_nr (int): Index of the chosen skill to compare
@@ -106,9 +110,29 @@ class Trials:
             result_string = f'{self.c1}{and_string}{self.c2}{performance}'
 
         if self.trials_log.get(self.skill):
-            self.trials_log[self.skill].append(result_string)
+            self.__remove_highlight()
+            # Add and highlight the current result
+            self.trials_log[self.skill].append(
+                f'{self.BRIGHT_CYAN}{result_string:<61}{self.RESET}')
         else:
+            self.__remove_highlight()
+            # Add and highlight the current result.
             # Result must be stored as a list to ensure correct processing by
             # the Display class
-            self.trials_log[self.skill] = [result_string]
+            self.trials_log[self.skill] = [
+                f'{self.BRIGHT_CYAN}{result_string:<61}{self.RESET}']
+        self.last_skill = self.skill
         self.runs += 1
+
+    def __remove_highlight(self):
+        """Removes highlight from previously highlighted entry
+        
+        The last added list element for the previously chosen skill in the
+        trials_log dictionary is highlighted in cyan. This highlight must be
+        removed as soon as the next element is added and highlighted.
+        """
+        if self.last_skill:
+            color_string = self.trials_log[self.last_skill][-1]
+            color_string = color_string.replace('\x1b[96;1m', '')
+            color_string = color_string.replace('\x1b[0m', '')
+            self.trials_log[self.last_skill][-1] = color_string
