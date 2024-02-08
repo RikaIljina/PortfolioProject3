@@ -55,7 +55,7 @@ Since the game is written for a Python terminal, my design choices were rather l
 - Every new screen view overwrites the previous view, thereby making sure the player cannot scroll through previous output, which makes the game UI neat and clean.
 - The menu row, the error row and the input row are always in the same place in every screen view, making it easier for the player to find the relevant information.
 
-![Full screen view of the game area](assets/readme/readme_design_fullscreen.png)
+![Screen view of the game area](assets/readme/screen_empty.png)
 
 Since the terminal window is embedded in an HTML page, I adjusted the style of the HTML page to make it consistent with my game UI: the terminal is centered on the page and the page background color is black.
 
@@ -70,9 +70,7 @@ I left the default colors for most of the output and used ASCII color codes to e
 - Bright red text: "Mission fail" notifications
 - Bright cyan text: emphasis of updated information 
 
-![Game palette](assets/readme/palette.png)
-
-<img src="assets/readme/readme_design.png" width="300" alt="">
+![Color palette of the game](assets/readme/palette.png)
 
 ### Typography
 
@@ -80,9 +78,11 @@ I used the default font of the Python terminal for all text.
 
 ### Art
 
-I used ASCII art to spice the game up visually:
-- the Star Trek emblem of "United Federation of Planets" for the game start screen [link]
-- the ship ... for the flying ship animation before the mission phase of the game [link]
+I used ASCII art to spice up the game visually:
+- the Star Trek emblem of "United Federation of Planets" for the game start screen
+- the ship "Ambassador Class (USS Excalibur NCC-26517)" for the flying ship animation before the mission phase of the game
+
+[Link to the ASCII art website](https://ascii.co.uk/art/startrek)
 
 ## Features
 
@@ -91,13 +91,36 @@ I used ASCII art to spice the game up visually:
 After the Heroku app has loaded, the player is presented with a terminal in which a screen reveal animation plays. After the animation, the player sees the game screen and the choices of the outer menu. Now the player can start to interact with the game.
 The menu choices are entered via keyboard and confirmed with ENTER.
 
+![Screenshot of the terminal at game start with logo and menu choices](assets/readme/screen_logo.png)
+
 1. To play the game, the player chooses '1'.
 2. The player is presented with an info screen explaining the game and prompting them to enter their name.
-3. After a personalized greeting and a description of the next step, the player sees a menu where they can \
-    (a) Choose a career track, \
-    (b) Choose two cadets, \
-    (c) Start the mission.
-4. (a) If the player chooses the first option, they are presented with a new menu line where they can choose one of five roles (Captain, Security Chief, Engineer, Doctor, Pilot) by entering the appropriate number. They then return to 3.
+3. After a personalized greeting and a description of the next step, the player sees a menu where they can
+   1. Choose a career track,
+   2. Choose two cadets,
+   3. Start the mission.
+4. If the player chooses the first option, they are presented with a new menu line where they choose one of five roles (Captain, Security Chief, Engineer, Doctor, Pilot) by entering the appropriate number.
+5. The player is then presented with a new menu line containing the six enumerated cadet names.
+6. The player successively selects two names and reads the result of the comparison in the terminal.
+7. The player is returned to point 3 where they can choose new cadets, choose a different track, or end the trial phase and start the mission right away.
+
+![Screenshot of the terminal with the trial menu choices](assets/readme/screen_trial_menu.png)
+
+8. Once the player has either run 14 trials or started the mission by entering '3' in the trials menu, they are presented with a menu consisting of the enumerated cadet names and prompted to choose one cadet per role. The results of the trial phase are displayed in the terminal to help the player make informed choices.
+
+![Screenshot of the terminal with the mission menu choices](assets/readme/screen_mission_menu.png)
+
+9. After assembling the crew, the player is presented with informative text and finally with the mission results for the entire mission as well as the individual cadet logs.
+
+![Screenshot of the terminal with the final mission logs](assets/readme/screen_mission_logs.png)
+
+10. After reading the mission logs, the player sees their detailed score as well as the highscore table. The player is entered in the highscore table if their score is in the top 10 of all players.
+
+![Screenshot of the terminal with the highscore table](assets/readme/screen_highscore.png)
+
+11. The player is then returned to the first screen with the logo and the outer game menu choices where they can play another round, play as a new player with a different name, show the highscore again or exit the game. On exiting the game, the player is shown the credits, and the program ends.
+
+![Screenshot of the terminal with the game exit screen](assets/readme/screen_exit.png)
 
 ### Codebase
 
