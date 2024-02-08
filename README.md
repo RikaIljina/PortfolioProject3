@@ -126,7 +126,26 @@ The menu choices are entered via keyboard and confirmed with ENTER.
 
 #### File structure
 
-- 
+- .devcontainer (from CI template) - directory with heroku config data
+- controllers (from CI template) - directory with JS file which handles Python terminal creation and destruction
+- views (from CI template) - directory with HTML and CSS data needed to style the webpage the terminal is embedded in
+- index.js (from CI template) - Total.js start script
+- package.json (from CI template) - JSON data file
+- requirements.txt (from CI template) - external libraries that must be installed for the game to execute correctly on Heroku
+- runtime.txt (from CI template) - Python version that the game uses on Heroku
+- run.py - Python script that must be executed to start the game
+- game - package with all modules accessed by run.py
+  - components - package with game component modules:
+    - cadets.py
+    - player.py
+  - phases - package with game phases modules:
+    - mission.py
+    - trials.py
+  - UI - package with game UI modules:
+    - display.py
+    - menu.py
+    - sheets.py
+- assets/readme - directory with README-related files
 
 #### Flowchart
 
@@ -139,30 +158,42 @@ The menu choices are entered via keyboard and confirmed with ENTER.
 
 #### Mechanics
 
-**Call stack:**
-
 **Dependencies:**
 
-**Message database:**
+All game modules are imported and their classes instantiated in the main script file `run.py`. Since other game modules need access to each other to work correctly, I use dependency injection to pass object references from `run.py` to the modules during their class initialization.
+
+**Database:**
+
+The game uses a Google spreadsheet as a database. The spreadsheet is accessed with the help of the `gspread` module and my own API key.
+The spreadsheet contains the highscore table that is read and updated every time the game is run.
+
+The sheet also contains all messages that are shown to the user, paired with a unique message ID. All messages are loaded into a dictionary object at game start and read from there.
+
+This approach helps avoid hard-coded texts and makes the game easily localizable.
+
+**Reusability:**
+
+The modules `sheets.py` and `display.py` have been written as independently from other the game modules as possible. Thus, `sheets.py` could be used for highscore management and text retrieval in a different Python console game, while `display.py` could be used for a different text-based game that requires a static terminal size with the same dimensions. A few hard-coded values would need to be replaced with variables to create a terminal with different dimensions.
 
 **Error handling:**
 
-**Input issues**
+Since the game handles user input, invalid inputs must be identified and prevented. All inputs are validated and in case of invalid input, a clear error message is shown to the player. The game then waits for valid input.
 
-Since I allow direct user input of a string on my website, I need to make sure that the user doesn't input anything malicious or anything that could break the readability of the page text. 
+![Screenshot of the terminal with an error message](assets/readme/screen_error.png)
 
-**Database issues**
+**Database and API issues**
 
-A grave error that would make the game unplayable is a corrupted database. 
+A grave error that would make the game unplayable is a corrupted database. In case the spreadsheet with the data cannot be accessed or if the program tries to access a message with a key that does not correspond to an ID in the sheet, the game is terminated with an error message.
 
-Preferably, the integrity of the file ` ` would be tested and ascertained before deployment and after each update, so the user would never have to encounter any of those database errors.
+Preferably, the game would be tested enough times to see if all message IDs in the code correspond to the IDs in the Google sheet before deployment and after each update, so the user would never have to encounter any database errors. Also, the Google API key must be kept up to date to ensure the playability of the game.
 
 ### Future features
 
 The following features could be implemented in future updates:
 
 - [ ] Localization of all strings to make the game available in other languages
-
+- [ ] Implementation of game settings in the menu to change the language or the color scheme to make it more accessible
+- [ ] Addition of sounds and music
 
 ### Known bugs
 
@@ -178,15 +209,19 @@ See the ["Bugs" section of TESTING.md](TESTING.md#known-bugs) for bug descriptio
 
 - [Git](https://git-scm.com/): version control via VS Code terminal
 - [GitHub](https://github.com/): project storage and submission
-- Chrome DevTools: debugging and responsiveness checks
-- [Google Fonts](https://fonts.google.com/): all site fonts
-- [Google Sheets](https://): database
-- [Flaticon](https://www.flaticon.com/): free graphics
-- [WebAIM](https://webaim.org/resources/contrastchecker/): contrast check
-- [amiresponsive](https://ui.dev/amiresponsive): responsiveness mock-up
-- VS Code: IDE
-- [OpenAI ChatGPT](https://openai.com/): help with creating quiz questions
+- [Heroku](https://www.heroku.com/): project deployment
+- [Google Sheets](https://docs.google.com/spreadsheets): database
+- [gspread](https://docs.gspread.org/en/v6.0.0/): Python API for Google Sheets
+- [google-auth](https://google-auth.readthedocs.io/en/stable/reference/google.oauth2.service_account.html) ('service-account' module): Google authentication library for Python
+- [VS Code](https://code.visualstudio.com/): IDE
 - [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker): spell check extension for VS Code
+- [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance): Language server for Python in VS Code
+- [Pylint](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint): VS Code extension providing linting support for Python files using `pylint`
+- [autopep8](https://marketplace.visualstudio.com/items?itemName=ms-python.autopep8): VS Code extension providing formatting support for Python files using the `autopep8` formatter
+- [autoDocstring](https://marketplace.visualstudio.com/items?itemName=njpwerner.autodocstring): generates Python docstrings automatically
+- [colorama](https://pypi.org/project/colorama/): makes ANSI escape character sequences work under MS Windows
+- [pip-tools](https://github.com/jazzband/pip-tools): generates up-to-date requirement list with `pip-compile`
+- os, sys, time, textwrap, re, typing, math, random from the [Python Standard Library](https://docs.python.org/3/library/index.html)
 
 ## Testing
 
@@ -205,16 +240,29 @@ Tests are described in [TESTING.md](TESTING.md).
 7. Push the files to the remote repository on GitHub with the command `git push -u origin main` 
 
 ### Heroku
-### GitHub Pages
 
-The website was deployed to GitHub Pages. Deployment process:
+The game was deployed to Heroku using this [template](https://github.com/Code-Institute-Org/p3-template) provided by Code Institute.
+Deployment process:
 
-1. Login to GitHub.com and open project repository
-2. Click on "Settings"
-3. In the left panel, select "Pages"
-4. Under "Build and Deployment" - "Source", select "Deploy from a branch" and select the main branch
-5. Once the deployment is finished, the link to the page is shown at the top of the GitHub Pages section
-6. The live link can be found [here](https://rikailjina.github.io/PortfolioProject2/)
+1. Log in to Heroku using your GitHub account.
+2. Open your dashboard and click on "New" - "Create new app".
+3. Enter relevant data and click on "Create app".
+4. In the tab row below the app name, click on "Settings".
+5. In the section "Buildpacks", add the buildpack `heroku/python`.
+6. Then add the buildpack `heroku/nodejs` (Note: the order in which the buildpacks are added is important!).
+5. In the section "Config Vars", click on "Reveal Config Vars".
+7. Create a config var called `PORT` and set it to `8000`.
+8. If you are using an API such as the Google Sheet API, add the following config var: use the key `CREDS` and paste the contents of your API credentials file `creds.json` into the `value` field.
+9. In the tab row below the app name, click on "Deployment".
+10. In the section "Deployment Method", click on "GitHub".
+11. In the section below, enter the repository name of the project that will be deployed.
+    - Make sure that the repository contains an up-to-date `requirements.txt` file with all installed packages in your Python environment. To create it, execute `pip freeze > requirements.txt` in your code editor with the project open.
+    - Make sure that the repository contains a `runtime.txt` file with the Python version that the project uses to run (e.g. python-3.11.5).
+12. Once the repository is found, click on "Connect".
+13. In the section below, enable automatic deployments to automatically deploy to Heroku after each push to GitHub (if needed).
+14. In the section below, click on "Deploy branch".
+15. Once the deployment process is finished, click on "View" at the bottom of the page or on "Open app" at the top of the page to open the live app.
+10. The live link can be found [here](https://ad-astra-42d5dff1b7ca.herokuapp.com/).
 
 ### Forking the GitHub Repository
 
@@ -246,6 +294,8 @@ Beside the Code Institute learning materials and sample files, I also used the f
 - [W3 Schools](https://www.w3schools.com/js/default.asp)
 - [Stackoverflow](https://stackoverflow.com/)
 
+https://www.youtube.com/watch?v=qUeud6DvOWI
+https://www.youtube.com/watch?v=woIkysZytSs
 
 ### Content
 
