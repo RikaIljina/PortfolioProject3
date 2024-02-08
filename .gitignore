@@ -9,4 +9,4 @@ node_modules/
 creds.json
 README_.md
 TESTING.md
-colors.py
+requirements.in
