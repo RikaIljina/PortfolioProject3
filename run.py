@@ -80,14 +80,13 @@ def main():
     sheet = Sheet()
     display = Display(sheet)
     menu = Menu(display, sheet, run)
-    menu.run_outer_loop()
-    menu.info_screen('10_say_goodbye')
+    try:
+        menu.run_outer_loop()
+        menu.info_screen('10_say_goodbye')
+    except KeyError as e:
+        print("Internal error: invalid dictionary key ", e)
     sys.exit()
 
 
 if __name__ == '__main__':
     main()
-
-
-# https://www.youtube.com/watch?v=qUeud6DvOWI
-# https://www.youtube.com/watch?v=woIkysZytSs

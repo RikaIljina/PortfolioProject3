@@ -6,9 +6,9 @@ import textwrap
 
 class Mission:
     """Calculates and stores the results of the mission phase
-    
+
     The mission difficulty can be adjusted by changing the MIN/MAX values.
-    
+
 
     Args:
         roles (list): List with cadet roles
@@ -172,8 +172,8 @@ class Mission:
             fail_text = self.sheet.get_text('ml_failed')
             cadet_performance = \
                 f'{self.BRIGHT_GREEN}{value[0]}{success_text}{self.RESET}' \
-                    if has_succeeded else \
-                    f'{self.BRIGHT_RED}{value[0]}{fail_text}{self.RESET}'
+                if has_succeeded else \
+                f'{self.BRIGHT_RED}{value[0]}{fail_text}{self.RESET}'
             # Build the mission log
             self.mission_log[key] = [cadet_performance]
             if isinstance(msg, list):
@@ -184,7 +184,7 @@ class Mission:
     # TODO: move to menu info screens
     def show_mission_logs(self):
         """Prepares mission logs for output, sends them to Display
-        
+
         Adds ANSI styles to certain lines and positions them correctly on
         the screen.
         """

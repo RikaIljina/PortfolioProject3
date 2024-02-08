@@ -378,7 +378,8 @@ class Menu():
                     'recruit_msg', self.active_player.name)
                 message.extend(cadet_names)
                 self.display.build_screen(message, row_nr=2)
-                # Wait for the user to read screen and press ENTER before starting trials
+                # Wait for the user to read screen and press ENTER before
+                # starting trials
                 self.display.build_menu('')
                 input(self.display.build_input(prompt_enter=True))
                 return
@@ -456,7 +457,8 @@ class Menu():
                         self.BRIGHT_RED + message[1] + self.RESET, 5, ansi=11)
                 else:
                     self.display.build_screen(
-                        self.BRIGHT_GREEN + message[1] + self.RESET, 5, ansi=11)
+                        self.BRIGHT_GREEN + message[1] + self.RESET, 5,
+                        ansi=11)
                 self.display.build_screen(message[2:], 6)
                 input(self.display.build_input(prompt_enter=True))
                 return
@@ -500,3 +502,6 @@ class Menu():
                 scr.append(f'{fill_sym*76}')
                 self.display.build_screen(scr, 1, center=True)
                 self.display.draw()
+            case _:
+                print("Internal error: no such info screen: ", part)
+                input()
