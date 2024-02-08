@@ -495,8 +495,8 @@ class Menu():
                 scr.extend([f'{fill_sym*76}']*5)
                 scr.append(f'{fill_sym*17}{self.sheet.get_text("exit_by")}'
                            f'{fill_sym*17}')
-                scr.append(f'{fill_sym*22}{self.sheet.get_text("exit_mail")}'
-                           f'{fill_sym*22}')
+                scr.append(f'{fill_sym*17}{self.sheet.get_text("exit_mail")}'
+                           f'{fill_sym*17}')
                 scr.append(f'{fill_sym*76}')
                 self.display.build_screen(scr, 1, center=True)
                 self.display.draw()
