@@ -61,16 +61,16 @@ Since the terminal window is embedded in an HTML page, I adjusted the style of t
 
 ### Color scheme
 
-![Game palette](assets/readme_files/readme_palette.png)
-
 I left the default colors for most of the output and used ASCII color codes to emphasize certain text:
 
 - Black: background color
 - White: most text
 - White text on red background: error line
-- Green text: menu line, "Mission success" notifications
-- Red text: "Mission fail" notifications
-- Cyan text: emphasis of updated information 
+- Bright green text: menu line, "Mission success" notifications
+- Bright red text: "Mission fail" notifications
+- Bright cyan text: emphasis of updated information 
+
+![Game palette](assets/readme/palette.png)
 
 <img src="assets/readme/readme_design.png" width="300" alt="">
 
