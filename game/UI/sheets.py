@@ -55,12 +55,12 @@ class Sheet:
         print(
             "Trying to open non-existent or inaccessible spreadsheet "
             f"document: {e}\nPlease restart the game or contact the dev: "
-            "vasilika.schnitzer@gmail.com")
+            "wasirika@gmail.com")
         sys.exit()
     except gspread.exceptions.WorksheetNotFound as e:
         print("Trying to open non-existent worksheet. Verify that the sheet "
               f"name exists: {e}\nPlease restart the game or contact the dev: "
-              "vasilika.schnitzer@gmail.com")
+              "wasirika@gmail.com")
         sys.exit()
     except Exception as e:
         print("There is no connection to Google Sheets. Possible reason: No "
@@ -68,7 +68,7 @@ class Sheet:
               "Google Drive API credentials or the sheet hasn't been shared "
               "with the application.\nPlease check your internet connection, "
               "restart the game or contact the dev: "
-              "vasilika.schnitzer@gmail.com")
+              "wasirika@gmail.com")
         sys.exit()
     # Max highscore entries allowed
     MAX_ENTRIES = 10
