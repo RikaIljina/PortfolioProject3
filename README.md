@@ -4,7 +4,7 @@
 
 [Live link to the game](https://rikailjina.github.io/PortfolioProject2/)
 
-"Ad Astra" is a single-player game written in Python and playable in a Python terminal. It contains a text-based logic puzzle in which the player has to assemble a starship crew of five Starfleet cadets, filling each role on the crew with the cadet with the highest possible skill. The player determines cadet skill levels by comparing two cadets at a time and interpreting the textual hints to figure out which cadet is best in which role.
+"Ad Astra" is a single-player game written in Python and playable in a Python terminal. It contains a text-based logic puzzle in which the player has to assemble a starship crew of five Starfleet cadets, filling each role on the crew with the cadet with the highest possible skill. The player determines cadet skill levels by comparing two cadets at a time and interpreting the textual hints to figure out which cadet is best suited for which role.
 
 ## Table of Contents
 
@@ -36,24 +36,24 @@
 
 The target audience are English-speaking players of all ages who are enthusiastic about text-based games, logic puzzles, and SciFi (mainly Star Trek).
 
-The goal is to engage a player in a fun logic puzzle, encouraging them to play several playthroughs and break the highscore record or to at least read as many entertaining descriptions of how their cadets succeeded or failed as possible.
+The goal is to engage the player in a fun logic puzzle, encouraging them to play several playthroughs and break the highscore record or to at least read as many entertaining descriptions of how their cadets succeeded or failed as possible.
 
 ### User stories
 
-1. As a player, I want to be able to easily understand how to start the game
-2. As a player, I want to be able to quickly understand what the game is about
-3. As a player, I want to be notified if my entry or menu choice is invalid
-4. As a player, I want to receive instant feedback when entering my choice
-5. As a player, I want to be receive feedback to let me know how well I did in the game
-6. As a player, I want to see how well I did compared to other players
+1. As a player, I want to be able to easily understand how to start the game.
+2. As a player, I want to be able to quickly understand what the game is about.
+3. As a player, I want to be notified if my entry or menu choice is invalid.
+4. As a player, I want to receive instant feedback when entering my choice.
+5. As a player, I want to be receive feedback to let me know how well I did in the game.
+6. As a player, I want to see how well I did compared with other players.
 
 ## Design
 
 Since the game is written for a Python terminal, my design choices were rather limited: the terminal dimensions were set to 24 rows high and 80 characters wide by the template that Code Institute provided. I decided to write a Display class that would format and render all in- and output:
 - All output is surrounded by an unchanging border built from the Unicode character "▓".
 - The input is always prefaced with the decorative line "▓▓▓ ⁞⁞ ".
-- Every new screenview overwrites the previous view, thereby making sure the player cannot scroll through previous output, which makes the game UI neat and clean.
-- The menu row, the error row and the input row are always in the same place in every screenview, making it easier for the player to find the relevant information.
+- Every new screen view overwrites the previous view, thereby making sure the player cannot scroll through previous output, which makes the game UI neat and clean.
+- The menu row, the error row and the input row are always in the same place in every screen view, making it easier for the player to find the relevant information.
 
 ![Full screen view of the game area](assets/readme/readme_design_fullscreen.png)
 

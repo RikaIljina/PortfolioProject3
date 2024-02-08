@@ -361,7 +361,7 @@ class Menu():
         """
         match part:
             case '1_logo':
-                logo = ['   🟇 🟍 ✵  AD ASTRA ✵ 🟍 🟇']
+                logo = [f'{"    🟇 🟍 ✵  AD ASTRA ✵ 🟍 🟇":<32}']
                 logo.extend(self.sheet.get_text('logo_ad_astra'))
                 self.display.clear()
                 self.display.build_screen(logo, 2, center_logo=True)
