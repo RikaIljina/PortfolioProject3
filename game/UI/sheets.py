@@ -73,7 +73,7 @@ class Sheet:
     # Max highscore entries allowed
     MAX_ENTRIES = 10
     # ANSI color codes
-    GREEN = "\033[32;1m"
+    BRIGHT_GREEN = "\033[92;1m"
     RESET = "\033[0m"
 
     def __init__(self):
@@ -95,7 +95,7 @@ class Sheet:
         for i, row in enumerate(score_rows, 1):
             # Pre-format names and scores for output
             score_list.append(
-                f'{self.GREEN}{i}{". "}{row[0]}{"  "}'
+                f'{self.BRIGHT_GREEN}{i}{". "}{row[0]}{"  "}'
                 f'{"⋅"*(60-len(str(i))-len(row[0])-len(row[1]))}'
                 f'{"  "}{row[1]}{self.RESET}')
         return score_list

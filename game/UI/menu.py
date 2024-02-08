@@ -63,8 +63,8 @@ class Menu():
     reset_menu(): Resets menu values on repeated playthrough
     info_screen(): Prepares and displays all info screens
     """
-    GREEN = "\033[32;1m"
-    RED = "\033[91;1m"
+    BRIGHT_GREEN = "\033[92;1m"
+    BRIGHT_RED = "\033[91;1m"
     BRIGHT_CYAN = '\033[96;1m'
     RESET = "\033[0m"
 
@@ -396,7 +396,7 @@ class Menu():
                 time.sleep(0.7)
                 self.display.flush_input()
                 self.display.clear()
-                alert_header = (f'{self.RED}{"▓"*33}'
+                alert_header = (f'{self.BRIGHT_RED}{"▓"*33}'
                                 f'{self.sheet.get_text("red_alert_header")}'
                                 f'{"▓"*32}{self.RESET}')
                 alert = self.sheet.get_text('red_alert_msg')
@@ -453,10 +453,10 @@ class Menu():
                     self.BRIGHT_CYAN + message[0] + self.RESET, 3, ansi=11)
                 if value in [0, 1, 2]:
                     self.display.build_screen(
-                        self.RED + message[1] + self.RESET, 5, ansi=11)
+                        self.BRIGHT_RED + message[1] + self.RESET, 5, ansi=11)
                 else:
                     self.display.build_screen(
-                        self.GREEN + message[1] + self.RESET, 5, ansi=11)
+                        self.BRIGHT_GREEN + message[1] + self.RESET, 5, ansi=11)
                 self.display.build_screen(message[2:], 6)
                 input(self.display.build_input(prompt_enter=True))
                 return
@@ -470,7 +470,7 @@ class Menu():
             case '9_highscore':
                 self.display.build_menu(self.sheet.get_text('please_wait'))
                 self.display.draw()
-                self.display.build_screen(f"{self.GREEN}"
+                self.display.build_screen(f"{self.BRIGHT_GREEN}"
                                           f"{self.sheet.get_text('hs_header')}"
                                           f"{self.RESET}",
                                           3, center=True, ansi=11)

@@ -76,8 +76,8 @@ class Display:
     ERROR_ROW_NR = 21
     MENU_ROW_NR = 20
     # ANSI codes for text styling
-    RED = "\033[41;1m"
-    GREEN = "\033[92;1m"
+    RED_BG = "\033[41;1m"
+    BRIGHT_GREEN = "\033[92;1m"
     RESET = "\033[0m"
 
     def __init__(self, sheet):
@@ -167,12 +167,12 @@ class Display:
                 Defaults to False.
         """
         if is_error:
-            result = (f'{self.BORDER_CHAR}{self.RED}{" "}{text:>76}{" "}'
+            result = (f'{self.BORDER_CHAR}{self.RED_BG}{" "}{text:>76}{" "}'
                       f'{self.RESET}{self.BORDER_CHAR}')
             self.rows[self.ERROR_ROW_NR] = result
         else:
-            result = (f'{self.BORDER_CHAR}{self.GREEN}{"▶ "}{text:<74}{"◀ "}'
-                      f'{self.RESET}{self.BORDER_CHAR}')
+            result = (f'{self.BORDER_CHAR}{self.BRIGHT_GREEN}{"▶ "}{text:<74}'
+                      f'{"◀ "}{self.RESET}{self.BORDER_CHAR}')
             self.rows[self.MENU_ROW_NR] = result
 
     def build_input(self, prompt='', prompt_enter=False) -> str:
@@ -194,7 +194,7 @@ class Display:
         if prompt_enter:
             prompt = self.enter_prompt
 
-        return self.GREEN + self.INPUT_PROMPT + prompt + self.RESET
+        return self.BRIGHT_GREEN + self.INPUT_PROMPT + prompt + self.RESET
 
     def draw(self):
         """Clears the previous screen and re-draws the new terminal

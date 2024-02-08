@@ -40,7 +40,7 @@ class Mission:
     DIFF_MIN = 3
     DIFF_MAX = 10
     RED = '\033[31;1m'
-    GREEN = '\033[92;1m'
+    BRIGHT_GREEN = '\033[92;1m'
     BRIGHT_RED = '\033[91;1m'
     BRIGHT_CYAN = '\033[96;1m'
     RESET = '\033[0m'
@@ -171,7 +171,7 @@ class Mission:
             success_text = self.sheet.get_text('ml_succeeded')
             fail_text = self.sheet.get_text('ml_failed')
             cadet_performance = \
-                f'{self.GREEN}{value[0]}{success_text}{self.RESET}' \
+                f'{self.BRIGHT_GREEN}{value[0]}{success_text}{self.RESET}' \
                     if has_succeeded else \
                     f'{self.BRIGHT_RED}{value[0]}{fail_text}{self.RESET}'
             # Build the mission log
