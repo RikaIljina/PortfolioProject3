@@ -71,13 +71,9 @@ def main():
     the program.
     """
     if os.name == 'nt':
-        
-        print('\033c', end='')
-        
-        #os.system("cls")
+        os.system("cls")
     else:
-        print('\033c')
-        #os.system("clear")
+        os.system("clear")
     sheet = Sheet()
     display = Display(sheet)
     menu = Menu(display, sheet, run)

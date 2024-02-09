@@ -196,20 +196,31 @@ class Display:
 
         return self.BRIGHT_GREEN + self.INPUT_PROMPT + prompt + self.RESET
 
-    def draw(self):
+    def draw(self, shallow_clear=False):
         """Clears the previous screen and re-draws the new terminal
 
         This function is usually called by build_input() to draw the screen
         just before receiving user input. It should be used on its own only
         before time.sleep() in order to avoid unnecessary re-drawing of the
         screen when the user can't even see the result.
+        
+        Args:
+            shallow_clear (bool, optional): Indicates if cls||clear is enough
+                to clear the screen before the next output. This is the case
+                when playing an animation with timed delay. A more thorough
+                clear is necessary after receiving user input to prevent extra
+                rows from being added, thus disrupting the terminal view.
+                Defaults to False.
         """
-        if os.name == 'nt':
-            #os.system("cls")
+        if not shallow_clear:
+            # Info found on https://stackoverflow.com/questions/2084508/
+            # clear-the-terminal-in-python
             print('\033c', end='')
         else:
-            #os.system("clear")
-            print('\033c', end="")
+            if os.name == 'nt':
+                os.system("cls")
+            else:
+                os.system("clear")
         for row in self.rows:
             print(f'{row}')
 
@@ -314,7 +325,7 @@ class Display:
                 # proper strings again
                 for i in range(len(self.rows)):
                     self.rows[i] = ''.join(rows_matrix_filled[i])
-                self.draw()
+                self.draw(shallow_clear=True)
                 time.sleep(0.03)
                 # Disable keyboard input while sleeping
                 self.flush_input()

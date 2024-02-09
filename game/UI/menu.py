@@ -94,7 +94,6 @@ class Menu():
             # After the input: Clear error messages and previous screen content
             self.display.clear(is_error=True)
             self.display.clear()
-            print('\033c', end='')
             match choice:
                 case '1':
                     # Call the game manager function
@@ -443,7 +442,7 @@ class Menu():
                     for line in parsed_ship:
                         all_lines.append(line[i:-1 if i >= -76 else i+76])
                     self.display.build_screen(all_lines, 3)
-                    self.display.draw()
+                    self.display.draw(shallow_clear=True)
                     time.sleep(0.05)
                 self.display.flush_input()
                 return
