@@ -103,7 +103,7 @@ class Display:
 
         Receives indexes to clear in the terminal and overwrites them in the 
         self.row attribute with empty rows.
-        The value passed as 'indexes' is expected to be a list, even if only
+        The value passed as 'indexes' is expected to be a list, even if it only
         contains one element (e.g. [10] to clear row 10).
 
         Args:
@@ -196,30 +196,30 @@ class Display:
 
         return self.BRIGHT_GREEN + self.INPUT_PROMPT + prompt + self.RESET
 
-    def draw(self):
+    def draw(self, shallow_clear=False):
         """Clears the previous screen and re-draws the new terminal
 
         This function is usually called by build_input() to draw the screen
         just before receiving user input. It should be used on its own only
         before time.sleep() in order to avoid unnecessary re-drawing of the
         screen when the user can't even see the result.
+        
+        Args:
+            shallow_clear (bool, optional): Indicates if it is sufficient to
+                move the cursor into row 1 column 1 of the terminal instead of
+                clearing the entire terminal. Reduces flickering while an
+                animation is being rendered. Defaults to False.
         """
         # Info found on https://stackoverflow.com/questions/2084508/
         # clear-the-terminal-in-python
-        print('\033c', end='')
-        # else:
-        #     if os.name == 'nt':
-        #         start1 = time.perf_counter()
-        #         print('\033c', end='')
-        #         end1 = time.perf_counter()
-        #         start2 = time.perf_counter()
-        #         os.system("cls")
-        #         end2 = time.perf_counter()
-        #         print('print: ', end1-start1)
-        #         print('os: ', end2-start2)
-        #         input()
-        #     else:
-        #         os.system("clear")
+        if shallow_clear:
+            # Only moves the cursor to row 1 column 1 without clearing the
+            # screen or the input prompt
+            print('\033[1;1H', end='')
+        else:
+            # Clears the entire screen including previous output and input
+            # prompt
+            print('\033c', end='')
         for row in self.rows:
             print(f'{row}')
 
@@ -324,7 +324,7 @@ class Display:
                 # proper strings again
                 for i in range(len(self.rows)):
                     self.rows[i] = ''.join(rows_matrix_filled[i])
-                self.draw()
+                self.draw(shallow_clear=True)
                 time.sleep(0.06)
                 # Disable keyboard input while sleeping
                 self.flush_input()
