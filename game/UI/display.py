@@ -205,9 +205,11 @@ class Display:
         screen when the user can't even see the result.
         """
         if os.name == 'nt':
-            os.system("cls")
+            #os.system("cls")
+            print('\033c', end='')
         else:
-            os.system("clear")
+            #os.system("clear")
+            print('\033c', end="")
         for row in self.rows:
             print(f'{row}')
 

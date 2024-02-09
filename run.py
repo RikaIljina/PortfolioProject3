@@ -10,9 +10,6 @@ from game.components.cadets import Cadets
 from game.phases.trials import Trials
 from game.phases.mission import Mission
 
-# Establish connection to Google sheets for highscore management
-# Create Worksheet object for access to texts and highscore
-
 
 def run(menu: object, player: object, display: object, sheet: object):
     """Game manager function; starts the different game phases
@@ -74,9 +71,13 @@ def main():
     the program.
     """
     if os.name == 'nt':
-        os.system("cls")
+        
+        print('\033c', end='')
+        
+        #os.system("cls")
     else:
-        os.system("clear")
+        print('\033c')
+        #os.system("clear")
     sheet = Sheet()
     display = Display(sheet)
     menu = Menu(display, sheet, run)

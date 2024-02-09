@@ -78,6 +78,7 @@ class Sheet:
 
     def __init__(self):
         # Build a dictionary with all messages in the 'texts' worksheet
+        # TODO: merge
         self.messages = self.texts.get_all_values()
         self.msg_dict = dict(self.messages)
 

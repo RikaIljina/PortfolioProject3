@@ -8,5 +8,4 @@ node_modules/
 .github/
 creds.json
 README_.md
-TESTING.md
 requirements.in

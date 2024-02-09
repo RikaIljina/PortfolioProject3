@@ -94,6 +94,7 @@ class Menu():
             # After the input: Clear error messages and previous screen content
             self.display.clear(is_error=True)
             self.display.clear()
+            print('\033c', end='')
             match choice:
                 case '1':
                     # Call the game manager function
