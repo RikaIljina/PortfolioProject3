@@ -70,10 +70,11 @@ def main():
     On game exit, the function calls say_goodbye() to show the credits and exit
     the program.
     """
-    if os.name == 'nt':
-        os.system("cls")
-    else:
-        os.system("clear")
+    print('\033c', end='')
+    # if os.name == 'nt':
+    #     os.system("cls")
+    # else:
+    #     os.system("clear")
     sheet = Sheet()
     display = Display(sheet)
     menu = Menu(display, sheet, run)

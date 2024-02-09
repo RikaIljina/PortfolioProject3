@@ -442,7 +442,7 @@ class Menu():
                     for line in parsed_ship:
                         all_lines.append(line[i:-1 if i >= -76 else i+76])
                     self.display.build_screen(all_lines, 3)
-                    self.display.draw(shallow_clear=True)
+                    self.display.draw()
                     time.sleep(0.05)
                 self.display.flush_input()
                 return
