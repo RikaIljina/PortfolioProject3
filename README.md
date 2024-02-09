@@ -2,7 +2,7 @@
 ### A "Star Trek"-themed logic puzzle
 ---
 
-[Live link to the game](https://rikailjina.github.io/PortfolioProject2/)
+[Live link to the game](https://ad-astra-42d5dff1b7ca.herokuapp.com/)
 
 "Ad Astra" is a single-player game written in Python and playable in a Python terminal. It contains a text-based logic puzzle in which the player has to assemble a starship crew of five Starfleet cadets, filling each role on the crew with the cadet with the highest possible skill. The player determines cadet skill levels by comparing two cadets at a time and interpreting the textual hints to figure out which cadet is best suited for which role.
 
@@ -221,7 +221,7 @@ See the ["Bugs" section of TESTING.md](TESTING.md#known-bugs) for bug descriptio
 - [autoDocstring](https://marketplace.visualstudio.com/items?itemName=njpwerner.autodocstring): generates Python docstrings automatically
 - [colorama](https://pypi.org/project/colorama/): makes ANSI escape character sequences work under MS Windows
 - [pip-tools](https://github.com/jazzband/pip-tools): generates up-to-date requirement list with `pip-compile`
-- os, sys, time, textwrap, re, typing, math, random from the [Python Standard Library](https://docs.python.org/3/library/index.html)
+- os, sys, time, textwrap, re, typing, math, random, termios, msvcrt from the [Python Standard Library](https://docs.python.org/3/library/index.html)
 
 ## Testing
 
@@ -237,11 +237,11 @@ Tests are described in [TESTING.md](TESTING.md).
 4. Add all project files to the repository with the command `git add .`
 5. Commit all added files with the command `git commit -m "Initial commit"`
 6. Create new remote with the command `git remote add origin https://github.com/[UserName]/[RepoName].git`
-7. Push the files to the remote repository on GitHub with the command `git push -u origin main` 
+7. Push the files to the remote repository on GitHub with the command `git push -u origin main`
 
 ### Heroku
 
-The game was deployed to Heroku using this [template](https://github.com/Code-Institute-Org/p3-template) provided by Code Institute.
+The game was deployed to Heroku using [this template](https://github.com/Code-Institute-Org/p3-template) provided by Code Institute.
 Deployment process:
 
 1. Log in to Heroku using your GitHub account.
@@ -290,23 +290,26 @@ All code was written by me unless clearly stated otherwise.
 
 Beside the Code Institute learning materials and sample files, I also used the following reference materials:
 
-- [MDN web docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+- [Python docs](https://docs.python.org/)
 - [W3 Schools](https://www.w3schools.com/js/default.asp)
 - [Stackoverflow](https://stackoverflow.com/)
-
-https://www.youtube.com/watch?v=qUeud6DvOWI
-https://www.youtube.com/watch?v=woIkysZytSs
+- [YouTube video on avoiding bad coding habits in Python](https://www.youtube.com/watch?v=qUeud6DvOWI)
+- [YouTube video on Python code style tips](https://www.youtube.com/watch?v=woIkysZytSs)
 
 ### Content
 
-Written by
+All texts have been written by me or by my sister.
 
 ### Media
 
-ASCII art
+I used Star Trek-themed ASCII art that can be found online:
+
+[Link to the ASCII art website](https://ascii.co.uk/art/startrek)
 
 ### Acknowledgments
 
+- Many thanks to my sister for writing most of the descriptive in-game texts.
 - Many thanks to my mentor for constructive feedback.
-- Many thanks to friends and family who did some of the testing.
+- Many thanks to friends and family who did a lot of testing.
 - Many thanks to the Code Institute slack community for constant and general support.
+- This game is based on the [Star Trek](https://www.startrek.com/en-un) universe, which is copyrighted and owned by [Paramount](https://www.paramount.com/). The usage of names, characters, and references from Star Trek is for non-commercial, educational purposes under the fair use regulation. I do not claim any ownership of the Star Trek franchise or its associated intellectual property.
