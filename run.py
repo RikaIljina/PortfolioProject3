@@ -1,6 +1,5 @@
 """Main game file that must be run in order to start the game"""
 # coding=utf-8
-import os
 import sys
 from game.UI.sheets import Sheet
 from game.UI.display import Display

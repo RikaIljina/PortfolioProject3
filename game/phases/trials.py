@@ -52,13 +52,10 @@ class Trials:
             c2 (int): Index of the second cadet
         """
         trials_left = self.MAX_RUNS - self.runs
-        # Preferably, the following string should be imported from the
-        # worksheet and thus made localizable. A solution for how to correctly
-        # achieve the parsing of an imported f-string while accounting for
-        # singular/plural in different languages is yet to be found.
-        trials_left_str = (
-            f'{trials_left + 1}'
-            f' hour{"s" if trials_left + 1 != 1 else ""} left')
+        sing_plural = self.sheet.get_text("trial_hours_left") \
+            if trials_left + 1 != 1 \
+            else self.sheet.get_text("trial_hours_left")
+        trials_left_str = (f'{trials_left + 1}{sing_plural}')
         self.display.build_screen(self.sheet.get_text('trial_ongoing')
                                   + f'{trials_left_str:>55}', row_nr=18)
         self.display.draw()

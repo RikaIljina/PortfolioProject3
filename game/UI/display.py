@@ -1,7 +1,6 @@
 """Contains Display class which handles all screen output"""
 import math
 import random
-import os
 import time
 from typing import Union
 from colorama import just_fix_windows_console
