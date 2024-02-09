@@ -6,7 +6,9 @@
 
 "Ad Astra" is a single-player game written in Python and playable in a Python terminal. It contains a text-based logic puzzle in which the player has to assemble a starship crew of five Starfleet cadets, filling each role on the crew with the cadet with the highest possible skill. The player determines cadet skill levels by comparing two cadets at a time and interpreting the textual hints to figure out which cadet is best suited for which role.
 
-## Table of Contents
+## Table of contents
+<details>
+<summary><span style='color: cyan'><b>Contents</b></summary>
 
 - [UX](#ux)
   - [Target audience](#target-audience)
@@ -29,6 +31,8 @@
 - [Testing](#testing)
 - [Deployment](#deployment)
 - [Credits](#credits)
+
+</details>
 
 ## UX
 
@@ -55,7 +59,7 @@ Since the game is written for a Python terminal, my design choices were rather l
 - Every new screen view overwrites the previous view, thereby making sure the player cannot scroll through previous output, which makes the game UI neat and clean.
 - The menu row, the error row and the input row are always in the same place in every screen view, making it easier for the player to find the relevant information.
 
-![Screen view of the game area](assets/readme/screen_empty.png)
+<img src="assets/readme/screen_empty.png" width="600" alt="Screen view of the game area">
 
 Since the terminal window is embedded in an HTML page, I adjusted the style of the HTML page to make it consistent with my game UI: the terminal is centered on the page and the page background color is black.
 
@@ -70,7 +74,7 @@ I left the default colors for most of the output and used ASCII color codes to e
 - Bright red text: "Mission fail" notifications
 - Bright cyan text: emphasis of updated information 
 
-![Color palette of the game](assets/readme/palette.png)
+<img src="assets/readme/palette.png" width="400" alt="Color palette of the game">
 
 ### Typography
 
@@ -91,7 +95,7 @@ I used ASCII art to spice up the game visually:
 After the Heroku app has loaded, the player is presented with a terminal in which a screen reveal animation plays. After the animation, the player sees the game screen and the choices of the outer menu. Now the player can start to interact with the game.
 The menu choices are entered via keyboard and confirmed with ENTER.
 
-![Screenshot of the terminal at game start with logo and menu choices](assets/readme/screen_logo.png)
+<img src="assets/readme/screen_logo.png" width="600" alt="Screenshot of the terminal at game start with logo and menu choices">
 
 1. To play the game, the player chooses '1'.
 2. The player is presented with an info screen explaining the game and prompting them to enter their name.
@@ -104,23 +108,23 @@ The menu choices are entered via keyboard and confirmed with ENTER.
 6. The player successively selects two names and reads the result of the comparison in the terminal.
 7. The player is returned to point 3 where they can choose new cadets, choose a different track, or end the trial phase and start the mission right away.
 
-![Screenshot of the terminal with the trial menu choices](assets/readme/screen_trial_menu.png)
+<img src="assets/readme/screen_trial_menu.png" width="600" alt="Screenshot of the terminal with the trial menu choices">
 
 8. Once the player has either run 14 trials or started the mission by entering '3' in the trials menu, they are presented with a menu consisting of the enumerated cadet names and prompted to choose one cadet per role. The results of the trial phase are displayed in the terminal to help the player make informed choices.
 
-![Screenshot of the terminal with the mission menu choices](assets/readme/screen_mission_menu.png)
+<img src="assets/readme/screen_mission_menu.png" width="600" alt="Screenshot of the terminal with the mission menu choices">
 
 9. After assembling the crew, the player is presented with informative text and finally with the mission results for the entire mission as well as the individual cadet logs.
 
-![Screenshot of the terminal with the final mission logs](assets/readme/screen_mission_logs.png)
+<img src="assets/readme/screen_mission_logs.png" width="600" alt="Screenshot of the terminal with the final mission logs">
 
 10. After reading the mission logs, the player sees their detailed score as well as the highscore table. The player is entered in the highscore table if their score is in the top 10 of all players.
 
-![Screenshot of the terminal with the highscore table](assets/readme/screen_highscore.png)
+<img src="assets/readme/screen_highscore.png" width="600" alt="Screenshot of the terminal with the highscore table">
 
 11. The player is then returned to the first screen with the logo and the outer game menu choices where they can play another round, play as a new player with a different name, show the highscore again or exit the game. On exiting the game, the player is shown the credits, and the program ends.
 
-![Screenshot of the terminal with the game exit screen](assets/readme/screen_exit.png)
+<img src="assets/readme/screen_exit.png" width="600" alt="Screenshot of the terminal with the game exit screen">
 
 ### Codebase
 
@@ -150,7 +154,7 @@ The menu choices are entered via keyboard and confirmed with ENTER.
 #### Flowchart
 
 <details>
-<summary>Flowchart depicting the progression of actions and processes</summary>
+<summary><span style="color: cyan">Flowchart depicting the progression of actions and processes</span></summary>
 
 ![Flowchart depicting the progression of actions and processes](assets/readme/flowchart.png)
 
@@ -179,7 +183,8 @@ The modules `sheets.py` and `display.py` have been written as independently from
 
 Since the game handles user input, invalid inputs must be identified and prevented. All inputs are validated and in case of invalid input, a clear error message is shown to the player. The game then waits for valid input.
 
-![Screenshot of the terminal with an error message](assets/readme/screen_error.png)
+<img src="assets/readme/screen_error.png" width="600" alt="Screenshot of the terminal with an error message">
+<br><br>
 
 **Database and API issues**
 
@@ -197,7 +202,7 @@ The following features could be implemented in future updates:
 
 ### Known bugs
 
-See the ["Bugs" section of TESTING.md](TESTING.md#known-bugs) for bug descriptions.
+See the ["Bugs" section of TESTING.md](TESTING.md#known-bugs-and-persisting-issues) for bug descriptions.
 
 ## Technologies
 
@@ -221,7 +226,7 @@ See the ["Bugs" section of TESTING.md](TESTING.md#known-bugs) for bug descriptio
 - [autoDocstring](https://marketplace.visualstudio.com/items?itemName=njpwerner.autodocstring): generates Python docstrings automatically
 - [colorama](https://pypi.org/project/colorama/): makes ANSI escape character sequences work under MS Windows
 - [pip-tools](https://github.com/jazzband/pip-tools): generates up-to-date requirement list with `pip-compile`
-- os, sys, time, textwrap, re, typing, math, random, termios, msvcrt from the [Python Standard Library](https://docs.python.org/3/library/index.html)
+- sys, time, textwrap, re, typing, math, random, termios, msvcrt from the [Python Standard Library](https://docs.python.org/3/library/index.html)
 
 ## Testing
 
@@ -231,7 +236,7 @@ Tests are described in [TESTING.md](TESTING.md).
 
 ### Pushing to GitHub
 
-1. Login to GitHub.com and create a new empty project repository
+1. Login to [GitHub](https://github.com/) and create a new empty project repository
 2. Create the local project in VS Code
 3. Initialize the repository by opening a terminal in VS Code and entering the command  `git init --initial-branch=main`
 4. Add all project files to the repository with the command `git add .`
@@ -263,6 +268,30 @@ Deployment process:
 14. In the section below, click on "Deploy branch".
 15. Once the deployment process is finished, click on "View" at the bottom of the page or on "Open app" at the top of the page to open the live app.
 10. The live link can be found [here](https://ad-astra-42d5dff1b7ca.herokuapp.com/).
+
+### Generating Google API credentials
+
+The game uses the Google API to connect the Python script to Google Sheets. To issue an API key:
+
+1. Log into [Google Cloud](https://console.cloud.google.com/apis/library) and open your console by clicking on "Console".
+2. In the upper part of the page, click on "Select a project" > "New Project".
+3. Choose a project name and click on "Create".
+4. Click on the notifications icon and then on "Select project".
+5. Open the burger menu to the right and select "APIs & Services" > "Library".
+6. Find and enable "Google Drive API".
+7. On the next page, with the section "Enabled APIs & services" open and "Google Drive API" selected, click on "Create credentials".
+8. From the "Which API are you using?" dropdown menu, choose "Google Drive API".
+9. For the "What data will you be accessing?" question, select "Application Data" and click on "Next".
+10. Enter a name for the service account (such as "MyGreatProject") and click on "Create and continue".
+11. Under "Grant this service account access to project" choose "Basic" > "Editor", then click on "Continue" and finally on "Done".
+12. On the next page, open the section "Credentials" and click on the link with the service account name in the table "Service accounts".
+13. On the next page, click on the "Keys" tab.
+14. Click on "Add key" > "Create new key" and select "JSON" as the key type.
+15. The key file is downloaded to your Download folder. It can now be moved into your Python project folder, renamed, and accessed with `gspread`.
+    ><span style="color: red;"><b>Important!</b></span> The credentials file must be kept secret. To prevent it from being uploaded to your GitHub repository, its name must be added to the repo's `.gitignore` file.
+16. Return to the API Library and find and enable "Google Sheets API".
+17. Return to the section "Credentials" and copy the service account email in the table "Service accounts".
+18. Open the Google Worksheet you want to connect to the Python script and share it with the service account by pasting in the email address and giving it the role of "Editor".
 
 ### Forking the GitHub Repository
 
