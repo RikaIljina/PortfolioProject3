@@ -25,7 +25,7 @@ class Trials:
     Methods:
         fill_trials(): Receives cadet indexes and starts the trial run
     """
-    MAX_RUNS = 14
+    MAX_RUNS = 3
     BRIGHT_CYAN = '\033[96;1m'
     RESET = '\033[0m'
 
@@ -52,9 +52,9 @@ class Trials:
             c2 (int): Index of the second cadet
         """
         trials_left = self.MAX_RUNS - self.runs
-        sing_plural = self.sheet.get_text("trial_hours_left") \
+        sing_plural = self.sheet.get_text("trials_hours_left") \
             if trials_left + 1 != 1 \
-            else self.sheet.get_text("trial_hours_left")
+            else self.sheet.get_text("trials_hour_left")
         trials_left_str = (f'{trials_left + 1}{sing_plural}')
         self.display.build_screen(self.sheet.get_text('trial_ongoing')
                                   + f'{trials_left_str:>55}', row_nr=18)

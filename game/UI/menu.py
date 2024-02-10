@@ -141,9 +141,9 @@ class Menu():
         self.display.clear()
         if self.trial_first_time:
             self.info_screen('4_trials_desc', mission.difficulty)
-            self.display.build_screen(
-                f'{self.sheet.get_text("trials_left", trials.MAX_RUNS):>76}',
-                18)
+            trials_left = self.sheet.get_text(
+                "trials_left", trials.MAX_RUNS)
+            self.display.build_screen(f'{trials_left:>76}', 18)
         while True:
             self.display.build_menu(self.sheet.get_text('menu_trial'))
             # Exit the menu loop if no more trial runs available
@@ -377,7 +377,7 @@ class Menu():
                 message = self.sheet.get_text(
                     'recruit_msg', self.active_player.name)
                 message.extend(cadet_names)
-                self.display.build_screen(message, row_nr=2)
+                self.display.build_screen(message, row_nr=1)
                 # Wait for the user to read screen and press ENTER before
                 # starting trials
                 self.display.build_menu('')
@@ -434,6 +434,7 @@ class Menu():
                     input(self.display.build_input(prompt_enter=True))
                     return
             case '6_ship_anim':
+                print('\033c', end='')
                 self.display.clear()
                 ship = self.sheet.get_text('ship_anim')
                 parsed_ship = [f'{" "*80}{row:73}' for row in ship]
