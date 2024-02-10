@@ -121,12 +121,12 @@ I find the resulting game to be congruent with my initial vision, albeit more ex
 Since I was learning the more advanced mechanics and features of the Python language while working on the project, I encountered many challenges and learned many new concepts. Some of them are:
 - How to properly write and instantiate classes (OOP)
 - How to have class objects interact with each other (dependency injection)
-- How to create modules to avoid having one huge file with all the Python code
+- How to create modules to avoid having one large file with all the Python code
 - How to make use of optional arguments in functions
 - How to use ANSI codes
 - How to refactor functions to avoid deep nesting
 
-It was particularly challenging to figure out how to share certain responsibilities between functions—which operations should be handled by which functions, which functions should change the data of certain classes or initiate the next game phase. I did my best to comply with the single responsibility principle while writing my classes, but I cannot claim that I fully succeeded.
+It was particularly challenging to figure out how to share certain responsibilities between functions—which operations should be handled by which functions, which functions should change the data of certain classes or initiate the next game phase. I did my best to comply with the single responsibility principle while writing my classes.
 
 #### Lessons learned
 
@@ -156,7 +156,12 @@ The menu choices are entered via keyboard and confirmed with ENTER.
 
 <img src="assets/readme/screen_mission_menu.png" width="600" alt="Screenshot of the terminal with the mission menu choices">
 
-9. After assembling the crew, the player is presented with informative text and finally with the mission results for the entire mission as well as the individual cadet logs.
+9. After assembling the crew, the player is presented with informative text and finally with the mission results for the entire mission as well as the individual cadet logs. Exactly which texts the player gets to read depends on a number of factors:
+    - Whether a cadet succeeded in their specific role
+    - How many cadets succeeded in their roles overall
+    - How difficult each test was for each cadet (three difficulty values _low_, _mid_, and _high_)
+  
+    This way, there are a total of 6 mission logs and 30 cadet logs to combine depending on the mission results.
 
 <img src="assets/readme/screen_mission_logs.png" width="600" alt="Screenshot of the terminal with the final mission logs">
 
@@ -226,7 +231,6 @@ The modules `sheets.py` and `display.py` have been written as independently from
 Since the game handles user input, invalid inputs must be identified and prevented. All inputs are validated and in case of invalid input, a clear error message is shown to the player. The game then waits for valid input.
 
 <img src="assets/readme/screen_error.png" width="600" alt="Screenshot of the terminal with an error message">
-<br><br>
 
 **Database and API issues**
 

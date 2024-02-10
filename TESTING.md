@@ -1,11 +1,11 @@
 # "AD ASTRA" - Testing
 
-## CONTENTS
+## Contents
 
-- [MANUAL TESTING](#manual-testing)
+- [Manual testing](#manual-testing)
   - [Testing User Stories](#testing-user-stories)
   - [Full Testing](#full-testing)
-- [BUGS](#bugs)
+- [Bugs](#bugs)
   - [Solved bugs](#solved-bugs)
   - [Known bugs and persisting issues](#known-bugs-and-persisting-issues)
 
