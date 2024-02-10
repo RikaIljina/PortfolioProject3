@@ -6,6 +6,8 @@ class Player:
     """Contains player data and performs player-related operations
 
     Attributes:
+        STARTING_SCORE (int): The score that is used as a base for player score
+            calculations
         name (str): Player name as entered by user, set by a method in 
             the Menu object
         score (int): Player score as calculated by class method
@@ -20,11 +22,11 @@ class Player:
         self.name = ""
         self.score = 0
 
-    def set_name(self, name):
+    def set_name(self, name: str) -> bool:
         """Validates player name entry
 
-        Checks if the name contains only latin letters and whitespaces
-        and makes sure that the name contains at least one letter.
+        Checks if the name contains only latin letters and whitespaces and
+        makes sure that the name contains at least one letter.
         Saves player name in self.name attribute.
         Returns a bool to menu loop run_player_init():
         - True if name has been set,
@@ -48,9 +50,9 @@ class Player:
         """Calculates player score at the end of the game
 
         Args:
-            trial_runs: Used-up trial runs from Trial class instance
-            trial_max_runs: Max trial runs from Trial class instance
-            mission: Reference to Mission class instance
+            trial_runs (int): Used-up trial runs from Trial class instance
+            trial_max_runs (int): Max trial runs from Trial class instance
+            mission (object): Reference to Mission class instance
 
         Returns:
             tuple: Resulting player score and detailed score elements

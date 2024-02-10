@@ -13,14 +13,15 @@ class Trials:
         sheet (object): Reference to Sheet class instance
 
     Attributes:
+        MAX_RUNS (int): Maximum allowed amount of trial runs
+        BRIGHT_CYAN, RESET: ANSI color codes
         skill (str): Name of the skill to test the cadets for
         last_skill (str): Name of the previously chosen skill
         c1 (str): Name of the first cadet to test
         c2 (str): Name of the second cadet to test
         trials_log (dict): Contains all results in text form,
-            format {skill: [result_string]}
+            format {skill: ['result string 1', 'result string 2',...]}
         runs (int): Current count of trial runs
-        MAX_RUNS (int): Maximum allowed amount of trial runs
 
     Methods:
         fill_trials(): Receives cadet indexes and starts the trial run
@@ -37,7 +38,7 @@ class Trials:
         self.c1 = ""
         self.c2 = ""
         self.trials_log = {}
-        self.runs = 1
+        self.runs = 0
 
     def fill_trials(self, cadets: object, skill_nr: int, c1: int, c2: int):
         """Receives skill and cadet indexes from the menu, starts the trial run
@@ -53,9 +54,9 @@ class Trials:
         """
         trials_left = self.MAX_RUNS - self.runs
         sing_plural = self.sheet.get_text("trials_hours_left") \
-            if trials_left + 1 != 1 \
+            if trials_left != 1 \
             else self.sheet.get_text("trials_hour_left")
-        trials_left_str = (f'{trials_left + 1}{sing_plural}')
+        trials_left_str = f'{trials_left}{sing_plural}'
         self.display.build_screen(self.sheet.get_text('trial_ongoing')
                                   + f'{trials_left_str:>55}', row_nr=18)
         self.display.draw()
@@ -63,7 +64,7 @@ class Trials:
         time.sleep(1)
         self.display.flush_input()
         # If the player has skipped the skill choice, the previous skill is
-        # used. The previous function makes sure that self.skill is set before
+        # used. The menu function makes sure that self.skill is set before
         # allowing the player to skip the skill choice.
         self.skill = cadets.skills[skill_nr] if skill_nr is not None \
             else self.skill
@@ -72,9 +73,11 @@ class Trials:
         self.__run_trials(cadets)
         self.display.build_screen(self.trials_log, row_nr=1)
         # Updated countdown after running the trial
-        trials_left_str = (
-            f'{trials_left}'
-            f' hour{"s" if trials_left != 1 else ""} left')
+        trials_left = self.MAX_RUNS - self.runs
+        sing_plural = self.sheet.get_text("trials_hours_left") \
+            if trials_left != 1 \
+            else self.sheet.get_text("trials_hour_left")
+        trials_left_str = f'{trials_left}{sing_plural}'
         self.display.build_screen(f"{trials_left_str:>76}", 18)
 
     def __run_trials(self, cadets: object):
@@ -107,11 +110,13 @@ class Trials:
             result_string = f'{self.c1}{and_string}{self.c2}{performance}'
 
         if self.trials_log.get(self.skill):
+            # Remove previous highlight
             self.__remove_highlight()
             # Add and highlight the current result
             self.trials_log[self.skill].append(
                 f'{self.BRIGHT_CYAN}{result_string:<61}{self.RESET}')
         else:
+            # Remove previous highlight
             self.__remove_highlight()
             # Add and highlight the current result.
             # Result must be stored as a list to ensure correct processing by

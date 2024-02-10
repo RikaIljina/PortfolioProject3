@@ -48,10 +48,10 @@ class Display:
         BORDER_CHAR (str): Character to use for the outer border
         INPUT_PROMPT (str): Characters to show before the input line
         EMPTY_ROW (str): Empty row string with border chars
-        ERROR_ROW_NR int): Index of the row with error output
+        ERROR_ROW_NR (int): Index of the row with error output
         MENU_ROW_NR (int): Index of the row with menu elements
-        RED, GREEN, RESET (str): ANSI color codes
-        rows (list): 23 strings containing all screen output
+        RED_BG, BRIGHT_GREEN, RESET (str): ANSI color codes
+        rows (list): 22 strings containing all screen output
         first_time (bool): True if Display is being initialized for the first
             time; needed to only play loading animation once
         enter_prompt (str): String to show in the input prompt when expecting
@@ -135,7 +135,7 @@ class Display:
                 logo, which requires its own build logic and animation.
             ansi (int, optional): Amount of ANSI chars to subtract from the
                 string length when building the correct string with borders;
-                ansi=11 seems to work for all cases in this game
+                ansi=11 seems to work for all cases in this game.
         """
         if not text:
             return
@@ -158,10 +158,11 @@ class Display:
         """Prepares the menu and error rows for terminal output
 
         Formats the string and overwrites the row index of menu row or error
-        row in in self.rows dictionary.
+        row in self.rows dictionary.
 
         Args:
-            text (str): String containing the menu elements, max 76 chars
+            text (str): String containing the menu elements, max 74 chars, or
+                the error message, max 76 chars.
             is_error (bool, optional): States if text is an error message.
                 Defaults to False.
         """
@@ -179,6 +180,7 @@ class Display:
 
         Calls draw() to draw the terminal. Thus, the screen is always re-drawn
         whenever user input is required.
+        This method is supposed to be called as an argument to input().
 
         Args:
             prompt (str, optional): Prompt to put before the user input.
@@ -209,15 +211,15 @@ class Display:
                 clearing the entire terminal. Reduces flickering while an
                 animation is being rendered. Defaults to False.
         """
-        # Info found on https://stackoverflow.com/questions/2084508/
-        # clear-the-terminal-in-python
         if shallow_clear:
             # Only moves the cursor to row 1 column 1 without clearing the
             # screen or the input prompt
             print('\033[1;1H', end='')
         else:
             # Clears the entire screen including previous output and input
-            # prompt
+            # prompt.
+            # Info found on https://stackoverflow.com/questions/2084508/
+            # clear-the-terminal-in-python
             print('\033c', end='')
         for row in self.rows:
             print(f'{row}')
@@ -268,7 +270,7 @@ class Display:
         reveal animation is played.
         
         Args:
-            text (str): List with raw strings with <76 characters each to be
+            text (str): List with raw strings with <78 characters each to be
                 prepared for terminal output 
             row_nr (int): Row number at which to display the first element
         """
@@ -284,7 +286,7 @@ class Display:
                 result = (f'{self.BORDER_CHAR}{" "*24 + line:<78}'
                           f'{self.BORDER_CHAR}')
                 self.rows[row_nr + idx] = result
-            # Turn the logo screen into a list with 23 rows where each row
+            # Turn the logo screen into a list with 22 rows where each row
             # contains a list of single characters
             rows_matrix_logo = []
             for row in self.rows:
@@ -292,12 +294,12 @@ class Display:
             # Overwrite the screen to fill it with block characters
             self.rows = [str(self.BORDER_CHAR * self.WIDTH)
                          for _ in range(self.HEIGHT)]
-            # Turn the filled screen into a list with 23 rows where each row
+            # Turn the filled screen into a list with 22 rows where each row
             # contains a list of single block characters
             rows_matrix_filled = []
             for row in self.rows:
                 rows_matrix_filled.append(list(row))
-            # Create a list with coordinate tuples for 23 rows and 80 columns
+            # Create a list with coordinate tuples for 22 rows and 80 columns
             coord_list = [(x, y) for x in range(self.HEIGHT)
                           for y in range(self.WIDTH)]
             len_coord = len(coord_list)
@@ -403,8 +405,6 @@ class Display:
             if not isinstance(value, list):
                 raise TypeError(
                     "Internal error: Dictionary value is not a list")
-                #input()
-                #return
             for val in value:
                 temp_list.append(val)
 

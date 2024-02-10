@@ -1,4 +1,4 @@
-"""Contains Menu class which builds menu elements and handles user input
+"""Contains the Menu class which builds menu elements and handles user input
 
 The Menu class was supposed to handle menu choice logic and call appropriate
 functions where needed. However, it has grown into an overarching class that
@@ -18,7 +18,7 @@ class Menu():
         * returning the chosen value
     - to render info screens
 
-    The Display class object is used to print on screen:
+    The Display class object is used by the Menu class to print on screen:
     - Print menu choices on the screen:
         self.display.build_menu(menu_text_string)
     - Print an error message on the screen:
@@ -39,29 +39,36 @@ class Menu():
 
     Args:
         display (object): Reference to Display class instance
-        sheet (object): Reference to Sheet class object
+        sheet (object): Reference to Sheet class instance
         run_game (object): Reference to global function run() in run.py
 
     Attributes:
-        GREEN, RESET: ANSI style codes
-        stay_in_trial_menu (bool):
+        BRIGHT_GREEN, BRIGHT_RED, BRIGHT_CYAN, RESET: ANSI style codes
+        chosen_skill (str): The name of the career track that was last chosen
+            by the player.
+        active_player (object): Reference to Player class instance; set by
+            global function run().
+        stay_in_trial_menu (bool): States whether the player has not used up
+            all available trial runs; needed to exit the trial menu loop and
+            proceed to the next menu.
         trial_first_time (bool): States whether the player has accessed the
             trial loop for the first time; needed to show the appropriate
             info screen.
 
     Methods:
-    run_outer_loop(): Displays the outer menu choices and waits for player
-        input
-    run_player_init(): Prompts user to enter a player name until valid name is
-        entered
-    run_trial_loop(): Displays trial phase choices and waits for user input
-    run_skill_choice(): Displays skill choices and waits for valid user input
-    run_cadet_choice(): Displays cadet names as menu choices and waits for
-        valid user input
-    run_mission_loop(): Displays cadet names as menu choices and waits for
-        valid user input
-    reset_menu(): Resets menu values on repeated playthrough
-    info_screen(): Prepares and displays all info screens
+        run_outer_loop(): Displays the outer menu choices and waits for player
+            input
+        run_player_init(): Prompts user to enter a player name until valid name
+            is entered
+        run_trial_loop(): Displays trial phase choices and waits for user input
+        run_skill_choice(): Displays skill choices and waits for valid user
+            input
+        run_cadet_choice(): Displays cadet names as menu choices for
+            trials.fill_trials() and waits for valid user input
+        run_mission_loop(): Displays cadet names as menu choices for
+            menu.assemble_crew() and waits for valid user input
+        reset_menu(): Resets menu values on repeated playthroughs
+        info_screen(): Prepares and displays all info screens
     """
     BRIGHT_GREEN = "\033[92;1m"
     BRIGHT_RED = "\033[91;1m"
@@ -131,12 +138,13 @@ class Menu():
 
         During the trial phase, the player can choose to select a specific
         career track (skill) as well as two cadets to test, or to end the
-        trial phase and start the mission. This method handles the choice of
-        track and cadets ... 
+        trial phase and start the mission. This method handles these choices
+        until the mission starts.
 
         Args:
             trials (object): Reference to Trials class instance
             cadets (object): reference to Cadets class instance
+            mission (object): Reference to Mission class instance
         """
         self.display.clear()
         if self.trial_first_time:
@@ -146,7 +154,7 @@ class Menu():
             self.display.build_screen(f'{trials_left:>76}', 18)
         while True:
             self.display.build_menu(self.sheet.get_text('menu_trial'))
-            # Exit the menu loop if no more trial runs available
+            # Exit the menu loop if no more trial runs are available
             if not self.stay_in_trial_menu:
                 self.display.build_menu("")
                 self.display.clear([16, 17, 18])
@@ -162,6 +170,8 @@ class Menu():
 
             match choice:
                 case '1':
+                    # Clear the screen to remove first-time info screen, but
+                    # not the successively shown trial logs that come after
                     if self.trial_first_time:
                         self.display.clear(list(range(1, 18)))
                         self.trial_first_time = False
@@ -279,12 +289,12 @@ class Menu():
         while True:
             c2 = input(self.display.build_input(
                 self.sheet.get_text('prompt_cadet_2'))).strip()
+            # Make sure the player doesn't choose the same cadet twice
             if str(c1+1) == c2:
                 self.display.build_menu(self.sheet.get_text(
                     'err_cadet_twice'), is_error=True)
                 continue
             self.display.clear(is_error=True)
-
             try:
                 c2 = int(c2) - 1
                 cadets.names[c2]
@@ -305,7 +315,7 @@ class Menu():
         # Remove cadet pair from screen but leave active skill
         self.display.build_screen((f'{self.chosen_skill}:  '), 17)
         # Check if all allowed trial runs have been exhausted
-        self.stay_in_trial_menu = trials.MAX_RUNS >= trials.runs
+        self.stay_in_trial_menu = trials.MAX_RUNS > trials.runs
         # Return to run_trial_loop()
 
     def run_mission_loop(self, available_cadets: list) -> int:
@@ -361,17 +371,20 @@ class Menu():
         """
         match part:
             case '1_logo':
+                # Displays the start screen with the logo
                 logo = [f'{"    🟇 🟍 ✵  AD ASTRA ✵ 🟍 🟇":<32}']
                 logo.extend(self.sheet.get_text('logo_ad_astra'))
                 self.display.clear()
                 self.display.build_screen(logo, 2, center_logo=True)
                 return
             case '2_welcome':
+                # Displays the game description
                 message = self.sheet.get_text('welcome')
                 self.display.clear()
                 self.display.build_screen(message)
                 return
             case '3_recruit':
+                # Displays a personalized welcome message and the cadet names
                 # Value is a list with cadet names
                 cadet_names = value
                 message = self.sheet.get_text(
@@ -384,14 +397,15 @@ class Menu():
                 input(self.display.build_input(prompt_enter=True))
                 return
             case '4_trials_desc':
+                # Displays the description of the trials phase
                 # Value is an int with mission difficulty
                 message = self.sheet.get_text('trials_desc', str(value))
                 self.display.build_screen(message, 2)
                 return
             case '5_red_alert':
+                # Displays the Red alert info screen
                 # Value is the Mission class object
                 mission = value
-                # Red alert screen
                 self.display.clear()
                 self.display.draw()
                 time.sleep(0.7)
@@ -434,6 +448,7 @@ class Menu():
                     input(self.display.build_input(prompt_enter=True))
                     return
             case '6_ship_anim':
+                # Displays the flying ship animation
                 print('\033c', end='')
                 self.display.clear()
                 ship = self.sheet.get_text('ship_anim')
@@ -448,7 +463,8 @@ class Menu():
                 self.display.flush_input()
                 return
             case '7_mission_score':
-                # value is final mission score here
+                # Value is final mission score here
+                # Displays the mission result description
                 self.display.build_menu("")
                 message = self.sheet.get_text(f'mission_score_{value}')
                 self.display.build_screen(
@@ -471,6 +487,7 @@ class Menu():
                     self.sheet.get_text('prompt_highscore')))
                 return
             case '9_highscore':
+                # Displays the highscore table
                 self.display.build_menu(self.sheet.get_text('please_wait'))
                 self.display.draw()
                 self.display.build_screen(f"{self.BRIGHT_GREEN}"

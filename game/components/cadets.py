@@ -12,6 +12,10 @@ class Cadets:
         sheet (object): Reference to Sheet class instance
 
     Attributes:
+        MAX_POINTS (int): Amount of skill points to divide among all 5 skills
+            of a cadet
+        LOWEST_SKILL (int): Value of the lowest allowed skill value
+        HIGHEST_SKILL (int): Value of the highest allowed skill value
         skills (list): Five skills the cadets are being tested for
         all_names (list): Names to randomly choose from when building dict
         names (list): Random sample of 6 names from all_names variable
@@ -26,8 +30,7 @@ class Cadets:
 
     def __init__(self, sheet: object):
         self.skills = sheet.get_list('skill_list')
-        self.all_names = sheet.get_list('name_list')
-        self.names = random.sample(self.all_names, 6)
+        self.names = random.sample(sheet.get_list('name_list'), 6)
         self.cadets = {}
 
     def recruit(self):
@@ -47,10 +50,6 @@ class Cadets:
         with a total sum of MAX_POINTS (25).
 
         Attributes:
-            MAX_POINTS (int): Total amount of skill points to divide among all 
-                skills for each cadet
-            LOWEST_SKILL (int): Lowest possible skill value
-            HIGHEST_SKILL (int): Highest possible skill value
             skill_points (list): Five skill values
             skill_amount (int): Amount of skills currently used in the game (5)
         """

@@ -20,6 +20,7 @@ def run(menu: object, player: object, display: object, sheet: object):
         menu (object): Reference to Menu class instance
         player (object): Reference to Player class instance
         display (object): Reference to Display class instance
+        sheet (object): Reference to Sheet class instance
     """
     # Some menu variables must be reset when the game is played in several
     # playthroughs in one session
@@ -58,7 +59,7 @@ def run(menu: object, player: object, display: object, sheet: object):
     sheet.write_score(player.score, player.name)
     display.clear()
     menu.info_screen('9_highscore')
-    # Return to menu lvl1
+    # Return to menu.run_outer_loop()
 
 
 def main():
@@ -69,6 +70,7 @@ def main():
     On game exit, the function calls say_goodbye() to show the credits and exit
     the program.
     """
+    # Clear the screen
     print('\033c', end='')
     sheet = Sheet()
     display = Display(sheet)

@@ -5,6 +5,7 @@ on demand, and writes new data into the spreadsheet.
 """
 import sys
 import textwrap
+from typing import Union
 import gspread
 from google.oauth2.service_account import Credentials
 
@@ -27,7 +28,7 @@ class Sheet:
         score_table: Worksheet instance for 'highscore'
         texts: Worksheet instance for 'texts'
         MAX_ENTRIES (int): Maximum highscore entries allowed
-        GREEN, RESET (str): ANSI style codes
+        BRIGHT_GREEN, RESET (str): ANSI style codes
         
     Methods:
         get_score(): Retrieves list with formatted highscore entries
@@ -49,7 +50,7 @@ class Sheet:
         SCOPED_CREDS = CREDS.with_scopes(SCOPE)
         GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
         SHEET = GSPREAD_CLIENT.open('ad_astra')
-        score_table = SHEET.worksheet("highscore")
+        highscore = SHEET.worksheet("highscore")
         texts = SHEET.worksheet("texts")
     except gspread.exceptions.SpreadsheetNotFound as e:
         print(
@@ -78,9 +79,7 @@ class Sheet:
 
     def __init__(self):
         # Build a dictionary with all messages in the 'texts' worksheet
-        # TODO: merge
-        self.messages = self.texts.get_all_values()
-        self.msg_dict = dict(self.messages)
+        self.msg_dict = dict(self.texts.get_all_values())
 
     def get_score(self) -> list:
         """Reads highscore table from worksheet and returns it in list form
@@ -91,7 +90,7 @@ class Sheet:
         Returns:
             list: A list with MAX_ENTRIES entries (default: 10) 
         """
-        score_rows = self.score_table.get_all_values()
+        score_rows = self.highscore.get_all_values()
         score_list = []
         for i, row in enumerate(score_rows, 1):
             # Pre-format names and scores for output
@@ -109,7 +108,7 @@ class Sheet:
             new_name (str): Player name to write into the highscore table
         """
         # Get score list from highscore worksheet
-        score_list = self.score_table.get_all_values()
+        score_list = self.highscore.get_all_values()
         entries_num = len(score_list)
         # Get lowest score in the table
         last_score = int(score_list[-1][1])
@@ -120,7 +119,7 @@ class Sheet:
             new_score_list = sorted(
                 score_list, key=lambda entry: int(entry[1]), reverse=True)
             # Update worksheet with the new sorted list
-            self.score_table.update(values=new_score_list, range_name='A1:B10')
+            self.highscore.update(values=new_score_list, range_name='A1:B10')
         else:
             # If new player score is high enough for the highscore:
             if new_score > last_score:
@@ -129,7 +128,7 @@ class Sheet:
                 new_score_list = sorted(
                     score_list, key=lambda entry: int(entry[1]), reverse=True)
                 new_score_list.pop(-1)
-                self.score_table.update(
+                self.highscore.update(
                     values=new_score_list, range_name='A1:B10')
 
     def get_mission_msg(self, role: str, level: str, success: bool,
@@ -148,17 +147,21 @@ class Sheet:
         key = f'ml_{role[:3].lower()}_{level}_{"suc" if success else "fail"}'
         return self.get_text(key, fname)
 
-    def get_text(self, key: str, value=None) -> str:
+    def get_text(self, key: str, value=None) -> Union[str, list]:
         """Retrieves and formats message from the dictionary for specified key
         
         Takes the message ID as key and returns the message string or a list
         with wrapped message strings.
+        The returned value is a string or a list with preformatted strings that
+        can be fed into the Display module.
 
         Args:
             key (str): Message ID
+            value (int||str): Value for the placeholder inside the message, if
+                present. Defaults to None.
 
         Returns:
-            str: Preformatted message
+            str||list: Preformatted message
         """
         if value:
             message_raw = self.msg_dict[key].format(value=value)
@@ -181,12 +184,12 @@ class Sheet:
         return message
 
     def get_list(self, key: str) -> list:
-        """Retrieves items from the message dictionary based on specified key
+        """Retrieves items from the message dictionary and returns list
 
         Takes a key as input and retrieves the corresponding value from the
         message dictionary. The value must be a string containing items
-        separated by commas (', '). The function splits the string and returns
-        a list of items.
+        separated by comma and whitespace (', '). The function splits the
+        string and returns a list of items.
 
         Args:
             key (str): Message ID to access the list in the message dictionary

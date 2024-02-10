@@ -7,8 +7,8 @@ import textwrap
 class Mission:
     """Calculates and stores the results of the mission phase
 
-    The mission difficulty can be adjusted by changing the MIN/MAX values.
-
+    The mission difficulty can be adjusted by changing the DIFF_MIN/DIFF_MAX
+    values.
 
     Args:
         roles (list): List with cadet roles
@@ -18,7 +18,7 @@ class Mission:
     Attributes:
         DIFF_MIN (int): Lower threshold for the random mission parameters
         DIFF_MAX (int): Upper threshold for the random mission parameters
-        RED, GREEN, BRIGHT_RED, BRIGHT_CYAN, RESET (str): ASCII color codes
+        BRIGHT_GREEN, BRIGHT_RED, BRIGHT_CYAN, RESET (str): ASCII color codes
         prognosis (int): Average skill value of the crew times 10
         score (int): Indicates how many cadets succeeded in their roles
         mission_log (dict): Collection of all mission result texts
@@ -32,14 +32,13 @@ class Mission:
 
     Methods:
         assemble_crew(): Lets player assign cadets to the roles via the menu
-        calculate_prognosis(): Calculates the probability for crew success
         calculate_success(): Calculates the success of the chosen crew
-        show_results():
-        show_mission_logs():
+        show_mission_logs(): Prepares mission logs for output, sends them to
+            Display
+
     """
     DIFF_MIN = 3
     DIFF_MAX = 10
-    RED = '\033[31;1m'
     BRIGHT_GREEN = '\033[92;1m'
     BRIGHT_RED = '\033[91;1m'
     BRIGHT_CYAN = '\033[96;1m'
@@ -97,19 +96,16 @@ class Mission:
         self.display.build_menu('')
         input(self.display.build_input(prompt_enter=True))
 
-    def calculate_prognosis(self):
+    def __calculate_prognosis(self):
         """Calculates the average skill level of the crew
 
         The calculation is based on the individual cadet skill values.
-
-        Returns:
-            int: Average skill level of the crew
         """
         result = sum([value[1]*10 for value in self.crew.values()])
         self.prognosis = math.floor(result/len(self.crew.values()))
-        self.calculate_disparity()
+        self.__calculate_disparity()
 
-    def calculate_disparity(self):
+    def __calculate_disparity(self):
         """Calculates disparity between the mission prognosis and difficulty
 
         This method calculates the difference between the mission prognosis
@@ -145,7 +141,7 @@ class Mission:
         sheet.get_mission_msg() also needs the cadet name to insert it into the
         mission description.
         """
-        self.calculate_prognosis()
+        self.__calculate_prognosis()
         diff_values = {1: "low", 2: "low", 3: "low", 4: "low",
                        5: "low", 6: "mid", 7: "mid", 8: "mid",
                        9: "high", 10: "high"}
@@ -181,7 +177,6 @@ class Mission:
             else:
                 self.mission_log[key].append(msg)
 
-    # TODO: move to menu info screens
     def show_mission_logs(self):
         """Prepares mission logs for output, sends them to Display
 
