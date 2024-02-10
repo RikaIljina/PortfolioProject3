@@ -46,12 +46,12 @@ The goal is to engage the player in a fun logic puzzle, encouraging them to play
 
 ### User stories
 
-1. As a player, I want to be able to easily understand how to start the game.
-2. As a player, I want to be able to quickly understand what the game is about.
-3. As a player, I want to be notified if my entry or menu choice is invalid.
-4. As a player, I want to receive instant feedback when entering my choice.
-5. As a player, I want to be receive feedback to let me know how well I did in the game.
-6. As a player, I want to see how well I did compared with other players.
+1. As a player, I want to easily understand how to start the game, so I can begin playing without confusion or delay.
+2. As a player, I want to quickly grasp the concepts and objectives of the game, so I can engage with it effectively.
+3. As a player, I want to be notified immediately if my entry or menu choice is invalid, so I can correct errors and have a smooth gaming experience.
+4. As a player, I want to receive instant feedback when entering my choice, so I can understand the consequences of my decisions.
+5. As a player, I want to receive feedback about how well I did in the game, so I can adapt my strategy on the next playthrough.
+6. As a player, I want to see how well I did compared with other players, so I am motivated to improve my playing style.
 
 ## Design
 
@@ -67,7 +67,7 @@ Since the terminal window is embedded in an HTML page, I adjusted the style of t
 
 ### Color scheme
 
-I left the default colors for most of the output and used ASCII color codes to emphasize certain text:
+To maintain readability, I used the default colors for most of the output and implemented ASCII color codes to emphasize certain text:
 
 - Black: background color
 - White: most text
@@ -80,7 +80,7 @@ I left the default colors for most of the output and used ASCII color codes to e
 
 ### Typography
 
-I used the default font of the Python terminal for all text.
+I used the default monospace font of the Python terminal for all text to ensure the correct rendering of my screen building logic.
 
 ### Art
 
@@ -94,7 +94,41 @@ I used ASCII art to spice up the game visually:
 
 ### Planning
 
-During the planning phase, I went through various game ideas before settling on this text-based logic puzzle. Once I had a basic idea of the required stages of the game, [I added comments to the run.py file](https://github.com/RikaIljina/PortfolioProject3/blob/5ef1590f7d6123a4a3424b692ca804a397b97809/run.py), roughly outlining the stages, functions, and classes I had to write. From there, I organically built up the script, first writing the basic logic to test the game principle, then adding the specific classes as needed and delegating certain processes to them.
+#### Initial vision
+
+During the planning phase, I went through various ideas involving Starfleet cadet training games and mission simulators before settling on this text-based logic puzzle. The development steps I had in mind were as follows:
+1. Have the player choose a name
+2. Create 5 cadets with secret values for each of 5 skills
+13. Have the player go through a Trials phase where they compare two cadets and receive a result in text form
+4. Have the player go through a Mission phase where they assign one cadet to one role
+5. Let the game create a Final Mission with a secret difficulty parameter for each role
+6. Let the game calculate the results and present them to the player
+7. Let the game access and update an external highscore database
+8. Have a Display class to show all output inside a non-scrollable terminal with fixed dimensions
+9. Have a Menu class to handle input and changing screens
+10. Have a proper menu function hierarchy to make sure all functions return to the `while True` loops of the menu instead of calling menu functions over and over, creating unnecessarily nested loops and a deep call stack
+
+#### Development process
+
+Once I had a basic idea of the mechanics and required stages of the game, [I added comments to the run.py file](https://github.com/RikaIljina/PortfolioProject3/blob/5ef1590f7d6123a4a3424b692ca804a397b97809/run.py), roughly outlining the stages, functions, and classes I had to write. From there, I organically built up the script, first writing the basic logic to test the game principle, then adding the specific classes as needed and delegating certain processes to them.
+
+#### Result
+
+I find the resulting game to be congruent with my initial vision, albeit more extensive and with more features than initially planned. The game logic worked as expected, even though more thorough balancing would be in order. The texts, most of which my sister kindly wrote for me, add an extra layer of reward, making sure that even a failed mission results in an entertaining read.
+
+#### Challenges
+
+Since I was learning the more advanced mechanics and features of the Python language while working on the project, I encountered many challenges and learned many new concepts. Some of them are:
+- How to properly write and instantiate classes (OOP)
+- How to have class objects interact with each other (dependency injection)
+- How to create modules to avoid having one huge file with all the Python code
+- How to make use of optional arguments in functions
+- How to use ANSI codes
+- How to refactor functions to avoid deep nesting
+
+It was particularly challenging to figure out how to share certain responsibilities between functions—which operations should be handled by which functions, which functions should change the data of certain classes or initiate the next game phase. I did my best to comply with the single responsibility principle while writing my classes, but I cannot claim that I fully succeeded.
+
+#### Lessons learned
 
 In hindsight, I realize I should have planned out each class and each method beforehand to avoid rewriting and restructuring my code over and over to adapt to each new addition—for example, after adding the Display class, I had to replace each `print()` statement with the appropriate Display method to properly render all text on screen; later, after adding the Sheet class that uses Google Sheets as a text database, I had to move all hard-coded strings to a Google Worksheet, create message IDs, and pass the appropriate Sheet method with the relevant ID to the Display object to retrieve the text from the database. Had I written these helper classes before diving right into the game mechanics, I would have saved myself a lot of time and bug-chasing. However, when starting this project, I did not have a clear enough grasp on the coding challenges before me to foresee the project requirements and to plan ahead.
 
@@ -126,7 +160,7 @@ The menu choices are entered via keyboard and confirmed with ENTER.
 
 <img src="assets/readme/screen_mission_logs.png" width="600" alt="Screenshot of the terminal with the final mission logs">
 
-10. After reading the mission logs, the player sees their detailed score as well as the highscore table. The player is entered in the highscore table if their score is in the top 10 of all players.
+10. After reading the mission logs, the player sees their detailed score as well as the highscore table. The player is entered into the highscore table if their score is in the top 10 of all players.
 
 <img src="assets/readme/screen_highscore.png" width="600" alt="Screenshot of the terminal with the highscore table">
 

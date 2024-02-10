@@ -13,20 +13,21 @@
 
 ### Testing user stories
 
-| Goals | How are they achieved? |
+| Goal | How is it achieved? |
 |---|---|
-| As a player, I want to be able to easily understand how to start the game. | Players are greeted by a loading screen with a menu line which contains the option "Start game" along with the associated number to enter. |
-| As a player, I want to be able to quickly understand what the game is about. | After starting the game, a one-page description is shown to the player explaining how the game works. |
-| As a player, I want to be notified if my entry or menu choice is invalid.  | A highlighted error line is shown whenever the player enters invalid input, prompting them to choose something valid. |
-| As a player, I want to receive instant feedback when entering my choice.  | Feedback is given in the form of changing screens and appropriate info texts. |
-| As a player, I want to be receive feedback to let me know how well I did in the game.  | After each playthrough, the player is shown a score table detailing the points they achieved or lost. |
-| As a player, I want to see how well I did compared with other players.  | After each playthrough, the game checks whether the player's score is high enough to be entered into the highscore. The highscore table with player names and top scores is shown to the player. |
+| As a player, I want to easily understand how to start the game, so I can begin playing without confusion or delay. | Players are greeted by a loading screen with a clear and intuitive menu line which contains the option "Start game" along with the associated number to enter. |
+| As a player, I want to quickly grasp the concepts and objectives of the game, so I can engage with it effectively. | After starting the game, a one-page description is shown to the player explaining how the game works and what the objective is. |
+| As a player, I want to be notified immediately if my entry or menu choice is invalid, so I can correct errors and have a smooth gaming experience. | A highlighted error line is shown whenever the player enters invalid input, prompting them to make an appropriate selection. |
+| As a player, I want to receive instant feedback when entering my choice, so I can understand the consequences of my decisions. | Feedback is given in the form of changing screens and appropriate info texts, letting the player see the outcome of their actions. |
+| As a player, I want to receive feedback about how well I did in the game, so I can adapt my strategy on the next playthrough. | After each playthrough, the player is shown a score table detailing the points they achieved or lost. |
+| As a player, I want to see how well I did compared with other players, so I am motivated to improve my playing style. | After each playthrough, the game checks whether the player's score is high enough to be entered into the highscore. The highscore table with player names and top scores is shown to the player. |
+
 
 ### Full Testing
 
 The website was tested on:
  - Laptop: 
-    - HP EliteBook x360 1030 G3 13.3''
+    - HP EliteBook x360 1030 G3 13.3'', Windows 11 Pro
 
   Due to the unresponsiveness of the embedded Python terminal, the game is not suitable for mobile phones.
 
@@ -66,6 +67,7 @@ The following issues came up during the development or testing process and were 
 | I'm using ANSI escape sequences to add color to my game. However, I encountered issues due to the specific process I use to build my screen: the length of the string must be considered when fitting it into 80 columns and surrounding it with border elements. If an ANSI sequence is present, it adds to the string length despite being invisible, thus disrupting the screen output. | Whenever an ANSI sequence is present in a string, a certain amount of characters must be added to the total row width to achieve the correct result. Trial and error has shown that 11 characters must be added when an ANSI color code and an ANSI reset code are present. It works to properly build the screen, but I have not yet found out why it must be precisely 11. |
 | The player could break the terminal display by entering a long sequence spanning more than two rows into the prompt. While the input was ignored by the game as invalid, its presence in the terminal added extra rows and made the whole terminal scrollable, showing broken parts of the previous screen. | I was unable to find a way to limit the length of the input itself, but I found a way to clear the terminal more thoroughly than with cls/clear: `print('\033c', end='')`. Now, the terminal doesn't show parts of previous output even if the user enters too many lines. Since a benchmark test with `time.perf_counter()` showed that this function is much faster than `os.system("clear")`, I replaced the latter with the former in all my modules. |
 | In my attempt to incorporate animations in the Python console without using complex external libraries that might not work with Heroku, I resorted to very basic mechanics: the screen output is being built out of 23 rows that are being assembled from a list, which is then being printed on screen with a short delay between the printing cycles. That way, the logo reveal animation and the flying ship animation are achieved. However, these processes rely heavily on `for`-loops and the constant re-drawing of the screen, which is not very performant and causes a lot of unpleasant flickering. | Given more time, I would find better ways to implement such animations by using external libraries or refactoring the animation functions. For now, I've used `print('\033[1;1H', end='')` to move the cursor to the beginning of the terminal before each new animation frame instead of clearing the screen. The new frame simply overwrites the previous frame, thus reducing the flickering. |
+| When first deploying my project on Heroku, I got a `SyntaxError` for using `match`. | I found out that `match` statements were not supported before Python 3.10 and that my Python version (python-3.11.5) did not match the version in the `runtime.txt` file (python-3.9.18). I changed the version in the file to my own version, which solved the error. |
 
 ### Known bugs and persisting issues
 
