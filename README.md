@@ -286,11 +286,11 @@ Deployment process:
 
 The game uses the Google API to connect the Python script to Google Sheets. To issue an API key:
 
-1. Log into [Google Cloud](https://console.cloud.google.com/apis/library) and open your console by clicking on "Console".
+1. Log into [Google Cloud](https://console.cloud.google.com/) and open your console by clicking on "Console".
 2. In the upper part of the page, click on "Select a project" > "New Project".
 3. Choose a project name and click on "Create".
 4. Click on the notifications icon and then on "Select project".
-5. Open the burger menu to the right and select "APIs & Services" > "Library".
+5. Open the burger menu to the left and select "APIs & Services" > "Library".
 6. Find and enable "Google Drive API".
 7. On the next page, with the section "Enabled APIs & services" open and "Google Drive API" selected, click on "Create credentials".
 8. From the "Which API are you using?" dropdown menu, choose "Google Drive API".
