@@ -230,7 +230,6 @@ See the ["Bugs" section of TESTING.md](TESTING.md#known-bugs-and-persisting-issu
 - [pip-tools](https://github.com/jazzband/pip-tools): generates up-to-date requirement list with `pip-compile`
 - sys, time, textwrap, re, typing, math, random, termios, msvcrt from the [Python Standard Library](https://docs.python.org/3/library/index.html)
 
-
 ## Testing
 
 Tests are described in [TESTING.md](TESTING.md).

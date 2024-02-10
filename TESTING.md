@@ -35,10 +35,9 @@ On the laptop, the site was tested in the following browsers:
  - Opera
  - Microsoft Edge
 
+The following goals were thoroughly tested:
 
-The following features were thoroughly tested:
-
-| Feature | Result |
+| Goal | Result |
 |---|---|
 | There are no spelling errors in the game | Pass |
 | The player name input prompt accepts only the allowed character set | Pass |
@@ -48,6 +47,10 @@ The following features were thoroughly tested:
 | All colors are displayed correctly | Pass |
 | In case of invalid input, the error handling functionality kicks in and notifies the player about the nature of the error | Pass |
 | In case of database errors, the error handling functionality kicks in and notifies the player about the nature of the error | Pass |
+| The code conforms to the PEP8 style guide | Pass |
+| The code doesn't contain unexplained issues that a linter would detect | Pass |
+
+The code has been checked and corrected with the help of the VS code extensions `autopep8` and `Pylint`.
 
 ## Bugs
 
