@@ -146,6 +146,7 @@ class Menu():
             cadets (object): reference to Cadets class instance
             mission (object): Reference to Mission class instance
         """
+        menu_line = self.sheet.get_text('menu_trial')
         self.display.clear()
         if self.trial_first_time:
             self.info_screen('4_trials_desc', mission.difficulty)
@@ -153,7 +154,7 @@ class Menu():
                 "trials_left", trials.MAX_RUNS)
             self.display.build_screen(f'{trials_left:>76}', 18)
         while True:
-            self.display.build_menu(self.sheet.get_text('menu_trial'))
+            self.display.build_menu(menu_line)
             # Exit the menu loop if no more trial runs are available
             if not self.stay_in_trial_menu:
                 self.display.build_menu("")
@@ -175,6 +176,9 @@ class Menu():
                     if self.trial_first_time:
                         self.display.clear(list(range(1, 18)))
                         self.trial_first_time = False
+                        # Switch to different menu line once a track has been
+                        # chosen
+                        menu_line = self.sheet.get_text('menu_trial_new')
                     self.run_skill_choice(trials, cadets)
                     continue
                 case '2':
