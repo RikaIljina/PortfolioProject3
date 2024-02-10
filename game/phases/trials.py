@@ -111,13 +111,13 @@ class Trials:
 
         if self.trials_log.get(self.skill):
             # Remove previous highlight
-            self.__remove_highlight()
+            self.remove_highlight()
             # Add and highlight the current result
             self.trials_log[self.skill].append(
                 f'{self.BRIGHT_CYAN}{result_string:<61}{self.RESET}')
         else:
             # Remove previous highlight
-            self.__remove_highlight()
+            self.remove_highlight()
             # Add and highlight the current result.
             # Result must be stored as a list to ensure correct processing by
             # the Display class
@@ -126,7 +126,7 @@ class Trials:
         self.last_skill = self.skill
         self.runs += 1
 
-    def __remove_highlight(self):
+    def remove_highlight(self):
         """Removes highlight from previously highlighted entry
         
         The last added list element for the previously chosen skill in the

@@ -157,6 +157,7 @@ class Menu():
             self.display.build_menu(menu_line)
             # Exit the menu loop if no more trial runs are available
             if not self.stay_in_trial_menu:
+                trials.remove_highlight()
                 self.display.build_menu("")
                 self.display.clear([16, 17, 18])
                 self.display.build_screen(self.sheet.get_text(
@@ -191,9 +192,10 @@ class Menu():
                     self.run_cadet_choice(trials, cadets)
                     continue
                 case '3':
-                    # Return to run() to start mission phase
+                    trials.remove_highlight()
                     self.display.clear(is_error=True)
                     self.display.clear()
+                    # Return to run() to start mission phase
                     break
                 case _:
                     self.display.build_menu(
