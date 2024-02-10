@@ -463,7 +463,7 @@ class Menu():
                         all_lines.append(line[i:-1 if i >= -76 else i+76])
                     self.display.build_screen(all_lines, 3)
                     self.display.draw(shallow_clear=True)
-                    time.sleep(0.05)
+                    time.sleep(0.09)
                 self.display.flush_input()
                 return
             case '7_mission_score':
