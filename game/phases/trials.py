@@ -25,7 +25,7 @@ class Trials:
     Methods:
         fill_trials(): Receives cadet indexes and starts the trial run
     """
-    MAX_RUNS = 3
+    MAX_RUNS = 14
     BRIGHT_CYAN = '\033[96;1m'
     RESET = '\033[0m'
 

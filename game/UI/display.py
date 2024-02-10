@@ -67,13 +67,13 @@ class Display:
         build_input(): Formats input prompt and calls draw to draw screen
         draw(): Draws the screen; only needed when input prompt is not used
     """
-    HEIGHT = 23
+    HEIGHT = 22
     WIDTH = 80
     BORDER_CHAR = "▓"
     INPUT_PROMPT = '▓▓▓ ⁞⁞ '
     EMPTY_ROW = f'{BORDER_CHAR}{" ":<78}{BORDER_CHAR}'
-    ERROR_ROW_NR = 22
-    MENU_ROW_NR = 21
+    ERROR_ROW_NR = 21
+    MENU_ROW_NR = 20
     # ANSI codes for text styling
     RED_BG = "\033[41;1m"
     BRIGHT_GREEN = "\033[92;1m"
