@@ -18,6 +18,7 @@
   - [Typography](#typography)
   - [Images](#images)
 - [Features](#features)
+  - [Planning](#planning)
   - [Game loop](#game-loop)
   - [Codebase](#codebase)
     - [File structure](#file-structure)
@@ -90,6 +91,12 @@ I used ASCII art to spice up the game visually:
 
 ## Features
 
+### Planning
+
+During the planning phase, I went through various game ideas before settling on this text-based logic puzzle. Once I had a basic idea of the required stages of the game, [I added comments to the run.py file](https://github.com/RikaIljina/PortfolioProject3/blob/5ef1590f7d6123a4a3424b692ca804a397b97809/run.py), roughly outlining the stages, functions, and classes I had to write. From there, I organically built up the script, first writing the basic logic to test the game principle, then adding the specific classes as needed and delegating certain processes to them.
+
+In hindsight, I realize I should have planned out each class and each method beforehand to avoid rewriting and restructuring my code over and over to adapt to each new addition—for example, after adding the Display class, I had to replace each `print()` statement with the appropriate Display method to properly render all text on screen; later, after adding the Sheet class that uses Google Sheets as a text database, I had to move all hard-coded strings to a Google Worksheet, create message IDs, and pass the appropriate Sheet method with the relevant ID to the Display object to retrieve the text from the database. Had I written these helper classes before diving right into the game mechanics, I would have saved myself a lot of time and bug-chasing. However, when starting this project, I did not have a clear enough grasp on the coding challenges before me to foresee the project requirements and to plan ahead.
+
 ### Game loop
 
 After the Heroku app has loaded, the player is presented with a terminal in which a screen reveal animation plays. After the animation, the player sees the game screen and the choices of the outer menu. Now the player can start to interact with the game.
@@ -130,26 +137,26 @@ The menu choices are entered via keyboard and confirmed with ENTER.
 
 #### File structure
 
-- .devcontainer (from CI template) - directory with heroku config data
-- controllers (from CI template) - directory with JS file which handles Python terminal creation and destruction
-- views (from CI template) - directory with HTML and CSS data needed to style the webpage the terminal is embedded in
-- index.js (from CI template) - Total.js start script
-- package.json (from CI template) - JSON data file
-- requirements.txt (from CI template) - external libraries that must be installed for the game to execute correctly on Heroku
-- runtime.txt (from CI template) - Python version that the game uses on Heroku
-- run.py - Python script that must be executed to start the game
-- game - package with all modules accessed by run.py
-  - components - package with game component modules:
+- .devcontainer (from CI template)—directory with heroku config data
+- controllers (from CI template)—directory with JS file which handles Python terminal creation and destruction
+- views (from CI template)—directory with HTML and CSS data needed to style the webpage the terminal is embedded in
+- index.js (from CI template)—Total.js start script
+- package.json (from CI template)—JSON data file
+- requirements.txt (from CI template)—external libraries that must be installed for the game to execute correctly on Heroku
+- runtime.txt (from CI template)—Python version that the game uses on Heroku
+- run.py—Python script that must be executed to start the game
+- game—package with all modules accessed by run.py
+  - components—package with game component modules:
     - cadets.py
     - player.py
-  - phases - package with game phases modules:
+  - phases—package with game phases modules:
     - mission.py
     - trials.py
-  - UI - package with game UI modules:
+  - UI—package with game UI modules:
     - display.py
     - menu.py
     - sheets.py
-- assets/readme - directory with README-related files
+- assets/readme—directory with README-related files
 
 #### Flowchart
 
@@ -252,7 +259,7 @@ The game was deployed to Heroku using [this template](https://github.com/Code-In
 Deployment process:
 
 1. Log in to Heroku using your GitHub account.
-2. Open your dashboard and click on "New" - "Create new app".
+2. Open your dashboard and click on "New" > "Create new app".
 3. Enter relevant data and click on "Create app".
 4. In the tab row below the app name, click on "Settings".
 5. In the section "Buildpacks", add the buildpack `heroku/python`.
