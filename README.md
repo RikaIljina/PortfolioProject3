@@ -28,6 +28,7 @@
   - [Known bugs](#known-bugs)
 - [Technologies](#technologies)
   - [Main Languages](#main-languages)
+  - [Dependencies and Imports](#dependencies-and-imports)
   - [Frameworks, Libraries, Applications](#frameworks-libraries-applications)
 - [Testing](#testing)
 - [Deployment](#deployment)
@@ -219,23 +220,26 @@ See the ["Bugs" section of TESTING.md](TESTING.md#known-bugs-and-persisting-issu
 
 - Python 3.11.5
 
+### Dependencies and Imports
+
+- [gspread](https://docs.gspread.org/en/v6.0.0/): Python API for Google Sheets
+- [google-auth](https://google-auth.readthedocs.io/en/stable/reference/google.oauth2.service_account.html) ('service-account' module): Google authentication library for Python
+- [colorama](https://pypi.org/project/colorama/): makes ANSI escape character sequences work under MS Windows
+- `sys`, `time`, `textwrap`, `re`, `typing`, `math`, `random`, `termios`, `msvcrt` from the [Python Standard Library](https://docs.python.org/3/library/index.html)
+
 ### Frameworks, Libraries, Applications
 
 - [Git](https://git-scm.com/): version control via VS Code terminal
 - [GitHub](https://github.com/): project storage and submission
 - [Heroku](https://www.heroku.com/): project deployment
 - [Google Sheets](https://docs.google.com/spreadsheets): database
-- [gspread](https://docs.gspread.org/en/v6.0.0/): Python API for Google Sheets
-- [google-auth](https://google-auth.readthedocs.io/en/stable/reference/google.oauth2.service_account.html) ('service-account' module): Google authentication library for Python
 - [VS Code](https://code.visualstudio.com/): IDE
 - [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker): spell check extension for VS Code
 - [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance): Language server for Python in VS Code
 - [Pylint](https://marketplace.visualstudio.com/items?itemName=ms-python.pylint): VS Code extension providing linting support for Python files using `pylint`
 - [autopep8](https://marketplace.visualstudio.com/items?itemName=ms-python.autopep8): VS Code extension providing formatting support for Python files using the `autopep8` formatter
 - [autoDocstring](https://marketplace.visualstudio.com/items?itemName=njpwerner.autodocstring): generates Python docstrings automatically
-- [colorama](https://pypi.org/project/colorama/): makes ANSI escape character sequences work under MS Windows
 - [pip-tools](https://github.com/jazzband/pip-tools): generates up-to-date requirement list with `pip-compile`
-- sys, time, textwrap, re, typing, math, random, termios, msvcrt from the [Python Standard Library](https://docs.python.org/3/library/index.html)
 
 ## Testing
 
