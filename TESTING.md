@@ -1,4 +1,4 @@
-# "What d'you know" - Testing
+# "AD ASTRA" - Testing
 
 ## CONTENTS
 
@@ -53,7 +53,7 @@ The following features were thoroughly tested:
 
 ### Solved bugs
 
-The following issues came up during the testing process and were fixed:
+The following issues came up during the development or testing process and were fixed:
 
 | Issue | Fix |
 |---|---|
@@ -66,6 +66,9 @@ The following issues came up during the testing process and were fixed:
 
 ### Known bugs and persisting issues
 
+- The game mechanics and the score calculation are not well-balanced yet:
+  - The cadet skill values are being randomly chosen from a pool of 25 points per cadet, but it is not a given that every cadet gets a skill with 10 points. This makes it impossible for the player to find a guaranteed way of achieving a top score in every playthrough.
+  - The score calculation needs to be tested more thoroughly to produce a fair result.
 - I am not sure whether the `flush_input()` function will work on all systems to flush the input stream.
 - I have no insight into how exactly Unicode characters are rendered by the Python terminal embedded in an HTML page. Therefore I am not sure whether all Unicode characters that I use for decoration will be shown correctly by all browsers and on all systems.
 - I wanted to have all my texts accessible and editable from outside the code, which is why I used Google Sheets as a database from which I retrieve all text by ID. While my solution works within the scope of this small game, there is still the risk of misspelling an ID for dictionary lookup and causing an error in the game. For larger projects I would probably use the `gettext` module to prevent such issues and have more features such as the consideration of plural forms.

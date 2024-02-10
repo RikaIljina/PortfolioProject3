@@ -8,7 +8,7 @@
 
 ## Table of contents
 <details>
-<summary><span style='color: cyan'><b>Contents</b></summary>
+<summary>Contents</summary>
 
 - [UX](#ux)
   - [Target audience](#target-audience)
@@ -154,7 +154,7 @@ The menu choices are entered via keyboard and confirmed with ENTER.
 #### Flowchart
 
 <details>
-<summary><span style="color: cyan">Flowchart depicting the progression of actions and processes</span></summary>
+<summary>Flowchart depicting the progression of actions and processes</summary>
 
 ![Flowchart depicting the progression of actions and processes](assets/readme/flowchart.png)
 
@@ -196,6 +196,8 @@ Preferably, the game would be tested enough times to see if all message IDs in t
 
 The following features could be implemented in future updates:
 
+- [ ] Player name validation that prevents players from choosing an offensive name
+- [ ] Implementation of a more extensive menu system that allows to return to main menu and exit the game at any point of the game and to return to the previous menu choices in case of making a wrong choice
 - [ ] Localization of all strings to make the game available in other languages
 - [ ] Implementation of game settings in the menu to change the language or the color scheme to make it more accessible
 - [ ] Addition of sounds and music
@@ -227,6 +229,7 @@ See the ["Bugs" section of TESTING.md](TESTING.md#known-bugs-and-persisting-issu
 - [colorama](https://pypi.org/project/colorama/): makes ANSI escape character sequences work under MS Windows
 - [pip-tools](https://github.com/jazzband/pip-tools): generates up-to-date requirement list with `pip-compile`
 - sys, time, textwrap, re, typing, math, random, termios, msvcrt from the [Python Standard Library](https://docs.python.org/3/library/index.html)
+
 
 ## Testing
 
@@ -288,7 +291,7 @@ The game uses the Google API to connect the Python script to Google Sheets. To i
 13. On the next page, click on the "Keys" tab.
 14. Click on "Add key" > "Create new key" and select "JSON" as the key type.
 15. The key file is downloaded to your Download folder. It can now be moved into your Python project folder, renamed, and accessed with `gspread`.
-    ><span style="color: red;"><b>Important!</b></span> The credentials file must be kept secret. To prevent it from being uploaded to your GitHub repository, its name must be added to the repo's `.gitignore` file.
+    >$\color{red}{\textsf{Important!}}$ The credentials file must be kept secret. To prevent it from being uploaded to your GitHub repository, its name must be added to the repo's `.gitignore` file.
 16. Return to the API Library and find and enable "Google Sheets API".
 17. Return to the section "Credentials" and copy the service account email in the table "Service accounts".
 18. Open the Google Worksheet you want to connect to the Python script and share it with the service account by pasting in the email address and giving it the role of "Editor".
@@ -315,7 +318,7 @@ By forking the GitHub Repository, you can make a copy of the original repository
 
 ### Code used
 
-All code was written by me unless clearly stated otherwise.
+All Python code was written by me unless clearly stated otherwise.
 
 Beside the Code Institute learning materials and sample files, I also used the following reference materials:
 
